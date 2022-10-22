@@ -5,7 +5,7 @@ const Register = () => {
   return (
     <div className='w-screen h-screen bg-white px-[500px] py-[90px]'>
         <div className='w-full h-full bg-white flex flex-col drop-shadow-xl'>
-            <div className='w-full h-[50px] bg-rose-600 rounded-t-lg'>
+            <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
                 <h1 className='text-center text-white text-2xl font-medium p-2'>Chat App</h1>
             </div>
             <div>
@@ -25,7 +25,7 @@ const Register = () => {
                     <h1 className='py-4 text-center text-lg font-medium'>Do you have an account ? <Link to='/login' className='text-lg font-normal text-rose-600'>Login now</Link></h1>
                 </div>
                 <div className='w-full flex flex-row justify-center'>
-                <button className="rounded-full bg-rose-600 text-white py-2 px-8 font-medium text-xl">Register</button>
+                <button className="rounded-full bg-sky-900 text-white py-2 px-8 font-medium text-xl">Register</button>
                 </div>
             </div>
         </div>
