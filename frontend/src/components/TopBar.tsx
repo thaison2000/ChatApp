@@ -1,11 +1,24 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const TopBar = () => {
+
+    const navigate = useNavigate()
+
+    const handleClickLogout = () =>{
+        localStorage.removeItem('user')
+        window.location.reload()
+    }
+
+    const handleClickHome = () =>{
+        navigate('/')
+    }
+
     return (
         <div className='h-[50px] flex flex-row bg-sky-900'>
             <div className='w-[250px] flex flex-row'>
-                <div>
-                    <h1 className='text-2xl text-white font-bold px-4 py-2'>Chat App</h1>
+                <div className=''>
+                    <h1 onClick={handleClickHome} className='text-2xl text-white font-bold px-4 py-2 hover:text-orange-300'>Chat App</h1>
                 </div>
                 <div className='flex flex-row ml-12'>
                 </div>
@@ -24,7 +37,7 @@ const TopBar = () => {
 
                 </div>
                 <div className=''>
-                    <h1 className='text-2xl text-white font-bold pl-4 py-2 mr-4'>Log out</h1>
+                    <h1 onClick={handleClickLogout} className='pointer-events-auto text-2xl text-white font-bold pl-4 py-2 mr-4'>Log out</h1>
                 </div>
             </div>
         </div>

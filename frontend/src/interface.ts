@@ -17,6 +17,7 @@ export interface UserRegisterInterface {
     email: string,
     name: string,
     password: string,
+    againPassword: string
 }
 
 export interface UserProfileInterface {

@@ -39,7 +39,7 @@ const authController = {
             const salt = await bcrypt.genSalt(10)
             const hashedPassword = await bcrypt.hash(req.body.password, salt)
 
-            //create account
+            // create account
             let newUser = await prisma.user.create({
                 data: {
                     email: req.body.email,
@@ -47,7 +47,8 @@ const authController = {
                     password: hashedPassword,
                     phone: '',
                     address: '',
-                    dateOfBirth: ''
+                    dateOfBirth: '',
+                    avatar: ''
                 }
             })
             res.status(200).json({
@@ -89,12 +90,17 @@ const authController = {
             }
 
             // Create and assign token
-            const token = jwt.sign({ userId: user.user_id }, `${process.env.TOKEN_SECRET}`)
+            const token = jwt.sign({ user_id: user.user_id }, `${process.env.TOKEN_SECRET}`)
 
             res.status(200).json({
                 user_id: user.user_id,
-                username: user.name,
+                name: user.name,
                 email: user.email,
+                phone: user.phone,
+                dateOfBirth: user.dateOfBirth,
+                address: user.address,
+                gender: user.gender,
+                avatar: user.avatar,
                 jwt: token
             })
         }

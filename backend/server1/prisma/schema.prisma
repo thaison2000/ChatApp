@@ -17,12 +17,13 @@ enum Gender {
 
 model User {
   user_id     Int     @id @default(autoincrement())
-  name        String?
+  name        String
   email       String  @unique
-  phone       String?
-  address     String?
-  dateOfBirth String?
-  password    String?
+  phone       String
+  address     String
+  dateOfBirth String
+  password    String
   gender      Gender  @default(Male)
+  avatar      String
 }
 

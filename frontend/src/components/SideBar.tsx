@@ -1,9 +1,18 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Context } from '../context/Context'
 
-const SideBar = (props:any) => {
+const SideBar = () => {
+
+    const navigate = useNavigate()
+    const { user } = useContext(Context)
 
     const [displayChanel, setDisplayChanel] = useState(true)
     const [displayDirectMessage, setDisplayDirectMessage] = useState(true)
+
+    const handleClickProfile = () =>{
+        navigate('/profile')
+    }
 
     const handleClickDisplayChanel = () => {
         setDisplayChanel(!displayChanel)
@@ -14,11 +23,11 @@ const SideBar = (props:any) => {
     }
 
     return (
-        <div className='w-[250px] bg-sky-700 overflow-auto'>
+        <div className='w-[250px] bg-sky-700 overflow-y-auto overflow-x-hidden'>
             <div className='flex flex-col divide-y-2'>
-                <div className=' my-4 flex flex-row' onClick={props.handleClickProfile}>
-                    <img className='rounded-full m-2 ml-4 w-8 h-8' src="https://www.w3schools.com/howto/img_avatar.png" alt="" />
-                    <h1 className='text-2xl text-white font-bold px-4 py-2'>Thai Son</h1>
+                <div className=' py-4 flex flex-row w-[250px] hover:bg-sky-800' onClick={handleClickProfile}>
+                    <img className='rounded-full m-2 ml-4 w-8 h-8' src={'http://localhost:3001/images/' + user.avatar} alt="" />
+                    <h1 className='text-2xl text-white font-bold px-4 py-2 overflow-auto'>{user.name}</h1>
                 </div>
                 <div>
                     <div className='flex flex-row py-2 hover:bg-sky-800'>
