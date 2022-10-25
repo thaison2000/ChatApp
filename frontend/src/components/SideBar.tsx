@@ -11,7 +11,7 @@ const SideBar = () => {
     const [displayDirectMessage, setDisplayDirectMessage] = useState(true)
 
     const handleClickProfile = () =>{
-        navigate('/profile')
+        navigate('/profile/'+ user.user_id)
     }
 
     const handleClickDisplayChanel = () => {

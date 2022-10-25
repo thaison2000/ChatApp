@@ -4,7 +4,7 @@ import { Context } from '../context/Context'
 import SideBar from '../components/SideBar'
 import TopBar from '../components/TopBar'
 
-const Profile = () => {
+const Profile = (props: any) => {
 
   console.log(
     'aa'
@@ -151,7 +151,7 @@ const Profile = () => {
               </div>
               <div className='my-4 ml-8 mr-4 relative drop-shadow-2xl bg-white rounded-2xl w-[250px] pb-6 '>
                 <label className="block mb-2 text-sm w-[240px] mt-4 ml-4 font-medium text-gray-900 dark:text-gray-300">Change avatar</label>
-                <input className="block w-[240px] text-sm text-slate-500 ml-2
+                <input className="block w-[240px] text-sm text-slate-500 ml-3
                   file:mr-4 file:py-2 file:px-4
                   file:rounded-full file:border-0
                   file:text-sm file:font-semibold
