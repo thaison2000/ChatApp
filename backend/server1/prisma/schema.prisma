@@ -15,6 +15,11 @@ enum Gender {
   Female
 }
 
+enum GroupType {
+  Chanel
+  DirectMessage
+}
+
 model User {
   user_id     Int     @id @default(autoincrement())
   name        String
@@ -25,5 +30,25 @@ model User {
   password    String
   gender      Gender  @default(Male)
   avatar      String
+}
+
+model Group {
+  group_id    Int     @id @default(autoincrement())
+  avatar      String
+  name        String
+  desc        String
+  type        GroupType @default(Chanel)
+}
+
+model GroupAdmin {
+  groupAdmin_id     Int     @id @default(autoincrement())
+  group_id          Int
+  user_id           Int     
+}
+
+model GroupUser {
+  groupUser_id      Int     @id @default(autoincrement())
+  group_id          Int
+  user_id           Int     
 }
 

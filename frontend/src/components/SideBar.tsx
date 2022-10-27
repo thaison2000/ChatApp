@@ -1,6 +1,8 @@
-import React, { useContext, useState } from 'react'
+import axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Context } from '../context/Context'
+import CreateGroupForm from './CreateGroupForm'
 
 const SideBar = () => {
 
@@ -9,9 +11,11 @@ const SideBar = () => {
 
     const [displayChanel, setDisplayChanel] = useState(true)
     const [displayDirectMessage, setDisplayDirectMessage] = useState(true)
+    const [createGroupForm, setCreateGroupForm] = useState(false)
+    const [groups,setGroups] = useState<Array<any>>()
 
-    const handleClickProfile = () =>{
-        navigate('/profile/'+ user.user_id)
+    const handleClickProfile = () => {
+        navigate('/profile/' + user.user_id)
     }
 
     const handleClickDisplayChanel = () => {
@@ -22,9 +26,34 @@ const SideBar = () => {
         setDisplayDirectMessage(!displayDirectMessage)
     }
 
+    const handleClickCreateGroup = () => {
+        setCreateGroupForm(!createGroupForm)
+    }
+
+    useEffect(() => {
+        const fetchAllGroups = async () => {
+            try {
+                const config = {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+                  },
+                }
+                const res = await axios.get("http://localhost:3001/api/group",config);
+                setGroups(res.data)
+          
+              }
+              catch (err) {
+                console.log(err)
+              }
+            };
+            fetchAllGroups();
+        }, []);
+
     return (
-        <div className='w-[250px] bg-sky-700 overflow-y-auto overflow-x-hidden'>
-            <div className='flex flex-col divide-y-2'>
+        <div className='w-[250px] bg-sky-700 overflow-y-auto overflow-x-hidden relative'>
+            {createGroupForm ? <CreateGroupForm /> : null}
+            <div className='flex flex-col divide-y-2 relative'>
                 <div className=' py-4 flex flex-row w-[250px] hover:bg-sky-800' onClick={handleClickProfile}>
                     <img className='rounded-full m-2 ml-4 w-8 h-8' src={'http://localhost:3001/images/' + user.avatar} alt="" />
                     <h1 className='text-2xl text-white font-bold px-4 py-2 overflow-auto'>{user.name}</h1>
@@ -72,34 +101,23 @@ const SideBar = () => {
                     </div>
                     {displayChanel ?
                         <div>
-                            <div className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
+                            <div onClick={handleClickCreateGroup} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white mt-1">
+                                    <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
+                                </svg>
+                                <span className='text-white ml-2'>Add Chanel</span>
+                            </div>
+                            {groups?.map((group=>(
+                                <div onClick={()=>{
+                                    navigate('/group/'+ group.group_id)
+                                }} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
                                     <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
                                 </svg>
 
-                                <span className='text-white ml-2'>Chanel 1</span>
+                                <span className='text-white ml-2'>{group.name}</span>
                             </div>
-                            <div className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
-                                    <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
-                                </svg>
-
-                                <span className='text-white ml-2'>Chanel 1</span>
-                            </div>
-                            <div className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
-                                    <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
-                                </svg>
-
-                                <span className='text-white ml-2'>Chanel 1</span>
-                            </div>
-                            <div className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
-                                    <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
-                                </svg>
-
-                                <span className='text-white ml-2'>Chanel 1</span>
-                            </div>
+                            )))}
                         </div> : null}
                 </div>
                 <div>

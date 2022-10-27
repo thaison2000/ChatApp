@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import ChatBox from './ChatBox'
-import TextEditor from './TextEditor'
+import Editor from './Editor'
 
-const ChatWindow = () => {
+const ChatWindow = (props:any) => {
   
   return (
     <div className='w-[calc(100%-250px)]'>
@@ -16,8 +16,8 @@ const ChatWindow = () => {
               <ChatBox/>
               <ChatBox/>
             </div>
-            <div className='h-[80px] w-[1290px] hover:h-[200px] fixed bottom-16 z-10 bg-white'>
-            <TextEditor/>
+            <div className=''>
+            <Editor/>
             </div>
         </div>
     </div>

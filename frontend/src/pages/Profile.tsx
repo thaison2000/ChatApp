@@ -6,10 +6,6 @@ import TopBar from '../components/TopBar'
 
 const Profile = (props: any) => {
 
-  console.log(
-    'aa'
-  )
-
   const { user, dispatch } = useContext(Context)
 
   const [clickProfileEdit, setClickProfileEdit] = useState(false)
@@ -128,7 +124,7 @@ const Profile = (props: any) => {
           </div>
           <div className='flex flex-row my-2'>
             <span className='text-xl w-[200px] text-sky-700 font-bold ml-3'></span>
-            <button onClick={handleClickSubmitUpdateProfile} className='text-xl text-stone-700 font-normal p-2 pl-4 bg-green-500 rounded-xl p-2 flex flex-row hover:bg-green-800 hover:text-white'>
+            <button onClick={handleClickSubmitUpdateProfile} className='text-xl text-stone-700 font-normal p-2 pl-4 bg-green-500 rounded-xl p-2 flex flex-row hover:bg-green-600 hover:text-white'>
               <span className=' mr-2 font-bold'>Submit</span>
             </button>
           </div>

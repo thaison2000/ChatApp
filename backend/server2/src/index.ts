@@ -7,6 +7,7 @@ import { Request, Response } from "express";
 import notificationRoute from "./routes/Notification";
 import cors from "cors";
 import mongoose from "mongoose";
+import postRoute from "./routes/Post";
 
 dotenv.config()
 
@@ -27,6 +28,7 @@ app.use("/images", express.static("public/images"));
 
 //api
 app.use('/api/notification', notificationRoute)
+app.use('/api/post', postRoute)
 
 app.get('/test', (req: Request, res: Response) => {
     return res.send("RUN NOW!")
