@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { uuid } from "uuidv4";
 
 import Post from '../models/Post';
 
@@ -8,7 +9,7 @@ const postController = {
         const newPost = new Post({
             user_id: req.user.user_id,
             group_id: req.body.group_id,
-            post_id: req.body.post_id,
+            post_id: `${uuid()}${Date.now()}`,
             content: req.body.content
         });
         try {
@@ -40,6 +41,18 @@ const postController = {
                 post_id: req.params.post_id
             });
             res.status(200).json(post);
+        } catch (err) {
+            console.log(err)
+            res.status(500).json(err);
+        }
+    },
+
+    getPostByGroupId: async (req: any, res: Response) => {
+        try {
+            const posts = await Post.find({
+                group_id: req.params.group_id
+            });
+            res.status(200).json(posts);
         } catch (err) {
             console.log(err)
             res.status(500).json(err);

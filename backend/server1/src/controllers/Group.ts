@@ -20,6 +20,12 @@ const groupController = {
                     user_id: req.user.user_id
                 }
             })
+            const newGroupUser = await prisma.groupUser.create({
+                data: {
+                    group_id: newGroup.group_id,
+                    user_id: req.user.user_id
+                }
+            })
             res.status(200).json('Create group successfully !')
         }
         catch(err){
@@ -108,12 +114,22 @@ const groupController = {
     },
     getAllGroups: async (req: any, res: Response) =>{
         try{
+            let data = []
 
-            const groups = await prisma.group.findMany({
+            const groupUsers = await prisma.groupUser.findMany({
                 where: {
+                    user_id: req.user.user_id
                 }
             })
-            res.status(200).json(groups)
+            for(let i=0;i<groupUsers.length;i++){
+                const group = await prisma.group.findUnique({
+                    where: {
+                        group_id: groupUsers[i].group_id
+                    }
+                })
+                data.push(group)
+            }
+            res.status(200).json(data)
         }
         catch(err){
             console.log(err)
