@@ -25,7 +25,7 @@ const ChatWindow = (props:any) => {
           }
         };
         fetchAllPosts();
-    }, [posts]);
+    }, [props.group_id]);
   
   return (
     <div className='w-[calc(100%-250px)]'>

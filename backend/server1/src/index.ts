@@ -11,6 +11,7 @@ import multer from "multer";
 import verifyToken from "./controllers/verifyToken";
 import { PrismaClient } from "@prisma/client";
 import groupRoute from "./routes/Group";
+import friendRoute from "./routes/Friend";
 
 dotenv.config()
 
@@ -25,6 +26,7 @@ app.use("/images", express.static("public/images"));
 app.use('/api/auth', authRoute)
 app.use('/api/user', userRoute)
 app.use('/api/group', groupRoute)
+app.use('/api/friend', friendRoute)
 
 //upload image
 export const storage = multer.diskStorage({

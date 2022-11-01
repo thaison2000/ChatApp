@@ -32,14 +32,12 @@ const userController = {
 
     getProfile: async (req: any, res: Response) =>{
         try{
-
-            console.log(req.user)
             const userProfile = await prisma.user.findUnique({
                 where: {
                     user_id: parseInt(req.params.user_id)
                 }
             })
-
+            console.log(userProfile)
             res.status(200).json(userProfile)
         }
         catch(err){

@@ -30,6 +30,12 @@ model User {
   password    String
   gender      Gender  @default(Male)
   avatar      String
+  friendRequestSendUser       FriendRequest[] @relation("sendUser")
+  friendRequestReceiveUser    FriendRequest[] @relation("receiveUser")
+  friendUser                  Friend[]        @relation("user")
+  friendFriend                Friend[]        @relation("friend")
+  groupAdmin                  GroupAdmin[]
+  groupUser                   GroupUser[]
 }
 
 model Group {
@@ -43,12 +49,35 @@ model Group {
 model GroupAdmin {
   groupAdmin_id     Int     @id @default(autoincrement())
   group_id          Int
-  user_id           Int     
+  user              User    @relation(fields: [user_id], references: [user_id])
+  user_id           Int
 }
 
 model GroupUser {
   groupUser_id      Int     @id @default(autoincrement())
   group_id          Int
-  user_id           Int     
+  user              User    @relation(fields: [user_id], references: [user_id])
+  user_id           Int
 }
+
+model Friend {
+  friendRecord_id   Int      @id @default(autoincrement())
+  user              User     @relation("user", fields: [user_id], references: [user_id])
+  user_id           Int
+  friend            User     @relation("friend", fields: [friend_id], references: [user_id])
+  friend_id         Int
+}
+
+model FriendRequest {
+  friendRequest_id     Int     @id @default(autoincrement())
+  sendUser          User    @relation("sendUser", fields: [sendUser_id], references: [user_id])
+  sendUser_id       Int
+  receiveUser       User    @relation("receiveUser", fields: [receiveUser_id], references: [user_id])
+  receiveUser_id    Int
+}
+
+
+
+
+
 
