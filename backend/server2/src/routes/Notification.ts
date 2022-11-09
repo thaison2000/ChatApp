@@ -4,8 +4,9 @@ import verifyToken from "../controllers/verifyToken";
 
 const notificationRoute = express.Router()
 
-notificationRoute.post('/',verifyToken,notificationController.createNotification)
+notificationRoute.post('/friendRequest/',verifyToken,notificationController.createFriendRequestNotification)
 notificationRoute.delete('/:sendUserId/:receiveUserId/:type',verifyToken,notificationController.deletedNotification)
 notificationRoute.get('/:sendUserId/:receiveUserId/:type',verifyToken,notificationController.getNotification)
+notificationRoute.get('/',verifyToken,notificationController.getAllNotificationsByReceiveUserId)
 
 export default notificationRoute

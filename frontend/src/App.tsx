@@ -15,8 +15,8 @@ function App() {
 
   useEffect(() => {
     socket.current = io("http://localhost:3003");
-    socket.current.emit("addUser", user?.user_id);
-  }, []);
+    socket.current.emit("addUser", user?.userId);
+  }, [socket.current]);
 
   return (
     <div className="App">

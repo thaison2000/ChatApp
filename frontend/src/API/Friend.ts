@@ -17,7 +17,7 @@ export const APIdeleteFriend = async (user_id: string) => {
   }
 }
 
-export const APIaddFriend = async (friendId: string) => {
+export const APIaddFriend = async (friendId: number) => {
   try {
     const config = {
       headers: {
@@ -97,6 +97,26 @@ export const APIgetAllFriendRequestBySendUserId = async () => {
       },
     }
     const res = await axios.get("http://localhost:3001/api/friend/request/sendUser/", config);
+    return {
+      status: true,
+      data: res.data
+    }
+  }
+  catch (err) {
+    console.log(err)
+    return { status: false }
+  }
+}
+
+export const APIgetAllFriendRequestByReceiveUserId = async () => {
+  try {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+      },
+    }
+    const res = await axios.get("http://localhost:3001/api/friend/request/receiveUser/", config);
     return {
       status: true,
       data: res.data

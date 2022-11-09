@@ -5,6 +5,7 @@ import TopBar from '../components/TopBar'
 import { useParams } from 'react-router-dom'
 import { APIgetUserProfile, APIupdateUserAvatar, APIupdateUserProfile } from '../API/User'
 import { APIcreateFriendRequest, APIdeleteFriend, APIdeleteFriendRequest, APIgetAllFriendRequestBySendUserId, APIgetAllFriends } from '../API/Friend'
+import { APIcreateFriendRequestNotification, APIdeleteNotification } from '../API/Notification'
 
 const Profile = (props: any) => {
 
@@ -110,6 +111,19 @@ const Profile = (props: any) => {
       setUserCondition('friendRequest')
     }
 
+    await APIcreateFriendRequestNotification({
+      sendUserId: currentUser.userId,
+      receiveUserId: user.userId,
+      sendUserName: currentUser.name,
+      type: 4
+    })
+
+    props.socket?.current?.emit("sendNotification", {
+      sendUserName: currentUser.name,
+      sendUserId: currentUser.userId,
+      receiveUserId: user.userId,
+      type:4
+    });
   }
 
   //xu ly khi xoa loi moi ket ban
@@ -118,6 +132,7 @@ const Profile = (props: any) => {
     if (status) {
       setUserCondition('user')
     }
+    await APIdeleteNotification(currentUser.userId, user.userId,4)
   }
 
   //xu ly khi xoa ban
@@ -219,7 +234,7 @@ const Profile = (props: any) => {
 
   return (
     <div className='w-screen h-screen pointer-events-auto'>
-      <TopBar />
+      <TopBar socket={props.socket}/>
       <div className='w-full h-[calc(100%-50px)] flex flex-row'>
         <SideBar />
         <div className='flex flex-row p-4'>

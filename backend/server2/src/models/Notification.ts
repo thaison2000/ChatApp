@@ -14,6 +14,9 @@ const NotificationSchema = mongoose.Schema(
             type: String,
             required: true
         },
+        sendUserName: {
+            type: String,
+        },
         post: {
             type: String,
         },

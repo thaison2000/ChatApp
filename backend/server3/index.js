@@ -10,6 +10,7 @@ const io = require("socket.io")(3003, {
     if(users.some((user) => user.userId === userId)){
       users = users.filter((user)=> user.userId !== userId)
       users.push({ userId, socketId })
+      console.log(users)
     }
     else{
       users.push({ userId, socketId });
@@ -51,7 +52,8 @@ const io = require("socket.io")(3003, {
         type,
         post,
         timestamp: new Date()
-      })}
+      })
+    }
     });
   
     //when disconnect
