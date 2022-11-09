@@ -21,15 +21,15 @@ enum GroupType {
 }
 
 model User {
-  user_id     Int     @id @default(autoincrement())
-  name        String
-  email       String  @unique
-  phone       String
-  address     String
-  dateOfBirth String
-  password    String
-  gender      Gender  @default(Male)
-  avatar      String
+  userId                      Int     @id @default(autoincrement())
+  name                        String
+  email                       String  @unique
+  phone                       String?
+  address                     String?
+  dateOfBirth                 String?
+  password                    String
+  gender                      Gender  @default(Male)
+  avatar                      String?
   friendRequestSendUser       FriendRequest[] @relation("sendUser")
   friendRequestReceiveUser    FriendRequest[] @relation("receiveUser")
   friendUser                  Friend[]        @relation("user")
@@ -39,41 +39,41 @@ model User {
 }
 
 model Group {
-  group_id    Int     @id @default(autoincrement())
-  avatar      String
-  name        String
-  desc        String
-  type        GroupType @default(Chanel)
+  groupId               Int     @id @default(autoincrement())
+  avatar                String?
+  name                  String
+  desc                  String?
+  type                  GroupType @default(Chanel)
 }
 
 model GroupAdmin {
-  groupAdmin_id     Int     @id @default(autoincrement())
-  group_id          Int
-  user              User    @relation(fields: [user_id], references: [user_id])
-  user_id           Int
+  groupAdminId          Int     @id @default(autoincrement())
+  groupId               Int
+  user                  User    @relation(fields: [userId], references: [userId])
+  userId                Int
 }
 
 model GroupUser {
-  groupUser_id      Int     @id @default(autoincrement())
-  group_id          Int
-  user              User    @relation(fields: [user_id], references: [user_id])
-  user_id           Int
+  groupUserId           Int     @id @default(autoincrement())
+  groupId               Int
+  user                  User    @relation(fields: [userId], references: [userId])
+  userId                Int
 }
 
 model Friend {
-  friendRecord_id   Int      @id @default(autoincrement())
-  user              User     @relation("user", fields: [user_id], references: [user_id])
-  user_id           Int
-  friend            User     @relation("friend", fields: [friend_id], references: [user_id])
-  friend_id         Int
+  friendRecordId        Int      @id @default(autoincrement())
+  user                  User     @relation("user", fields: [userId], references: [userId])
+  userId                Int
+  friend                User     @relation("friend", fields: [friendId], references: [userId])
+  friendId              Int
 }
 
 model FriendRequest {
-  friendRequest_id     Int     @id @default(autoincrement())
-  sendUser          User    @relation("sendUser", fields: [sendUser_id], references: [user_id])
-  sendUser_id       Int
-  receiveUser       User    @relation("receiveUser", fields: [receiveUser_id], references: [user_id])
-  receiveUser_id    Int
+  friendRequestId       Int     @id @default(autoincrement())
+  sendUser              User    @relation("sendUser", fields: [sendUserId], references: [userId])
+  sendUserId            Int
+  receiveUser           User    @relation("receiveUser", fields: [receiveUserId], references: [userId])
+  receiveUserId         Int
 }
 
 

@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction } from "express";
 const app = express();
 
 import bodyParser from "body-parser";
@@ -16,10 +16,24 @@ import friendRoute from "./routes/Friend";
 dotenv.config()
 
 // Middleswares
+app.use(function (req: Request, res: Response, next: NextFunction) {
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    // Request headers you wish to allow
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    next();
+  });
+
+app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json())
-app.use(cors())
 app.use("/images", express.static("public/images"));
 
 //api
@@ -47,7 +61,7 @@ app.post("/api/user/updateAvatar", verifyToken, upload.single("file"), async (re
     try {
         const userProfile = await prisma.user.update({
             where: {
-                user_id: req.user.user_id
+                userId: req.user.userId
             },
             data: {
                 avatar: req.body.name
@@ -65,7 +79,7 @@ app.post("/api/group/updateAvatar", verifyToken, upload.single("file"), async (r
     try {
         const group = await prisma.group.update({
             where: {
-                group_id: req.body.group_id
+                groupId: req.body.groupId
             },
             data: {
                 avatar: req.body.name

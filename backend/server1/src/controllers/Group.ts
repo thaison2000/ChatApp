@@ -16,14 +16,14 @@ const groupController = {
             })
             const newGroupAdmin = await prisma.groupAdmin.create({
                 data: {
-                    group_id: newGroup.group_id,
-                    user_id: req.user.user_id
+                    groupId: newGroup.groupId,
+                    userId: req.user.userId
                 }
             })
             const newGroupUser = await prisma.groupUser.create({
                 data: {
-                    group_id: newGroup.group_id,
-                    user_id: req.user.user_id
+                    groupId: newGroup.groupId,
+                    userId: req.user.userId
                 }
             })
             res.status(200).json('Create group successfully !')
@@ -39,26 +39,26 @@ const groupController = {
 
             const admin = await prisma.groupAdmin.findMany({
                 where: {
-                    user_id: req.user.user_id,
-                    group_id: req.params.group_id
+                    userId: req.user.userId,
+                    groupId: req.params.groupId
                 }
             })
             if(admin){
                 await prisma.group.delete({
                     where: {
-                        group_id: req.params.group_id
+                        groupId: req.params.groupId
                     }
                 })
 
                 await prisma.groupAdmin.deleteMany({
                     where: {
-                        group_id: req.params.group_id
+                        groupId: req.params.groupId
                     }
                 })
 
                 await prisma.groupUser.deleteMany({
                     where: {
-                        group_id: req.params.group_id
+                        groupId: req.params.groupId
                     }
                 })
             }
@@ -75,7 +75,7 @@ const groupController = {
 
             const newGroup = await prisma.group.update({
                 where:{
-                    group_id: req.body.group_id
+                    groupId: req.body.groupId
                 },
                 data: {
                     name: req.body.name,
@@ -84,8 +84,8 @@ const groupController = {
             })
             const newGroupAdmin = await prisma.groupAdmin.create({
                 data: {
-                    group_id: newGroup.group_id,
-                    user_id: req.user.user_id
+                    groupId: newGroup.groupId,
+                    userId: req.user.userId
                 }
             })
             res.status(200).json('Create group successfully !')
@@ -101,8 +101,8 @@ const groupController = {
 
             const newMember = await prisma.groupUser.create({
                 data: {
-                    group_id: req.body.group_id,
-                    user_id: req.body.user_id
+                    groupId: req.body.groupId,
+                    userId: req.body.userId
                 }
             })
             res.status(200).json('Add member into group successfully !')
@@ -118,13 +118,13 @@ const groupController = {
 
             const groupUsers = await prisma.groupUser.findMany({
                 where: {
-                    user_id: req.user.user_id
+                    userId: req.user.userId
                 }
             })
             for(let i=0;i<groupUsers.length;i++){
                 const group = await prisma.group.findUnique({
                     where: {
-                        group_id: groupUsers[i].group_id
+                        groupId: groupUsers[i].groupId
                     }
                 })
                 data.push(group)

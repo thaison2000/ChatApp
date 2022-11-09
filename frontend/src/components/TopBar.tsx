@@ -1,9 +1,18 @@
-import React from 'react'
+import axios from 'axios'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Context } from '../context/Context'
 
-const TopBar = () => {
+const TopBar = (props:any) => {
 
     const navigate = useNavigate()
+    const scrollRef = useRef<any>()
+    const { user, dispatch } = useContext(Context);
+    const [notificationAlert, setNotificationAlert] = useState<boolean>(false);
+    const [notifications, setNotifications] = useState<any>();
+    const [countNewNotifications, setCountNewNotifications] = useState(-1);
+    const [newNotification, setNewNotification] = useState<any>();
+    const [deletedfriendRequestNotification, setDeletedFriendRequestNotification] = useState();
 
     const handleClickLogout = () => {
         localStorage.removeItem('user')
@@ -13,6 +22,102 @@ const TopBar = () => {
     const handleClickHome = () => {
         navigate('/')
     }
+
+    useEffect(() => {
+        scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [notifications]);
+
+    // useEffect(() => {
+    //     const getNotifications = async () => {
+    //         try {
+    //             const res = await axios.get("http://localhost:3001/api/notification/" + user._id);
+    //             setNotifications(res.data);
+    //         } catch (err) {
+    //             console.log(err);
+    //         }
+    //     };
+    //     getNotifications();
+    // }, []);
+
+    // useEffect(() => {
+    //     props.socket?.current?.on("getNotification", (data:any) => {
+    //         console.log(data)
+    //         setNewNotification({
+    //             sendUserId: data.sendUserId,
+    //             sendUserName: data.sendUserName,
+    //             receiveUserId: data.receiveUserId,
+    //             type: data.type,
+    //             post: data.post,
+    //             createdAt: data.timestamp
+    //         })
+    //     });
+    // }, [props.socket?.current]);
+
+    // useEffect(() => {
+    //     newNotification &&
+    //         setNotifications((prev:any) => [...prev, newNotification]);
+    //     setCountNewNotifications(countNewNotifications + 1)
+    // }, [newNotification]);
+
+    // useEffect(() => {
+    //     deletedfriendRequestNotification &&
+    //         setNotifications(notifications.filter((notification) => {
+    //             let deletedValue = { ...deletedfriendRequestNotification, type: 4 }
+
+    //             return (notification.sendUserName !== deletedValue.sendUserName && notification.type !== deletedValue.type) && notification !== deletedfriendRequestNotification
+    //         }));
+    //     console.log(notifications)
+    // }, [deletedfriendRequestNotification]);
+
+    // const handleClickAcceptAddFriend = async (deletefriendRequestNotification:any) => {
+    //     try {
+    //         await axios.put(`http://localhost:3001/api/user/` + user._id + '/addfriend', { userId: deletefriendRequestNotification.sendUserId, });
+    //         await axios.delete(`http://localhost:3001/api/notification`, {
+    //             data: {
+    //                 sendUserId: deletefriendRequestNotification.sendUserId,
+    //                 receiveUserId: user._id,
+    //                 type: 4
+    //             }
+    //         });
+    //         await axios.post(`http://localhost:3003/api/conversation/`, { firstUserId: deletefriendRequestNotification.sendUserId, secondUserId: user._id });
+
+    //         socket.current?.emit("sendNotification", {
+    //             sendUserName: user.username,
+    //             sendUserId: deletefriendRequestNotification.receiveUserId,
+    //             receiveUserId: deletefriendRequestNotification.sendUserId,
+    //             type: 5
+    //         });
+
+    //         dispatch({ type: "ADDFRIEND", payload: deletefriendRequestNotification.sendUserId });
+    //         setNotifications(notifications.filter((notification) => {
+    //             return notification != deletefriendRequestNotification
+    //         }))
+
+    //     } catch (err) {
+    //     }
+    // };
+
+    // const handleClickRejectAddFriend = async (deletefriendRequestNotification) => {
+    //     try {
+    //         await axios.delete(`http://localhost:3001/api/notification`, {
+    //             data: {
+    //                 sendUserId: deletefriendRequestNotification.sendUserId,
+    //                 receiveUserId: user._id,
+    //                 type: 4
+    //             }
+    //         });
+    //         setNotifications(notifications.filter((notification) => {
+    //             return notification != deletefriendRequestNotification
+    //         }))
+    //         socket.current?.emit("sendNotification", {
+    //             sendUserName: user.username,
+    //             sendUserId: deletefriendRequestNotification.receiveUserId,
+    //             receiveUserId: deletefriendRequestNotification.sendUserId,
+    //             type: 6
+    //         });
+    //     } catch (err) {
+    //     }
+    // };
 
     return (
         <div className='h-[50px] flex flex-row bg-sky-900'>

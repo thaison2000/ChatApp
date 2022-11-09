@@ -5,11 +5,11 @@ import verifyToken from "../controllers/verifyToken";
 const friendRoute = express.Router()
 
 friendRoute.post('/request/',verifyToken,friendController.createFriendRequest)
-friendRoute.delete('/request/:receiveUser_id',verifyToken,friendController.deleteFriendRequest)
+friendRoute.delete('/request/:sendUserId/:receiveUserId',verifyToken,friendController.deleteFriendRequest)
 friendRoute.get('/request/sendUser/',verifyToken,friendController.getAllFriendRequestBySendUserId)
-friendRoute.get('/request/receive/',verifyToken,friendController.getAllFriendRequestByReceiveUserId)
+friendRoute.get('/request/receiveUser/',verifyToken,friendController.getAllFriendRequestByReceiveUserId)
 friendRoute.post('/',verifyToken,friendController.addFriend)
-friendRoute.delete('/:friend_id',verifyToken,friendController.deleteFriend)
-friendRoute.get('/',verifyToken,friendController.getAllFriend)
+friendRoute.delete('/:friendId',verifyToken,friendController.deleteFriend)
+friendRoute.get('/',verifyToken,friendController.getAllFriends)
 
 export default friendRoute

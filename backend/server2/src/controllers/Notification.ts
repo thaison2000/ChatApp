@@ -8,7 +8,6 @@ const notificationController = {
         const newNotification = new Notification({
           sendUserId: req.body.sendUserId,
           receiveUserId: req.body.receiveUserId,
-          sendUserName: req.body.sendUserName,
           type: req.body.type,
           post: req.body.post
         });

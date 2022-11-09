@@ -2,15 +2,15 @@ const mongoose = require('mongoose')
 
 const NotificationSchema = mongoose.Schema(
     {
+        notificationId: {
+            type: String,
+            required: true
+        },
         sendUserId: {
             type: String,
             required: true
         },
         receiveUserId: {
-            type: String,
-            required: true
-        },
-        sendUserName: {
             type: String,
             required: true
         },

@@ -3,7 +3,7 @@ import ChatWindow from '../components/ChatWindow'
 import SideBar from '../components/SideBar'
 import TopBar from '../components/TopBar'
 
-const Home = () => {
+const Home = (props: any) => {
 
     return (
         <div className='w-screen h-screen pointer-events-auto'>

@@ -1,95 +1,101 @@
-import axios from 'axios'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { Context } from '../context/Context'
 import SideBar from '../components/SideBar'
 import TopBar from '../components/TopBar'
 import { useParams } from 'react-router-dom'
+import { APIgetUserProfile, APIupdateUserAvatar, APIupdateUserProfile } from '../API/User'
+import { APIcreateFriendRequest, APIdeleteFriend, APIdeleteFriendRequest, APIgetAllFriendRequestBySendUserId, APIgetAllFriends } from '../API/Friend'
 
 const Profile = (props: any) => {
 
   const { user: currentUser, dispatch } = useContext(Context)
 
-  let user_id = useParams().user_id
+  let userId: string = useParams().userId || ''
+
+  const name = useRef<any>()
+  const gender = useRef<any>()
+  const dateOfBirth = useRef<any>()
+  const phone = useRef<any>()
+  const address = useRef<any>()
 
   const [clickProfileEdit, setClickProfileEdit] = useState(false)
-  const name = useRef<HTMLInputElement>(null)
-  const dateOfBirth = useRef<HTMLInputElement>(null)
-  const phone = useRef<HTMLInputElement>(null)
-  const address = useRef<HTMLInputElement>(null)
-  const gender = useRef<HTMLSelectElement>(null)
   const [avatar, setAvatar] = useState<any>();
   const [user, setUser] = useState<any>()
-  const [userCondition, setUserCondition] = useState<string>();
+  const [newNotification, setNewNotification] = useState<any>({});
+  const [userCondition, setUserCondition] = useState<string>('user');
   //userCondition = [currentUser, user, friendRequest, friend]
 
   useEffect(() => {
+    props.socket.current?.on("getNotification", (data: any) => {
+      setNewNotification({
+        sendUserId: data.sendUserId,
+        receiveUserId: data.receiveUserId,
+        type: data.type,
+        post: data.post,
+        createdAt: data.timestamp
+      })
+    });
+  }, [props.socket.current]);
+
+  useEffect(() => {
+    if (newNotification.type == 5) {
+      console.log(newNotification.sendUserId)
+      setUserCondition('friend')
+      window.location.reload()
+    }
+    if (newNotification.type == 6) {
+      setUserCondition('user')
+    }
+    if (newNotification.type == 7) {
+      console.log(newNotification.sendUserId)
+      setUserCondition('user')
+    }
+  }, [newNotification]);
+
+  //lay thong tin ca nhan nguoi dung
+  useEffect(() => {
     const getUserProfile = async () => {
-      try {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json',
-            'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
-          },
-        }
-        const res = await axios.get("http://localhost:3001/api/user/" + user_id, config)
-        setUser(res.data)
-      } catch (err) {
-        console.log(err)
+      const { status, data } = await APIgetUserProfile(userId)
+      if (status) {
+        setUser(data)
       }
     }
     getUserProfile()
 
-  }, [user_id]);
+  }, [userId, clickProfileEdit]);
 
   useEffect(() => {
 
     let friends: any = []
     let friendRequests: any = []
 
-    const getAllFriends = async () => {
-      try {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json',
-            'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
-          },
-        }
-        const res = await axios.get("http://localhost:3001/api/friend/", config);
-        friends = res.data
-      } catch (err) {
-        console.log(err)
-      }
-    }
-
-    const getAllFriendRequestBySendUserId = async () => {
-      try {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json',
-            'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
-          },
-        }
-        const res = await axios.get("http://localhost:3001/api/friend/request/sendUser/", config);
-        friends = res.data
-      } catch (err) {
-        console.log(err)
-      }
-    }
-
-    getAllFriends()
-    getAllFriendRequestBySendUserId()
-
-    if (user?.user_id == currentUser?.user_id) {
+    if (user?.userId == currentUser?.userId) {
       setUserCondition('currentUser')
     }
-    else if (friends.some((friend: any) => friend.user_id == user?.user_id)) {
-      setUserCondition('friend')
-    }
-    else if (friendRequests.some((friendRequest: any) => friendRequest.sendUser_id == user?.user_id)) {
-      setUserCondition('friendRequest')
-    }
-    else{
-      setUserCondition('user')
+    else {
+      const getAllFriends = async () => {
+        const { status, data }: any = await APIgetAllFriends()
+        if (status) {
+          friends = data
+        }
+        if (friends.some((friend: any) => friend.userId == user?.userId)) {
+          setUserCondition('friend')
+        }
+      }
+
+      const getAllFriendRequestBySendUserId = async () => {
+        const { status, data }: any = await APIgetAllFriendRequestBySendUserId()
+        if (status) {
+          friendRequests = data
+        }
+        if (friendRequests.some((friendRequest: any) => friendRequest.sendUserId == currentUser.userId && friendRequest.receiveUserId == user?.userId)) {
+          setUserCondition('friendRequest')
+
+        }
+      }
+
+      getAllFriends()
+      getAllFriendRequestBySendUserId()
     }
   }, [user]);
 
@@ -97,124 +103,69 @@ const Profile = (props: any) => {
     setClickProfileEdit(!clickProfileEdit)
   }
 
-  const handleClickSendFriendRequest = async () =>{
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
-        },
-      }
-      await axios.post("http://localhost:3001/api/friend/request", {
-        sendUser_id: currentUser.user_id,
-        receiverUser_id: user.user_id
-      },
-        config);
+  //xu ly khi gui loi moi ket ban
+  const handleClickSendFriendRequest = async () => {
+    const { status }: any = await APIcreateFriendRequest(user.userId)
+    if (status) {
       setUserCondition('friendRequest')
+    }
 
-    }
-    catch (err) {
-      console.log(err)
-    }
   }
 
-  const handleClickDeleteFriendRequest = async () =>{
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
-        },
-      }
-      await axios.delete("http://localhost:3001/api/friend/request/" + user.user_id,config);
+  //xu ly khi xoa loi moi ket ban
+  const handleClickDeleteFriendRequest = async () => {
+    const { status }: any = await APIdeleteFriendRequest(currentUser.userId, user.userId)
+    if (status) {
       setUserCondition('user')
-
-    }
-    catch (err) {
-      console.log(err)
     }
   }
 
-  const handleClickDeleteFriend = async () =>{
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
-        },
-      }
-      await axios.delete("http://localhost:3001/api/friend/" + user.user_id,config);
+  //xu ly khi xoa ban
+  const handleClickDeleteFriend = async () => {
+    const { status }: any = await APIdeleteFriend(user.userId)
+    if (status) {
       setUserCondition('user')
-
-    }
-    catch (err) {
-      console.log(err)
     }
   }
 
-  const handleSubmitUpdateAvatar = async (e: any) => {
-    try {
-      if (avatar) {
-        const data = new FormData();
-        const fileName = Date.now() + avatar.name;
-        data.append("name", fileName);
-        data.append("file", avatar);
-        console.log(avatar)
-        try {
-          const config = {
-            headers: {
-              'Content-Type': 'application/json',
-              'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
-            },
-          }
-          await axios.post("http://localhost:3001/api/user/updateAvatar", data, config);
-        } catch (err) {
-          console.log(err)
-        }
+  //xu ly khi thay doi anh dai dien
+  const handleSubmitUpdateAvatar = async () => {
+    let fileName = ''
+    if (avatar) {
+      const { status, data }: any = await APIupdateUserAvatar(avatar)
+      if (status) {
+        fileName = data
         dispatch({ type: 'UPDATE_AVATAR', payload: { avatar: fileName } });
         setAvatar(null)
         window.location.reload()
       }
-    } catch (err) {
-      console.log(err)
     }
   };
 
-  const handleClickSubmitUpdateProfile = async (e: any) => {
-    e.preventDefault();
-
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
-        },
-      }
-      await axios.post("http://localhost:3001/api/user/updateProfile", {
-        name: name.current?.value,
-        dateOfBirth: dateOfBirth.current?.value,
-        phone: phone.current?.value,
-        address: address.current?.value,
-        gender: gender.current?.value
-      },
-        config);
+  // xu ly khi thay doi thong tin ca nhan
+  const handleClickSubmitUpdateProfile = async () => {
+    const { status }: any = await APIupdateUserProfile({
+      name: name.current.value,
+      dateOfBirth: dateOfBirth.current.value,
+      phone: phone.current.value,
+      address: address.current.value,
+      gender: gender.current.value
+    })
+    if (status) {
       dispatch({
         type: 'UPDATE_PROFILE', payload: {
-          name: name.current?.value,
-          dateOfBirth: dateOfBirth.current?.value,
-          phone: phone.current?.value,
-          address: address.current?.value,
-          gender: gender.current?.value
+          name: name.current.value,
+          dateOfBirth: dateOfBirth.current.value,
+          phone: phone.current.value,
+          address: address.current.value,
+          gender: gender.current.value
         }
       })
       setClickProfileEdit(!clickProfileEdit)
-
-    }
-    catch (err) {
-      console.log(err)
     }
   };
 
+  //form thay doi thong tin ca nhan
   const ProfileEditForm = () => {
     return (
       <div className='drop-shadow-2xl bg-white rounded-2xl p-4 mt-4 w-[600px]'>
@@ -278,7 +229,7 @@ const Profile = (props: any) => {
                 <img className='w-48 h-48 rounded-full' src={'http://localhost:3001/images/' + user?.avatar} alt="" />
 
               </div>
-              {currentUser?.user_id == user?.user_id ?
+              {currentUser?.userId == user?.userId ?
                 <div className='my-4 ml-8 mr-4 relative drop-shadow-2xl bg-white rounded-2xl w-[250px] pb-6 '>
                   <label className="block mb-2 text-sm w-[240px] mt-4 ml-4 font-medium text-gray-900 dark:text-gray-300">Change avatar</label>
                   <input className="block w-[240px] text-sm text-slate-500 ml-3
@@ -313,7 +264,7 @@ const Profile = (props: any) => {
                 <div className='drop-shadow-2xl bg-white rounded-2xl p-4 mt-4 w-[600px]'>
                   <div className='mx-8 mt-4 flex flex-row'>
                     <span className='text-2xl text-sky-700 font-bold w-[200px]'>User information</span>
-                    {currentUser?.user_id == user?.user_id ?
+                    {currentUser?.userId == user?.userId ?
                       <svg onClick={handleClickProfileEdit} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 ml-3 mt-1 text-amber-400 hover:text-green-700">
                         <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
                         <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />

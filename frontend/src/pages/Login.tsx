@@ -1,12 +1,12 @@
-import axios from 'axios'
 import React, { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { APILogin } from '../API/Auth'
 import { Context } from '../context/Context'
 
 const Login = () => {
 
-    const [email, setEmail] = useState<string>()
-    const [password, setPassword] = useState<string>()
+    const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
     const navigate = useNavigate()
     const { dispatch } = useContext(Context);
 
@@ -20,19 +20,14 @@ const Login = () => {
 
     const handleClickLogin = async (e: any) => {
         e.preventDefault();
-    
-        try{
-            const res = await axios.post("http://localhost:3001/api/auth/login",{ 
-                email: email, 
-                password: password 
-            });
-            dispatch({type: 'LOG_IN',payload: res.data});
-            navigate('/')
-        } 
-        catch(err){
-            console.log(err)
-        }
-    };
+        const { status, data }: any = await APILogin({
+            email: email,
+            password: password
+        })
+        if (status)
+            dispatch({ type: 'LOG_IN', payload: data });
+        navigate('/')
+    }
 
     return (
         <div className='w-screen h-screen bg-white px-[500px] py-[180px]'>

@@ -1,6 +1,6 @@
-import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { APIfetchAllGroups } from '../API/Group';
 import { Context } from '../context/Context'
 import CreateGroupForm from './CreateGroupForm'
 
@@ -12,10 +12,10 @@ const SideBar = () => {
     const [displayChanel, setDisplayChanel] = useState(true)
     const [displayDirectMessage, setDisplayDirectMessage] = useState(true)
     const [createGroupForm, setCreateGroupForm] = useState(false)
-    const [groups,setGroups] = useState<Array<any>>()
+    const [groups, setGroups] = useState<Array<any>>()
 
     const handleClickProfile = () => {
-        navigate('/profile/' + user.user_id)
+        navigate('/profile/' + user.userId)
     }
 
     const handleClickDisplayChanel = () => {
@@ -32,23 +32,13 @@ const SideBar = () => {
 
     useEffect(() => {
         const fetchAllGroups = async () => {
-            try {
-                const config = {
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
-                  },
-                }
-                const res = await axios.get("http://localhost:3001/api/group",config);
-                setGroups(res.data)
-          
-              }
-              catch (err) {
-                console.log(err)
-              }
-            };
-            fetchAllGroups();
-        }, []);
+            const { status, data } = await APIfetchAllGroups()
+            if (status) {
+                setGroups(data)
+            }
+        }
+        fetchAllGroups();
+    }, []);
 
     return (
         <div className='w-[250px] bg-sky-700 overflow-y-auto overflow-x-hidden relative'>
@@ -107,17 +97,17 @@ const SideBar = () => {
                                 </svg>
                                 <span className='text-white ml-2'>Add Chanel</span>
                             </div>
-                            {groups?.map((group=>(
-                                <div onClick={()=>{
-                                    navigate('/group/'+ group.group_id)
+                            {groups?.map((group => (
+                                <div onClick={() => {
+                                    navigate('/group/' + group.group_id)
                                     // window.location.reload()
                                 }} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
-                                    <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
-                                </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
+                                        <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
+                                    </svg>
 
-                                <span className='text-white ml-2'>{group.name}</span>
-                            </div>
+                                    <span className='text-white ml-2'>{group.name}</span>
+                                </div>
                             )))}
                         </div> : null}
                 </div>

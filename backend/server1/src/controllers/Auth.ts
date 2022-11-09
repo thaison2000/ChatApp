@@ -1,31 +1,38 @@
-import express, { Request, Response } from "express";
+import { Response } from "express";
 import { loginValidation, registerValidation } from "./validation";
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+
+interface userRegisterInterface {
+    email: string,
+    name: string,
+    password: string,
+    againPassword?: string
+}
+
+interface userLoginInterface {
+    email: string,
+    password: string,
+}
 
 const prisma = new PrismaClient()
 
 const authController = {
     register: async (req: any, res: Response) => {
         try {
-
-            // validate data before saving a user
+            const userRegister: userRegisterInterface = req.body
             const { error } = registerValidation({
-                name: req.body.name,
-                email: req.body.email,
-                password: req.body.password
+                email: userRegister.email,
+                name: userRegister.name,
+                password: userRegister.password
             })
             if (error) {
                 return res.status(400).json(error.details[0].message)
             }
-
-            //check match password
             if (req.body.password != req.body.againPassword) {
-                return res.status(400).json('Password is not matching !')
+                return res.status(400).json('Password is not matching')
             }
-
-            // checking user exist or not
             const emailExist = await prisma.user.findUnique({
                 where: {
                     email: req.body.email
@@ -34,28 +41,17 @@ const authController = {
             if (emailExist) {
                 return res.status(400).json('Email already exist')
             }
-
-            // hash password
             const salt = await bcrypt.genSalt(10)
             const hashedPassword = await bcrypt.hash(req.body.password, salt)
-
-            // create account
+            const user: userRegisterInterface = {
+                email: req.body.email,
+                name: req.body.name,
+                password: hashedPassword
+            }
             let newUser = await prisma.user.create({
-                data: {
-                    email: req.body.email,
-                    name: req.body.name,
-                    password: hashedPassword,
-                    phone: '',
-                    address: '',
-                    dateOfBirth: '',
-                    avatar: ''
-                }
+                data: user
             })
-            res.status(200).json({
-                userId: newUser.user_id,
-                email: newUser.email,
-                username: newUser.name,
-            })
+            res.status(200).json(newUser)
 
         } catch (err) {
             console.log(err)
@@ -65,9 +61,9 @@ const authController = {
 
     login: async (req: any, res: Response) => {
         try {
-
+            const userLogin: userLoginInterface = req.body
             // validate data before logged in
-            const { error } = loginValidation(req.body)
+            const { error } = loginValidation(userLogin)
             if (error) {
                 return res.status(400).json(error.details[0].message)
             }
@@ -79,9 +75,8 @@ const authController = {
                 }
             })
             if (!user) {
-                return res.status(400).json('Email is not found!')
+                return res.status(400).json('Email is not found')
             }
-            console.log(user)
 
             // checking password
             const validPass = await bcrypt.compare(req.body.password, user.password)
@@ -90,10 +85,10 @@ const authController = {
             }
 
             // Create and assign token
-            const token = jwt.sign({ user_id: user.user_id }, `${process.env.TOKEN_SECRET}`)
+            const token = jwt.sign({ userId: user.userId }, `${process.env.TOKEN_SECRET}`)
 
             res.status(200).json({
-                user_id: user.user_id,
+                userId: user.userId,
                 name: user.name,
                 email: user.email,
                 phone: user.phone,

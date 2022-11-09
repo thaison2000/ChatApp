@@ -1,109 +1,113 @@
 import { PrismaClient } from "@prisma/client";
-import express, { Request, Response } from "express";
+import { Response } from "express";
+
+interface friendRequestInterface {
+    sendUserId: number,
+    receiveUserId: number
+}
 
 const prisma = new PrismaClient()
 
 const FriendController = {
-    createFriendRequest: async (req: any, res: Response)=>{
-
+    createFriendRequest: async (req: any, res: Response) => {
         try {
-            const newFriendRequest = await prisma.friendRequest.create({
-                data: {
-                    sendUser_id: req.user.user_id,
-                    receiveUser_id: req.body.friend_id
-                }
+            const friendRequest: friendRequestInterface = {
+                sendUserId: req.user.userId,
+                receiveUserId: req.body.receiveUserId
+            }
+            await prisma.friendRequest.create({
+                data: friendRequest
             })
             res.status(200).json("Create friend request successfully !");
-          } catch (err) {
+        } catch (err) {
+            console.log(err)
             res.status(500).json(err);
-          }
+        }
     },
 
-    deleteFriendRequest: async (req: any, res: Response)=>{
-
+    deleteFriendRequest: async (req: any, res: Response) => {
         try {
-            const deleteFriendRequest = await prisma.friendRequest.deleteMany({
+            await prisma.friendRequest.deleteMany({
                 where: {
-                    sendUser_id: req.user.user_id,
-                    receiveUser_id: req.params.receiveUser_id
+                    sendUserId: parseInt(req.params.sendUserId),
+                    receiveUserId: parseInt(req.params.receiveUserId)
                 }
             })
             res.status(200).json("Delete friend request successfully !");
-          } catch (err) {
+        } catch (err) {
+            console.log(err)
             res.status(500).json(err);
-          }
+        }
     },
 
-    getAllFriendRequestBySendUserId: async (req: any, res: Response)=>{
-
+    getAllFriendRequestBySendUserId: async (req: any, res: Response) => {
         try {
             const FriendRequests = await prisma.friendRequest.findMany({
                 where: {
-                    sendUser_id: req.user.user_id
+                    sendUserId: req.user.userId
                 }
             })
             res.status(200).json(FriendRequests);
-          } catch (err) {
+        } catch (err) {
             res.status(500).json(err);
-          }
+        }
     },
 
-    getAllFriendRequestByReceiveUserId: async (req: any, res: Response)=>{
-
+    getAllFriendRequestByReceiveUserId: async (req: any, res: Response) => {
         try {
             const FriendRequests = await prisma.friendRequest.findMany({
                 where: {
-                    receiveUser_id: req.user.user_id
+                    receiveUserId: req.user.userId
                 }
             })
             res.status(200).json(FriendRequests);
-          } catch (err) {
+        } catch (err) {
             res.status(500).json(err);
-          }
+        }
     },
 
-    addFriend: async (req: any, res: Response)=>{
-
+    addFriend: async (req: any, res: Response) => {
         try {
-            const friend = await prisma.friend.create({
+            await prisma.friend.create({
                 data: {
-                    user_id: req.user.user_id,
-                    friend_id: req.body.friend_id
+                    userId: req.user.userId,
+                    friendId: parseInt(req.body.friendId)
                 }
             })
             res.status(200).json('Add friend successfully !');
-          } catch (err) {
+        } catch (err) {
+            console.log(err)
             res.status(500).json(err);
-          }
+        }
     },
 
-    deleteFriend: async (req: any, res: Response)=>{
+    deleteFriend: async (req: any, res: Response) => {
 
         try {
-            const friend = await prisma.friend.deleteMany({
+            await prisma.friend.deleteMany({
                 where: {
-                    user_id: req.user.user_id,
-                    friend_id: req.params.friend_id
+                    userId: req.user.userId,
+                    friendId: parseInt(req.params.friendId)
                 }
             })
             res.status(200).json('Delete friend successfully !');
-          } catch (err) {
+        } catch (err) {
             res.status(500).json(err);
-          }
+        }
     },
 
-    getAllFriend: async (req: any, res: Response)=>{
+    getAllFriends: async (req: any, res: Response) => {
 
         try {
             const friends = await prisma.friend.findMany({
                 where: {
-                    user_id: req.user.user_id,
+                    userId: req.user.userId,
                 }
             })
             res.status(200).json(friends);
-          } catch (err) {
+        } catch (err) {
             res.status(500).json(err);
-          }
+        }
     },
 }
 

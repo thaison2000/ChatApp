@@ -4,7 +4,7 @@ import ChatWindow from '../components/ChatWindow'
 import SideBar from '../components/SideBar'
 import TopBar from '../components/TopBar'
 
-const Group = () => {
+const Group = (props: any) => {
 
     const group_id = useParams().group_id
 

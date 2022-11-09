@@ -3,23 +3,24 @@ import{ Response } from "express";
 
 const prisma = new PrismaClient()
 
+interface userProfileUpdateInterface {
+    name: string,
+    dateOfBirth: string,
+    gender: any,
+    phone: string,
+    address: string
+}
+
+
 const userController = {
     updateProfile: async (req: any, res: Response) =>{
         try{
-
-            console.log(req.user)
+            const userProfileUpdate: userProfileUpdateInterface = req.body
             const userProfile = await prisma.user.update({
                 where: {
-                    user_id: req.user.user_id
+                    userId: req.user.userId
                 },
-                data: {
-                    name: req.body.name,
-                    dateOfBirth: req.body.dateOfBirth,
-                    phone: req.body.phone,
-                    address: req.body.address,
-                    gender: req.body.gender
-
-                }
+                data: userProfileUpdate
             })
 
             res.status(200).json(userProfile)
@@ -34,10 +35,9 @@ const userController = {
         try{
             const userProfile = await prisma.user.findUnique({
                 where: {
-                    user_id: parseInt(req.params.user_id)
+                    userId: parseInt(req.params.userId)
                 }
             })
-            console.log(userProfile)
             res.status(200).json(userProfile)
         }
         catch(err){

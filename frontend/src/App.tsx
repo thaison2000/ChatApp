@@ -13,19 +13,19 @@ function App() {
   const { user } = useContext(Context);
   const socket = useRef<any>()
 
-  // useEffect(() => {
-  //   socket.current = io("http://localhost:3004");
-  //   socket.current.emit("addUser", user?.user_id);
-  // }, []);
+  useEffect(() => {
+    socket.current = io("http://localhost:3003");
+    socket.current.emit("addUser", user?.user_id);
+  }, []);
 
   return (
     <div className="App">
       <Routes>
         <Route path='login' element={<Login/>}></Route>
         <Route path='register' element={<Register/>}></Route>
-        <Route path='profile/:user_id' element={user?<Profile/>:<Login/>}></Route>
-        <Route path='group/:group_id' element={user?<Group/>:<Login/>}></Route>
-        <Route path='/' element={user?<Home/>:<Login/>}></Route>
+        <Route path='profile/:userId' element={user?<Profile socket={socket}/>:<Login/>}></Route>
+        <Route path='group/:groupId' element={user?<Group socket={socket}/>:<Login/>}></Route>
+        <Route path='/' element={user?<Home socket={socket}/>:<Login/>}></Route>
       </Routes>
     </div>
   );
