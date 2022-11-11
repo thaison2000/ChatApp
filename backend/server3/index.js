@@ -7,8 +7,8 @@ const io = require("socket.io")(3003, {
   let users = [];
   
   const addUser = (userId, socketId) => {
-    if(users.some((user) => user.userId === userId)){
-      users = users.filter((user)=> user.userId !== userId)
+    if(users.some((user) => user.userId == userId)){
+      users = users.filter((user)=> user.userId != userId)
       users.push({ userId, socketId })
       console.log(users)
     }
@@ -18,11 +18,11 @@ const io = require("socket.io")(3003, {
   };
   
   const removeUser = (socketId) => {
-    users = users.filter((user) => user.socketId !== socketId);
+    users = users.filter((user) => user.socketId != socketId);
   };
   
   const getUser = (userId) => {
-    return users.find((user) => user.userId === userId);
+    return users.find((user) => user.userId == userId);
   };
   
   io.on("connection", (socket) => {
@@ -44,6 +44,8 @@ const io = require("socket.io")(3003, {
 
     socket.on("sendNotification", ({ sendUserName, sendUserId, receiveUserId, type, post }) => {
       const receiver = getUser(receiveUserId);
+      console.log(typeof(receiveUserId))
+      console.log(type)
       if(receiver){
       io.to(receiver.socketId).emit("getNotification", {
         sendUserId,

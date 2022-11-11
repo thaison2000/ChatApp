@@ -5,8 +5,8 @@ import verifyToken from "../controllers/verifyToken";
 const postRoute = express.Router()
 
 postRoute.post('/',verifyToken,postController.createPost)
-postRoute.delete('/:post_id',verifyToken,postController.deletePostByPostId)
-postRoute.get('/post/:post_id',verifyToken,postController.getPostByPostId)
-postRoute.get('/group/:group_id',verifyToken,postController.getPostByGroupId)
+postRoute.delete('/:postId',verifyToken,postController.deletePostByPostId)
+postRoute.get('/post/:postId',verifyToken,postController.getPostByPostId)
+postRoute.get('/group/:groupId',verifyToken,postController.getPostByGroupId)
 
 export default postRoute

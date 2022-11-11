@@ -9,5 +9,6 @@ groupRoute.delete('/',verifyToken,groupController.deleteGroup)
 groupRoute.put('/',verifyToken,groupController.updateGroup)
 groupRoute.post('/',verifyToken,groupController.addMember)
 groupRoute.get('/',verifyToken,groupController.getAllGroups)
+groupRoute.get('/:groupId',verifyToken,groupController.getGroupByGroupId)
 
 export default groupRoute

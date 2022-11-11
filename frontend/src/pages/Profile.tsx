@@ -98,7 +98,7 @@ const Profile = (props: any) => {
       getAllFriends()
       getAllFriendRequestBySendUserId()
     }
-  }, [user]);
+  }, [user,userId]);
 
   const handleClickProfileEdit = () => {
     setClickProfileEdit(!clickProfileEdit)

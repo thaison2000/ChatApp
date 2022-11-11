@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -23,6 +24,7 @@ enum GroupType {
 model User {
   userId                      Int     @id @default(autoincrement())
   name                        String
+  @@fulltext([name])
   email                       String  @unique
   phone                       String?
   address                     String?

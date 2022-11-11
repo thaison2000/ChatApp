@@ -7,9 +7,9 @@ import Post from '../models/Post';
 const postController = {
     createPost: async (req: any, res: Response) => {
         const newPost = new Post({
-            user_id: req.user.user_id,
-            group_id: req.body.group_id,
-            post_id: `${uuid()}${Date.now()}`,
+            userId: req.user.userId,
+            groupId: req.body.groupId,
+            postId: `${uuid()}${Date.now()}`,
             content: req.body.content
         });
         try {
@@ -23,8 +23,8 @@ const postController = {
     deletePostByPostId: async (req: any, res: Response) => {
         try {
             const deletePost = await Post.findOne({
-                user_id: req.user.user_id,
-                post_id: req.params.post_id
+                userId: req.user.userId,
+                postId: req.params.postId
             });
             await deletePost.deleteOne();
             res.status(200).json('delete post successfully');
@@ -37,8 +37,8 @@ const postController = {
     getPostByPostId: async (req: any, res: Response) => {
         try {
             const post = await Post.findOne({
-                user_id: req.user_id,
-                post_id: req.params.post_id
+                userId: req.userId,
+                postId: req.params.postId
             });
             res.status(200).json(post);
         } catch (err) {
@@ -50,7 +50,7 @@ const postController = {
     getPostByGroupId: async (req: any, res: Response) => {
         try {
             const posts = await Post.find({
-                group_id: req.params.group_id
+                groupId: req.params.groupId
             });
             res.status(200).json(posts);
         } catch (err) {

@@ -1,21 +1,23 @@
-import axios from 'axios'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { APIaddFriend, APIdeleteFriendRequest, APIgetAllFriendRequestByReceiveUserId } from '../API/Friend'
-import { APIgetAllNotificationsByReceiveUserId } from '../API/Notification'
+import { APIcreateFriendRequestNotification, APIgetAllNotificationsByReceiveUserId } from '../API/Notification'
+import { APIfindUserByName } from '../API/User'
 import { Context } from '../context/Context'
 
 const TopBar = (props: any) => {
 
-    const navigate = useNavigate()
+    let navigate = useNavigate()
     const scrollRef = useRef<any>()
     const { user, dispatch } = useContext(Context);
+    const [searchingAlert, setSearchingAlert] = useState<boolean>(false);
+    const [searchingUsers, setSearchingUsers] = useState<any>();
+    const [searchingWord, setSearchingWord] = useState<string>('');
     const [friendRequests, setFriendRequests] = useState<any>();
     const [notificationAlert, setNotificationAlert] = useState<boolean>(false);
-    const [notifications, setNotifications] = useState<any>();
+    const [notifications, setNotifications] = useState<any>([]);
     const [countNewNotifications, setCountNewNotifications] = useState<number>(-1);
     const [newNotification, setNewNotification] = useState<any>();
-    const [deletedfriendRequestNotification, setDeletedFriendRequestNotification] = useState();
 
     const handleClickLogout = () => {
         localStorage.removeItem('user')
@@ -52,6 +54,7 @@ const TopBar = (props: any) => {
 
     useEffect(() => {
         props.socket?.current?.on("getNotification", (data: any) => {
+            console.log(data)
             setNewNotification({
                 sendUserId: data.sendUserId,
                 sendUserName: data.sendUserName,
@@ -69,100 +72,70 @@ const TopBar = (props: any) => {
         setCountNewNotifications(countNewNotifications + 1)
     }, [newNotification]);
 
-    // useEffect(() => {
-    //     deletedfriendRequestNotification &&
-    //         setNotifications(notifications.filter((notification) => {
-    //             let deletedValue = { ...deletedfriendRequestNotification, type: 4 }
-
-    //             return (notification.sendUserName !== deletedValue.sendUserName && notification.type !== deletedValue.type) && notification !== deletedfriendRequestNotification
-    //         }));
-    //     console.log(notifications)
-    // }, [deletedfriendRequestNotification]);
-
-    // const handleClickAcceptAddFriend = async (deletefriendRequestNotification:any) => {
-    //     try {
-    //         await axios.put(`http://localhost:3001/api/user/` + user._id + '/addfriend', { userId: deletefriendRequestNotification.sendUserId, });
-    //         await axios.delete(`http://localhost:3001/api/notification`, {
-    //             data: {
-    //                 sendUserId: deletefriendRequestNotification.sendUserId,
-    //                 receiveUserId: user._id,
-    //                 type: 4
-    //             }
-    //         });
-    //         await axios.post(`http://localhost:3003/api/conversation/`, { firstUserId: deletefriendRequestNotification.sendUserId, secondUserId: user._id });
-
-    //         socket.current?.emit("sendNotification", {
-    //             sendUserName: user.username,
-    //             sendUserId: deletefriendRequestNotification.receiveUserId,
-    //             receiveUserId: deletefriendRequestNotification.sendUserId,
-    //             type: 5
-    //         });
-
-    //         dispatch({ type: "ADDFRIEND", payload: deletefriendRequestNotification.sendUserId });
-    //         setNotifications(notifications.filter((notification) => {
-    //             return notification != deletefriendRequestNotification
-    //         }))
-
-    //     } catch (err) {
-    //     }
-    // };
-
-    // const handleClickRejectAddFriend = async (deletefriendRequestNotification) => {
-    //     try {
-    //         await axios.delete(`http://localhost:3001/api/notification`, {
-    //             data: {
-    //                 sendUserId: deletefriendRequestNotification.sendUserId,
-    //                 receiveUserId: user._id,
-    //                 type: 4
-    //             }
-    //         });
-    //         setNotifications(notifications.filter((notification) => {
-    //             return notification != deletefriendRequestNotification
-    //         }))
-    //         socket.current?.emit("sendNotification", {
-    //             sendUserName: user.username,
-    //             sendUserId: deletefriendRequestNotification.receiveUserId,
-    //             receiveUserId: deletefriendRequestNotification.sendUserId,
-    //             type: 6
-    //         });
-    //     } catch (err) {
-    //     }
-    // };
-
     const handleClickNotificationAlert = () => {
         setNotificationAlert(!notificationAlert)
-        setCountNewNotifications(0)
     }
 
     const handleClickDeleteFriendRequest = async (sendUserId: number, receiveUserId: number) => {
         await APIdeleteFriendRequest(sendUserId, receiveUserId)
-        const newFriendRequests = friendRequests.filter((friendRequest: any) => friendRequest.sendUserId == sendUserId)
-        setFriendRequests(newFriendRequests)
+
+        await APIcreateFriendRequestNotification({
+            sendUserName: user.name,
+            sendUserId: receiveUserId,
+            receiveUserId: sendUserId,
+            type: 6
+        })
 
         props.socket?.current?.emit("sendNotification", {
             sendUserName: user.name,
-            sendUserId: user.userId,
-            receiveUserId: receiveUserId,
+            sendUserId: receiveUserId,
+            receiveUserId: sendUserId,
             type: 6
         });
+
+        const newFriendRequests = friendRequests.filter((friendRequest: any) => friendRequest.sendUserId != sendUserId)
+        setFriendRequests(newFriendRequests)
     }
 
     const handleClickAcceptFriendRequest = async (sendUserId: number, receiveUserId: number) => {
         await APIaddFriend(sendUserId)
         await APIdeleteFriendRequest(sendUserId, receiveUserId)
-        const newFriendRequests = friendRequests.filter((friendRequest: any) => friendRequest.sendUserId == sendUserId)
-        setFriendRequests(newFriendRequests)
+
+        await APIcreateFriendRequestNotification({
+            sendUserName: user.name,
+            sendUserId: receiveUserId,
+            receiveUserId: sendUserId,
+            type: 5
+        })
 
         props.socket?.current?.emit("sendNotification", {
             sendUserName: user.name,
-            sendUserId: user.userId,
-            receiveUserId: receiveUserId,
+            sendUserId: receiveUserId,
+            receiveUserId: sendUserId,
             type: 5
         });
+
+        const newFriendRequests = friendRequests.filter((friendRequest: any) => friendRequest.sendUserId != sendUserId)
+        setFriendRequests(newFriendRequests)
+    }
+
+    const handleClickFindUser = async () => {
+        const { status, data } = await APIfindUserByName(searchingWord)
+        if (status) {
+            setSearchingUsers(data)
+            setSearchingAlert(!searchingAlert)
+            if (data.length == 0) {
+                alert('Can not find any user !')
+            }
+        }
+    }
+
+    const handleSearchingWordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchingWord(e.target.value)
     }
 
     const NotifcationAlert = () => (
-        <div className='fixed w-[350px] h-64 bg-white shadow-2xl left-[1000px] top-[20px] z-10 rounded-xl divide-y'>
+        <div className='fixed w-[350px] h-[300px] overflow-auto h-64 bg-white shadow-2xl left-[1000px] top-[20px] z-10 rounded-xl divide-y'>
             {notifications?.map((notification: any) => {
                 if (notification.type == 4 &&
                     friendRequests.some((friendRequest: any) => friendRequest.sendUserId == notification.sendUserId && friendRequest.receiveUserId == notification.receiveUserId)
@@ -171,27 +144,52 @@ const TopBar = (props: any) => {
                         <div className='py-2 px-4'>
                             You have a <span className='text-[18px] font-medium text-sky-900'>friend request</span> from <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span>
                             <div className='flex flex-row justify-center mt-2'>
-                                <div onClick={() => handleClickAcceptFriendRequest(notification.receiveUserId, notification.sendUserId)} className='py-1 px-8 bg-sky-900 text-white h-8 rounded-2xl hover:bg-green-500 mr-4'>Accept</div>
-                                <div onClick={() => handleClickDeleteFriendRequest(notification.receiveUserId, notification.sendUserId)} className='py-1 px-8 bg-sky-900 text-white h-8 rounded-2xl hover:bg-red-500'>Reject</div>
+                                <div onClick={async () => await handleClickAcceptFriendRequest(notification.sendUserId, notification.receiveUserId)} className='py-1 px-8 bg-sky-900 text-white h-8 rounded-2xl hover:bg-green-500 mr-4'>Accept</div>
+                                <div onClick={async () => await handleClickDeleteFriendRequest(notification.sendUserId, notification.receiveUserId)} className='py-1 px-8 bg-sky-900 text-white h-8 rounded-2xl hover:bg-red-500'>Reject</div>
                             </div>
                         </div>
                     )
                 }
-                if(notification.type == 5){
-                    const newFriendRequests = friendRequests.filter((friendRequest: any) => friendRequest.sendUserId == notification.sendUserId)
-                    setFriendRequests(newFriendRequests)
+                if (notification.type == 5) {
+                    return (
+                        <div className='py-2 px-4'>
+                            You and<span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> are<span className='text-[18px] font-medium text-sky-900'>Friends</span>
+                        </div>
+                    )
                 }
-                if(notification.type == 6){
-                    const newFriendRequests = friendRequests.filter((friendRequest: any) => friendRequest.sendUserId == notification.sendUserId)
-                    setFriendRequests(newFriendRequests)
+                if (notification.type == 6) {
+                    return (
+                        <div className='py-2 px-4'>
+                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has rejected your <span className='text-[18px] font-medium text-sky-900'>Friend Request</span>
+                        </div>
+                    )
                 }
             }
             )}
         </div>
     )
 
+    const SearchingAlert = () => {
+        return (
+            <div className='h-[500px] w-[600px] shadow-2xl bg-white z-20'>
+                {searchingUsers.map((searchingUser: any) => (
+                    <div onClick={() => {
+                        navigate('/profile/' + searchingUser.userId, { replace: true })
+                        window.location.reload()
+                    }
+                    } className='p-4 flex flex-row hover:bg-gray-100'>
+                        <div>
+                            <img className='w-6 h-6' src={'http://localhost:3001/images/' + searchingUser.avatar} alt="" />
+                        </div>
+                        <div className='ml-4'>{searchingUser.name}</div>
+                    </div>
+                ))}
+            </div>
+        )
+    }
+
     return (
-        <div className='h-[50px] flex flex-row bg-sky-900'>
+        <div className='h-[50px] flex flex-row bg-sky-900 relative'>
             {notificationAlert ? <NotifcationAlert /> : null}
             <div className='w-[250px] flex flex-row'>
                 <div className=''>
@@ -200,10 +198,15 @@ const TopBar = (props: any) => {
                 <div className='flex flex-row ml-12'>
                 </div>
             </div>
-            <div className='w-[750px]'>
-                <div>
-                    <input className='w-[600px] focus:outline-none py-[6px] my-[7px] px-[10px]' type="text" placeholder=' search ...' />
+            <div className='w-[750px] flex flex-col relative'>
+                <div className='relative flex flex-row'>
+                    <input onChange={handleSearchingWordChange} className='w-[600px] focus:outline-none py-[6px] my-[7px] px-[10px]' type="text" placeholder=' search ...' />
+                    <svg onClick={handleClickFindUser} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 absolute right-40 top-3">
+                        <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clipRule="evenodd" />
+                    </svg>
                 </div>
+                {searchingAlert ? <SearchingAlert /> : null}
+
             </div>
             <div className='w-[536px] flex flex-row justify-end'>
                 <div className='flex flex-row relative'>

@@ -137,6 +137,23 @@ const groupController = {
         }
     },
 
+    getGroupByGroupId: async (req: any, res: Response) =>{
+        try{
+            let data = []
+
+            const group = await prisma.group.findUnique({
+                where: {
+                    groupId: parseInt(req.params.groupId)
+                }
+            })
+            res.status(200).json(group)
+        }
+        catch(err){
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
 }
 
 export default groupController

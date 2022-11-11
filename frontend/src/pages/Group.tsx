@@ -6,14 +6,14 @@ import TopBar from '../components/TopBar'
 
 const Group = (props: any) => {
 
-    const group_id = useParams().group_id
+    const groupId = useParams().groupId
 
     return (
         <div className='w-screen h-screen pointer-events-auto'>
         <TopBar socket={props.socket} />
         <div className='w-full h-[calc(100%-50px)] flex flex-row'>
             <SideBar/>
-            <ChatWindow group_id={group_id}/>
+            <ChatWindow groupId={groupId}/>
         </div>
     </div>
     )

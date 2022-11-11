@@ -98,8 +98,8 @@ const SideBar = () => {
                                 <span className='text-white ml-2'>Add Chanel</span>
                             </div>
                             {groups?.map((group => (
-                                <div onClick={() => {
-                                    navigate('/group/' + group.group_id)
+                                <div key={group.Id} onClick={() => {
+                                    navigate('/group/' + group.groupId)
                                     // window.location.reload()
                                 }} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
