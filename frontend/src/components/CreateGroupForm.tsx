@@ -2,7 +2,7 @@ import axios from "axios"
 import { useState } from "react"
 
 
-const CreateGroupForm = () => {
+const CreateGroupForm = (props: any) => {
 
     const [name,setName] = useState<string>()
     const [desc,setDesc] = useState<string>()
@@ -52,7 +52,8 @@ const CreateGroupForm = () => {
                     <input onChange={handleDescChange} className='w-full my-4 py-4 focus:outline-none' type="password" placeholder='description ...' />
                 </div>
                 <div className='w-full flex flex-row justify-center '>
-                    <button onClick={handleClickCreateGroup} className="rounded-full bg-sky-900 text-white py-2 px-8 font-medium text-xl hover:bg-green-600 hover:text-white">Create</button>
+                    <button onClick={handleClickCreateGroup} className="rounded-full text-white py-2 px-8 font-medium text-xl bg-green-600 hover:bg-sky-900 hover:text-white">Create</button>
+                    <button onClick={props.handleClickCreateGroupForm} className="rounded-full ml-6 text-white py-2 px-8 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white">Cancel</button>
                 </div>
             </div>
         </div>

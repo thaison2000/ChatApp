@@ -13,7 +13,7 @@ const Group = (props: any) => {
         <TopBar socket={props.socket} />
         <div className='w-full h-[calc(100%-50px)] flex flex-row'>
             <SideBar/>
-            <ChatWindow groupId={groupId}/>
+            <ChatWindow groupId={groupId} socket={props.socket}/>
         </div>
     </div>
     )

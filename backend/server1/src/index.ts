@@ -79,7 +79,7 @@ app.post("/api/group/updateAvatar", verifyToken, upload.single("file"), async (r
     try {
         const group = await prisma.group.update({
             where: {
-                groupId: req.body.groupId
+                groupId: parseInt(req.body.groupId)
             },
             data: {
                 avatar: req.body.name

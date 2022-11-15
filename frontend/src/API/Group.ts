@@ -40,10 +40,11 @@ export const APIgetGroupByGroupId = async (groupId: string) => {
     }
 };
 
-export const APIupdateGroupAvatar = async (avatar: any) => {
+export const APIupdateGroupAvatar = async (avatar: any, groupId: string) => {
     try {
         const data = new FormData();
         const fileName = Date.now() + avatar.name;
+        data.append("groupId", groupId);
         data.append("name", fileName);
         data.append("file", avatar);
         console.log(avatar)
@@ -59,6 +60,45 @@ export const APIupdateGroupAvatar = async (avatar: any) => {
             data: fileName
         }
     } catch (err) {
+        console.log(err)
+        return {status: false}
+    }
+};
+
+export const APIaddMemberIntoGroup = async (groupId: string, userId: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.post("http://localhost:3001/api/group/addMember/" ,{groupId,userId}, config);
+        return {
+            status: true
+        }
+    }
+    catch (err) {
+        console.log(err)
+        return {status: false}
+    }
+};
+
+export const APIgetAllMemberByGroupId = async (groupId: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        const res = await axios.get("http://localhost:3001/api/group/members/" + groupId, config);
+        return {
+            status: true,
+            data: res.data
+        }
+    }
+    catch (err) {
         console.log(err)
         return {status: false}
     }

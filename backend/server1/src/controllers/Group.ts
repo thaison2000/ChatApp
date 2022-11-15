@@ -101,8 +101,8 @@ const groupController = {
 
             const newMember = await prisma.groupUser.create({
                 data: {
-                    groupId: req.body.groupId,
-                    userId: req.body.userId
+                    groupId: parseInt(req.body.groupId),
+                    userId: parseInt(req.body.userId)
                 }
             })
             res.status(200).json('Add member into group successfully !')
@@ -147,6 +147,22 @@ const groupController = {
                 }
             })
             res.status(200).json(group)
+        }
+        catch(err){
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+    getAllGroupMemberByGroupId: async (req: any, res: Response) =>{
+        try{
+
+            const groupMembers = await prisma.groupUser.findMany({
+                where: {
+                    groupId: parseInt(req.params.groupId)
+                }
+            })
+            res.status(200).json(groupMembers)
         }
         catch(err){
             console.log(err)

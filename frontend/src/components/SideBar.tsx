@@ -42,7 +42,7 @@ const SideBar = () => {
 
     return (
         <div className='w-[250px] bg-sky-700 overflow-y-auto overflow-x-hidden relative'>
-            {createGroupForm ? <CreateGroupForm /> : null}
+            {createGroupForm ? <CreateGroupForm handleClickCreateGroupForm = {handleClickCreateGroup}/> : null}
             <div className='flex flex-col divide-y-2 relative'>
                 <div className=' py-4 flex flex-row w-[250px] hover:bg-sky-800' onClick={handleClickProfile}>
                     <img className='rounded-full m-2 ml-4 w-8 h-8' src={'http://localhost:3001/images/' + user.avatar} alt="" />
@@ -98,7 +98,7 @@ const SideBar = () => {
                                 <span className='text-white ml-2'>Add Chanel</span>
                             </div>
                             {groups?.map((group => (
-                                <div key={group.Id} onClick={() => {
+                                <div key={group.groupId} onClick={() => {
                                     navigate('/group/' + group.groupId)
                                     // window.location.reload()
                                 }} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>

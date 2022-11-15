@@ -14,10 +14,16 @@ export const APIcreatePost = async (postCreate: postCreateInterface) => {
             },
         }
         await axios.post("http://localhost:3002/api/post/", postCreate, config);
+        return {
+            status: true
+        }
 
     }
     catch (err) {
         console.log(err)
+        return {
+            status: false
+        }
     }
 }
 
