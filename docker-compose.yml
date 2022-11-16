@@ -1,0 +1,47 @@
+version: '3.7'
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_DATABASE=chatapp
+
+  server1:
+    image: server1
+    container_name: server1-container
+    build: ./backend/server1
+    ports:
+      - 3001:3001
+
+    command: npm run dev
+
+  server2:
+    image: server2
+    container_name: server2-container
+    build: ./backend/server2
+    ports:
+      - 3002:3002
+
+    command: npm run dev
+
+  server3:
+    image: server3
+    container_name: server3-container
+    build: ./backend/server3
+    ports:
+      - 3003:3003
+
+    command: npm start
+
+  frontend:
+    image: frontend
+    container_name: frontend-container
+    build: ./frontend
+    ports:
+      - 3000:3000
+
+    command: npm start
