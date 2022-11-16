@@ -5,7 +5,7 @@ import verifyToken from "../controllers/verifyToken";
 const groupRoute = express.Router()
 
 groupRoute.post('/',verifyToken,groupController.createGroup)
-groupRoute.delete('/',verifyToken,groupController.deleteGroup)
+groupRoute.delete('/:groupId',verifyToken,groupController.deleteGroup)
 groupRoute.put('/',verifyToken,groupController.updateGroup)
 groupRoute.post('/addMember/',verifyToken,groupController.addMember)
 groupRoute.get('/',verifyToken,groupController.getAllGroups)

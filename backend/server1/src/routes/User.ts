@@ -4,7 +4,7 @@ import verifyToken from "../controllers/verifyToken";
 
 const userRoute = express.Router()
 
-userRoute.put('/updateProfile',verifyToken,userController.updateProfile)
+userRoute.put('/',verifyToken,userController.updateProfile)
 userRoute.get('/:userId',verifyToken,userController.getProfile)
 userRoute.get('/',verifyToken,userController.findUserByName)
 

@@ -11,7 +11,6 @@ interface userProfileUpdateInterface {
     address: string
 }
 
-
 const userController = {
     updateProfile: async (req: any, res: Response) => {
         try {
@@ -48,16 +47,15 @@ const userController = {
 
     findUserByName: async (req: any, res: Response) => {
         try {
-            const users = await prisma.user.findMany({
-                where: {
-                    name: {
-                        search: req.query.name,
+                const users = await prisma.user.findMany({
+                    where: {
+                        name: {
+                            search: req.query.name,
+                        }
                     }
-                }
-            })
-            console.log(users)
-            res.status(200).json(users)
-        }
+                })
+                res.status(200).json(users)
+            }
         catch (err) {
             console.log(err)
             res.status(500).json(err)

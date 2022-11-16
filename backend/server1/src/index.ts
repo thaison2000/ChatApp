@@ -13,6 +13,25 @@ import { PrismaClient } from "@prisma/client";
 import groupRoute from "./routes/Group";
 import friendRoute from "./routes/Friend";
 
+// const redisClient = createClient({
+//     socket: {
+//         host: process.env.REDIS_HOST,
+//         port: parseInt(`${process.env.REDIS_PORT}`)
+//     },
+//     password: process.env.REDIS_PW
+// });
+
+// (async () => {
+//     await redisClient.connect();
+// })();
+
+
+// redisClient.on('connect', () => console.log('Redis Client Connected'));
+// redisClient.on('error', (err) => console.log('Redis Client Connection Error', err));
+
+// export { redisClient };
+
+
 dotenv.config()
 
 // Middleswares

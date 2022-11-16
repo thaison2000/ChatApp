@@ -10,17 +10,16 @@ const groupController = {
             const newGroup = await prisma.group.create({
                 data: {
                     name: req.body.name,
-                    desc: req.body.desc,
-                    avatar: ''
+                    desc: req.body.desc
                 }
             })
-            const newGroupAdmin = await prisma.groupAdmin.create({
+            await prisma.groupAdmin.create({
                 data: {
                     groupId: newGroup.groupId,
                     userId: req.user.userId
                 }
             })
-            const newGroupUser = await prisma.groupUser.create({
+            await prisma.groupUser.create({
                 data: {
                     groupId: newGroup.groupId,
                     userId: req.user.userId
@@ -40,25 +39,25 @@ const groupController = {
             const admin = await prisma.groupAdmin.findMany({
                 where: {
                     userId: req.user.userId,
-                    groupId: req.params.groupId
+                    groupId: parseInt(req.params.groupId)
                 }
             })
             if(admin){
                 await prisma.group.delete({
                     where: {
-                        groupId: req.params.groupId
+                        groupId: parseInt(req.params.groupId)
                     }
                 })
 
                 await prisma.groupAdmin.deleteMany({
                     where: {
-                        groupId: req.params.groupId
+                        groupId: parseInt(req.params.groupId)
                     }
                 })
 
                 await prisma.groupUser.deleteMany({
                     where: {
-                        groupId: req.params.groupId
+                        groupId: parseInt(req.params.groupId)
                     }
                 })
             }
@@ -72,8 +71,7 @@ const groupController = {
 
     updateGroup: async (req: any, res: Response) =>{
         try{
-
-            const newGroup = await prisma.group.update({
+            await prisma.group.update({
                 where:{
                     groupId: req.body.groupId
                 },
@@ -82,13 +80,7 @@ const groupController = {
                     desc: req.body.desc
                 }
             })
-            const newGroupAdmin = await prisma.groupAdmin.create({
-                data: {
-                    groupId: newGroup.groupId,
-                    userId: req.user.userId
-                }
-            })
-            res.status(200).json('Create group successfully !')
+            res.status(200).json('Update group successfully !')
         }
         catch(err){
             console.log(err)
@@ -99,7 +91,7 @@ const groupController = {
     addMember: async (req: any, res: Response) =>{
         try{
 
-            const newMember = await prisma.groupUser.create({
+            await prisma.groupUser.create({
                 data: {
                     groupId: parseInt(req.body.groupId),
                     userId: parseInt(req.body.userId)
@@ -139,8 +131,6 @@ const groupController = {
 
     getGroupByGroupId: async (req: any, res: Response) =>{
         try{
-            let data = []
-
             const group = await prisma.group.findUnique({
                 where: {
                     groupId: parseInt(req.params.groupId)

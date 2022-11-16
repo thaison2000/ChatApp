@@ -52,14 +52,14 @@ model GroupAdmin {
   groupAdminId          Int     @id @default(autoincrement())
   groupId               Int
   user                  User    @relation(fields: [userId], references: [userId])
-  userId                Int
+  userId                Int     
 }
 
 model GroupUser {
   groupUserId           Int     @id @default(autoincrement())
   groupId               Int
   user                  User    @relation(fields: [userId], references: [userId])
-  userId                Int
+  userId                Int     
 }
 
 model Friend {
