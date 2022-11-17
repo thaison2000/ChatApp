@@ -9,10 +9,13 @@ services:
       - "3307:3306"
     environment:
       - MYSQL_DATABASE=chatapp
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
 
   server1:
     image: server1
     container_name: server1-container
+    depends_on:
+      - mysql
     build: ./backend/server1
     ports:
       - 3001:3001
