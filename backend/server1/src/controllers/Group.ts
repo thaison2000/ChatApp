@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import{ Response } from "express";
+import { Response } from "express";
 
 const prisma = new PrismaClient()
 
 const groupController = {
-    createGroup: async (req: any, res: Response) =>{
-        try{
+    createGroup: async (req: any, res: Response) => {
+        try {
 
             const newGroup = await prisma.group.create({
                 data: {
@@ -27,14 +27,14 @@ const groupController = {
             })
             res.status(200).json('Create group successfully !')
         }
-        catch(err){
+        catch (err) {
             console.log(err)
             res.status(500).json(err)
         }
     },
-    
-    deleteGroup: async (req: any, res: Response) =>{
-        try{
+
+    deleteGroup: async (req: any, res: Response) => {
+        try {
 
             const admin = await prisma.groupAdmin.findMany({
                 where: {
@@ -42,7 +42,8 @@ const groupController = {
                     groupId: parseInt(req.params.groupId)
                 }
             })
-            if(admin){
+
+            if (admin) {
                 await prisma.group.delete({
                     where: {
                         groupId: parseInt(req.params.groupId)
@@ -63,16 +64,16 @@ const groupController = {
             }
             res.status(200).json('Delete group successfully !')
         }
-        catch(err){
+        catch (err) {
             console.log(err)
             res.status(500).json(err)
         }
     },
 
-    updateGroup: async (req: any, res: Response) =>{
-        try{
+    updateGroup: async (req: any, res: Response) => {
+        try {
             await prisma.group.update({
-                where:{
+                where: {
                     groupId: req.body.groupId
                 },
                 data: {
@@ -82,14 +83,14 @@ const groupController = {
             })
             res.status(200).json('Update group successfully !')
         }
-        catch(err){
+        catch (err) {
             console.log(err)
             res.status(500).json(err)
         }
     },
 
-    addMember: async (req: any, res: Response) =>{
-        try{
+    addMember: async (req: any, res: Response) => {
+        try {
 
             await prisma.groupUser.create({
                 data: {
@@ -99,13 +100,13 @@ const groupController = {
             })
             res.status(200).json('Add member into group successfully !')
         }
-        catch(err){
+        catch (err) {
             console.log(err)
             res.status(500).json(err)
         }
     },
-    getAllGroups: async (req: any, res: Response) =>{
-        try{
+    getAllGroups: async (req: any, res: Response) => {
+        try {
             let data = []
 
             const groupUsers = await prisma.groupUser.findMany({
@@ -113,7 +114,7 @@ const groupController = {
                     userId: req.user.userId
                 }
             })
-            for(let i=0;i<groupUsers.length;i++){
+            for (let i = 0; i < groupUsers.length; i++) {
                 const group = await prisma.group.findUnique({
                     where: {
                         groupId: groupUsers[i].groupId
@@ -123,14 +124,14 @@ const groupController = {
             }
             res.status(200).json(data)
         }
-        catch(err){
+        catch (err) {
             console.log(err)
             res.status(500).json(err)
         }
     },
 
-    getGroupByGroupId: async (req: any, res: Response) =>{
-        try{
+    getGroupByGroupId: async (req: any, res: Response) => {
+        try {
             const group = await prisma.group.findUnique({
                 where: {
                     groupId: parseInt(req.params.groupId)
@@ -138,23 +139,57 @@ const groupController = {
             })
             res.status(200).json(group)
         }
-        catch(err){
+        catch (err) {
             console.log(err)
             res.status(500).json(err)
         }
     },
 
-    getAllGroupMemberByGroupId: async (req: any, res: Response) =>{
-        try{
-
+    getAllGroupMemberByGroupId: async (req: any, res: Response) => {
+        try {
+            let data = []
             const groupMembers = await prisma.groupUser.findMany({
                 where: {
                     groupId: parseInt(req.params.groupId)
                 }
             })
-            res.status(200).json(groupMembers)
+            for (let i = 0; i < groupMembers.length; i++) {
+
+                //lay thong tin user
+                const user = await prisma.user.findUnique({
+                    where: {
+                        userId: groupMembers[i].userId
+                    }
+                })
+                //kiem tra co phai admin khong
+                const admin = await prisma.groupAdmin.findMany({
+                    where: {
+                        groupId: groupMembers[i].groupId,
+                        userId: groupMembers[i].userId
+                    }
+                })
+                if (admin.length == 0) {
+                    data.push({
+                        userId: user?.userId,
+                        groupId: groupMembers[i].groupId,
+                        name: user?.name,
+                        avatar: user?.avatar,
+                        type: 'user'
+                    })
+                }
+                else {
+                    data.push({
+                        userId: user?.userId,
+                        groupId: groupMembers[i].groupId,
+                        name: user?.name,
+                        avatar: user?.avatar,
+                        type: 'admin'
+                    })
+                }
+            }
+            res.status(200).json(data)
         }
-        catch(err){
+        catch (err) {
             console.log(err)
             res.status(500).json(err)
         }

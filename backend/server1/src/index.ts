@@ -12,13 +12,13 @@ import verifyToken from "./controllers/verifyToken";
 import { PrismaClient } from "@prisma/client";
 import groupRoute from "./routes/Group";
 import friendRoute from "./routes/Friend";
+// import { createClient } from "redis";
 
 // const redisClient = createClient({
 //     socket: {
 //         host: process.env.REDIS_HOST,
 //         port: parseInt(`${process.env.REDIS_PORT}`)
-//     },
-//     password: process.env.REDIS_PW
+//     }
 // });
 
 // (async () => {

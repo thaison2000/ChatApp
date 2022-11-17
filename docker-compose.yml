@@ -2,6 +2,13 @@ version: '3.7'
 
 services:
 
+  redis:
+    image: redis:5-alpine
+    container_name: redis
+    ports:
+      - '6379:6379'
+    restart: unless-stopped
+
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -11,10 +18,18 @@ services:
       - MYSQL_DATABASE=chatapp
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
 
+  mongo:
+    image: mongo:4.4
+    container_name: mongo
+    ports:
+      - 27017:27017
+    restart: unless-stopped
+
   server1:
     image: server1
     container_name: server1-container
     depends_on:
+      - redis
       - mysql
     build: ./backend/server1
     ports:
@@ -25,6 +40,9 @@ services:
   server2:
     image: server2
     container_name: server2-container
+    depends_on:
+      - mongo
+      - redis
     build: ./backend/server2
     ports:
       - 3002:3002

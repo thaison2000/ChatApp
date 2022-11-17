@@ -36,7 +36,7 @@ export const APIupdateUserProfile = async (userProfileUpdate: userProfileUpdateI
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.put("http://localhost:3001/api/user/updateProfile", userProfileUpdate, config);
+        await axios.put("http://localhost:3001/api/user/", userProfileUpdate, config);
         return {
             status: true
         }

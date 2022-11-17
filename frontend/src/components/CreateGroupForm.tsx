@@ -1,11 +1,12 @@
 import axios from "axios"
 import { useState } from "react"
+import { APIcreateGroup } from "../API/Group";
 
 
 const CreateGroupForm = (props: any) => {
 
-    const [name,setName] = useState<string>()
-    const [desc,setDesc] = useState<string>()
+    const [name,setName] = useState<string>('')
+    const [desc,setDesc] = useState<string>('')
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setName(e.target.value)
@@ -18,23 +19,9 @@ const CreateGroupForm = (props: any) => {
     const handleClickCreateGroup = async (e: any) => {
         e.preventDefault();
     
-        try {
-          const config = {
-            headers: {
-              'Content-Type': 'application/json',
-              'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
-            },
-          }
-          await axios.post("http://localhost:3001/api/group", {
-            name,
-            desc
-          },
-            config);
+        const { status } = await APIcreateGroup(name,desc)
+        if(status){
           window.location.reload()
-    
-        }
-        catch (err) {
-          console.log(err)
         }
       };
 
