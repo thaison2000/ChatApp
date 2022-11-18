@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { APIfetchAllGroups } from '../API/Group';
+import { APIfetchAllDirectMessageGroups, APIfetchAllGroups, APIgetAllMemberByGroupId } from '../API/Group';
 import { Context } from '../context/Context'
 import CreateGroupForm from './CreateGroupForm'
 
@@ -13,6 +13,7 @@ const SideBar = () => {
     const [displayDirectMessage, setDisplayDirectMessage] = useState(true)
     const [createGroupForm, setCreateGroupForm] = useState(false)
     const [groups, setGroups] = useState<Array<any>>()
+    const [directMessages, setDirectMessages] = useState<Array<any>>()
 
     const handleClickProfile = () => {
         navigate('/profile/' + user.userId)
@@ -40,12 +41,22 @@ const SideBar = () => {
         fetchAllGroups();
     }, []);
 
+    useEffect(() => {
+        const fetchAllDirectMessageGroups = async () => {
+            const { status, data } = await APIfetchAllDirectMessageGroups()
+            if (status) {
+                setDirectMessages(data)
+            }
+        }
+        fetchAllDirectMessageGroups();
+    }, []);
+
     return (
         <div className='w-[250px] bg-sky-700 overflow-y-auto overflow-x-hidden relative'>
-            {createGroupForm ? <CreateGroupForm handleClickCreateGroupForm = {handleClickCreateGroup}/> : null}
+            {createGroupForm ? <CreateGroupForm handleClickCreateGroupForm={handleClickCreateGroup} /> : null}
             <div className='flex flex-col divide-y-2 relative'>
                 <div className=' py-4 flex flex-row w-[250px] hover:bg-sky-800' onClick={handleClickProfile}>
-                    <img className='rounded-full m-2 ml-4 w-8 h-8' src={'http://localhost:3001/images/' + user.avatar} alt="" />
+                    <img className='rounded-full m-2 ml-4 w-8 h-8' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                     <h1 className='text-2xl text-white font-bold px-4 py-2 overflow-auto'>{user.name}</h1>
                 </div>
                 <div>
@@ -120,34 +131,17 @@ const SideBar = () => {
                     </div>
                     {displayDirectMessage ?
                         <div>
-                            <div className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
-                                    <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
-                                </svg>
+                            {directMessages?.map((directMessage: any) => (
+                                <div key={directMessage.groupId} onClick={() => {
+                                    navigate('/group/' + directMessage.groupId)
+                                }} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
+                                        <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
+                                    </svg>
 
-                                <span className='text-white ml-2'>User 1</span>
-                            </div>
-                            <div className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
-                                    <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
-                                </svg>
-
-                                <span className='text-white ml-2'>User 1</span>
-                            </div>
-                            <div className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
-                                    <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
-                                </svg>
-
-                                <span className='text-white ml-2'>User 1</span>
-                            </div>
-                            <div className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
-                                    <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
-                                </svg>
-
-                                <span className='text-white ml-2'>User 1</span>
-                            </div>
+                                    <span className='text-white ml-2'>{directMessage.name}</span>
+                                </div>
+                            ))}
                         </div> : null}
                 </div>
             </div>

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const APIdeleteFriend = async (user_id: string) => {
+export const APIdeleteFriend = async (userId: string) => {
   try {
     const config = {
       headers: {
@@ -8,7 +8,7 @@ export const APIdeleteFriend = async (user_id: string) => {
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    await axios.delete("http://localhost:3001/api/friend/" + user_id, config);
+    await axios.delete("http://localhost:3001/api/friend/" + userId, config);
     return { status: true }
   }
   catch (err) {
@@ -25,7 +25,7 @@ export const APIaddFriend = async (friendId: number) => {
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    await axios.post("http://localhost:3001/api/friend/", friendId, config);
+    await axios.post("http://localhost:3001/api/friend/", {friendId}, config);
     return { status: true }
   }
   catch (err) {

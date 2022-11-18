@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { APIaddFriend, APIdeleteFriendRequest, APIgetAllFriendRequestByReceiveUserId } from '../API/Friend'
+import { APIcreateGroup } from '../API/Group'
 import { APIcreateFriendRequestNotification, APIgetAllNotificationsByReceiveUserId } from '../API/Notification'
 import { APIfindUserByName } from '../API/User'
 import { Context } from '../context/Context'
@@ -99,6 +100,7 @@ const TopBar = (props: any) => {
 
     const handleClickAcceptFriendRequest = async (sendUserId: number, receiveUserId: number) => {
         await APIaddFriend(sendUserId)
+        await APIcreateGroup('','','DirectMessage')
         await APIdeleteFriendRequest(sendUserId, receiveUserId)
 
         await APIcreateFriendRequestNotification({
@@ -117,6 +119,7 @@ const TopBar = (props: any) => {
 
         const newFriendRequests = friendRequests.filter((friendRequest: any) => friendRequest.sendUserId != sendUserId)
         setFriendRequests(newFriendRequests)
+        window.location.reload()
     }
 
     const handleClickFindUser = async () => {
@@ -153,14 +156,21 @@ const TopBar = (props: any) => {
                 if (notification.type == 5) {
                     return (
                         <div className='py-2 px-4'>
-                            You and<span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> are<span className='text-[18px] font-medium text-sky-900'>Friends</span>
+                            You and <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> are <span className='text-[18px] font-medium text-sky-900'>Friends</span> !
                         </div>
                     )
                 }
                 if (notification.type == 6) {
                     return (
                         <div className='py-2 px-4'>
-                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has rejected your <span className='text-[18px] font-medium text-sky-900'>Friend Request</span>
+                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has rejected your <span className='text-[18px] font-medium text-sky-900'>Friend Request</span> !
+                        </div>
+                    )
+                }
+                if (notification.type == 7) {
+                    return (
+                        <div className='py-2 px-4'>
+                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has <span className='text-[18px] font-medium text-sky-900'>Unfriend</span> you !
                         </div>
                     )
                 }
@@ -179,7 +189,7 @@ const TopBar = (props: any) => {
                     }
                     } className='p-4 flex flex-row hover:bg-gray-100'>
                         <div>
-                            <img className='w-6 h-6' src={'http://localhost:3001/images/' + searchingUser.avatar} alt="" />
+                            <img className='w-6 h-6' src={user?.avatar? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                         </div>
                         <div className='ml-4'>{searchingUser.name}</div>
                     </div>

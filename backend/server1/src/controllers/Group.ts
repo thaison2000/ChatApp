@@ -10,7 +10,8 @@ const groupController = {
             const newGroup = await prisma.group.create({
                 data: {
                     name: req.body.name,
-                    desc: req.body.desc
+                    desc: req.body.desc,
+                    type: req.body.type
                 }
             })
             await prisma.groupAdmin.create({
@@ -105,6 +106,42 @@ const groupController = {
             res.status(500).json(err)
         }
     },
+
+    //chi xoa duoc user, khong xoa duoc admin
+    deleteMember: async (req: any, res: Response) => {
+        try {
+
+            await prisma.groupUser.deleteMany({
+                where: {
+                    groupId: parseInt(req.params.groupId),
+                    userId: parseInt(req.params.userId)
+                }
+            })
+            res.status(200).json('Delete member in group successfully !')
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+    promoteAdmin: async (req: any, res: Response) => {
+        try {
+
+            await prisma.groupAdmin.create({
+                data: {
+                    groupId: parseInt(req.body.groupId),
+                    userId: parseInt(req.body.userId)
+                }
+            })
+            res.status(200).json('Promote member to admin in group successfully !')
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
     getAllGroups: async (req: any, res: Response) => {
         try {
             let data = []
@@ -120,7 +157,53 @@ const groupController = {
                         groupId: groupUsers[i].groupId
                     }
                 })
-                data.push(group)
+                if(group?.type == 'Chanel'){
+                    data.push(group)
+                }
+                
+            }
+            res.status(200).json(data)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+    getAllDirectMessageGroups: async (req: any, res: Response) => {
+        try {
+            let data = []
+
+            const groupUsers = await prisma.groupUser.findMany({
+                where: {
+                    userId: req.user.userId
+                }
+            })
+            for (let i = 0; i < groupUsers.length; i++) {
+                const group = await prisma.group.findUnique({
+                    where: {
+                        groupId: groupUsers[i].groupId
+                    }
+                })
+                if(group?.type == 'DirectMessage'){
+                    let groupAnotherUser = await prisma.groupUser.findMany({
+                        where: {
+                            groupId: group.groupId
+                        }
+                    })
+                    groupAnotherUser = groupAnotherUser.filter((groupAnotherUser:any)=>{
+                        groupAnotherUser.userId != req.user.userId
+                    })
+                    let user = await prisma.user.findUnique({
+                        where: {
+                            userId: groupAnotherUser[0].userId
+                        }
+                    })
+                    data.push({
+                        groupId: group.groupId,
+                        name: user?.name
+                    })
+                }
             }
             res.status(200).json(data)
         }

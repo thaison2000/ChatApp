@@ -4,7 +4,7 @@ import SideBar from '../components/SideBar'
 import TopBar from '../components/TopBar'
 import { useParams } from 'react-router-dom'
 import { APIgetUserProfile, APIupdateUserAvatar, APIupdateUserProfile } from '../API/User'
-import { APIcreateFriendRequest, APIdeleteFriend, APIdeleteFriendRequest, APIgetAllFriendRequestBySendUserId, APIgetAllFriends } from '../API/Friend'
+import { APIaddFriend, APIcreateFriendRequest, APIdeleteFriend, APIdeleteFriendRequest, APIgetAllFriendRequestBySendUserId, APIgetAllFriends } from '../API/Friend'
 import { APIcreateFriendRequestNotification, APIdeleteNotification } from '../API/Notification'
 
 const Profile = (props: any) => {
@@ -40,16 +40,25 @@ const Profile = (props: any) => {
 
   useEffect(() => {
     if (newNotification.type == 5) {
-      console.log(newNotification.sendUserId)
-      setUserCondition('friend')
-      window.location.reload()
+      const addFriend = async () => {
+        const { status } = await APIaddFriend(newNotification.sendUserId)
+        if (status) {
+          setUserCondition('friend')
+        }
+      }
+      addFriend()
     }
     if (newNotification.type == 6) {
       setUserCondition('user')
     }
     if (newNotification.type == 7) {
-      console.log(newNotification.sendUserId)
-      setUserCondition('user')
+      const deleteFriend = async () => {
+        const { status } = await APIdeleteFriend(newNotification.sendUserId)
+        if (status) {
+          setUserCondition('user')
+        }
+      }
+      deleteFriend()
     }
   }, [newNotification]);
 
@@ -79,7 +88,7 @@ const Profile = (props: any) => {
         if (status) {
           friends = data
         }
-        if (friends.some((friend: any) => friend.userId == user?.userId)) {
+        if (friends.some((friend: any) => friend.friendId == user?.userId)) {
           setUserCondition('friend')
         }
       }
@@ -98,7 +107,7 @@ const Profile = (props: any) => {
       getAllFriends()
       getAllFriendRequestBySendUserId()
     }
-  }, [user,userId]);
+  }, [user, userId]);
 
   const handleClickProfileEdit = () => {
     setClickProfileEdit(!clickProfileEdit)
@@ -122,7 +131,7 @@ const Profile = (props: any) => {
       sendUserName: currentUser.name,
       sendUserId: currentUser.userId,
       receiveUserId: user.userId,
-      type:4
+      type: 4
     });
   }
 
@@ -132,13 +141,19 @@ const Profile = (props: any) => {
     if (status) {
       setUserCondition('user')
     }
-    await APIdeleteNotification(currentUser.userId, user.userId,4)
+    await APIdeleteNotification(currentUser.userId, user.userId, 4)
   }
 
   //xu ly khi xoa ban
   const handleClickDeleteFriend = async () => {
     const { status }: any = await APIdeleteFriend(user.userId)
     if (status) {
+      props.socket?.current?.emit("sendNotification", {
+        sendUserName: currentUser.name,
+        sendUserId: currentUser.userId,
+        receiveUserId: user.userId,
+        type: 7
+      });
       setUserCondition('user')
     }
   }
@@ -234,14 +249,14 @@ const Profile = (props: any) => {
 
   return (
     <div className='w-screen h-screen pointer-events-auto'>
-      <TopBar socket={props.socket}/>
+      <TopBar socket={props.socket} />
       <div className='w-full h-[calc(100%-50px)] flex flex-row'>
         <SideBar />
         <div className='flex flex-row p-4'>
           <div className='flex flex-row'>
             <div className='flex flex-col'>
               <div className='my-4 ml-8 mr-4 flex flex-col relative drop-shadow-2xl bg-white rounded-2xl w-[250px] h-[250px] justify-center items-center'>
-                <img className='w-48 h-48 rounded-full' src={'http://localhost:3001/images/' + user?.avatar} alt="" />
+                <img className='w-48 h-48 rounded-full' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
 
               </div>
               {currentUser?.userId == user?.userId ?

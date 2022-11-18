@@ -103,7 +103,7 @@ const ChatBox = (props: any) => {
             navigate('/profile/' + user.userId, { replace: true })
             window.location.reload()
           }}
-            className='w-8 h-8 m-4 rounded-full' src={'http://localhost:3001/images/' + user?.avatar} alt="" />
+            className='w-8 h-8 m-4 rounded-full' src={user?.avatar? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
         </div>
         <div>
           <h1 className='my-4 mx-0 text-xl font-bold'>{user?.name}</h1>
