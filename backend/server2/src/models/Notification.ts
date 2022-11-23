@@ -12,7 +12,6 @@ const NotificationSchema = mongoose.Schema(
         },
         receiveUserId: {
             type: String,
-            required: true
         },
         sendUserName: {
             type: String,
@@ -22,6 +21,15 @@ const NotificationSchema = mongoose.Schema(
         },
         type: {
             type: Number
+        },
+        groupId: {
+            type: Number
+        },
+        groupName: {
+            type: String
+        },
+        affectedUserName: {
+            type: String
         }
         // 1 la like
         // 2 la comment
@@ -31,6 +39,10 @@ const NotificationSchema = mongoose.Schema(
         // 6 la rejectAddfriend
         // 7 la unfriend
         // 8 la chat
+        // 9 la them user vao chanel
+        // 10 la xoa user khoi chanel
+        // 11 la thang cap user len admin
+        // 12 la xoa chanel
     },
     { timestamps: true })
 

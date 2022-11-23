@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { APIfetchAllDirectMessageGroups, APIfetchAllGroups, APIgetAllMemberByGroupId } from '../API/Group';
+import { APIfetchAllDirectMessageGroups, APIfetchAllGroups } from '../API/Group';
 import { Context } from '../context/Context'
 import CreateGroupForm from './CreateGroupForm'
 
-const SideBar = () => {
+const SideBar = (props:any) => {
 
     const navigate = useNavigate()
     const { user } = useContext(Context)
@@ -14,6 +14,21 @@ const SideBar = () => {
     const [createGroupForm, setCreateGroupForm] = useState(false)
     const [groups, setGroups] = useState<Array<any>>()
     const [directMessages, setDirectMessages] = useState<Array<any>>()
+    const [newNotification, setNewNotification] = useState<any>({});
+
+    useEffect(() => {
+        props.socket.current?.on("getNotification", (data: any) => {
+          setNewNotification({
+            sendUserId: data.sendUserId,
+            receiveUserId: data.receiveUserId,
+            type: data.type,
+            post: data.post,
+            createdAt: data.timestamp
+          })
+        });
+      }, [props.socket.current]);
+
+
 
     const handleClickProfile = () => {
         navigate('/profile/' + user.userId)
@@ -39,7 +54,7 @@ const SideBar = () => {
             }
         }
         fetchAllGroups();
-    }, []);
+    }, [newNotification]);
 
     useEffect(() => {
         const fetchAllDirectMessageGroups = async () => {
@@ -49,7 +64,7 @@ const SideBar = () => {
             }
         }
         fetchAllDirectMessageGroups();
-    }, []);
+    }, [newNotification]);
 
     return (
         <div className='w-[250px] bg-sky-700 overflow-y-auto overflow-x-hidden relative'>
@@ -113,10 +128,7 @@ const SideBar = () => {
                                     navigate('/group/' + group.groupId)
                                     // window.location.reload()
                                 }} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
-                                        <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
-                                    </svg>
-
+                                    <img className='w-6 h-6 rounded-full mt-[1px]' src={group?.avatar ? ('http://localhost:3001/images/' + group?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                                     <span className='text-white ml-2'>{group.name}</span>
                                 </div>
                             )))}
@@ -133,12 +145,9 @@ const SideBar = () => {
                         <div>
                             {directMessages?.map((directMessage: any) => (
                                 <div key={directMessage.groupId} onClick={() => {
-                                    navigate('/group/' + directMessage.groupId)
+                                    navigate('/directMessage/' + directMessage.groupId)
                                 }} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white mt-1">
-                                        <path fillRule="evenodd" d="M9.493 2.853a.75.75 0 00-1.486-.205L7.545 6H4.198a.75.75 0 000 1.5h3.14l-.69 5H3.302a.75.75 0 000 1.5h3.14l-.435 3.148a.75.75 0 001.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 001.486.205L12.456 14h3.346a.75.75 0 000-1.5h-3.14l.69-5h3.346a.75.75 0 000-1.5h-3.14l.435-3.147a.75.75 0 00-1.486-.205L12.045 6H9.059l.434-3.147zM8.852 7.5l-.69 5h2.986l.69-5H8.852z" clipRule="evenodd" />
-                                    </svg>
-
+                                    <img className='w-6 h-6 rounded-full mt-[1px]' src={directMessage?.avatar ? ('http://localhost:3001/images/' + directMessage?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                                     <span className='text-white ml-2'>{directMessage.name}</span>
                                 </div>
                             ))}

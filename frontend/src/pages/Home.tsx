@@ -9,7 +9,7 @@ const Home = (props: any) => {
         <div className='w-screen h-screen pointer-events-auto'>
         <TopBar socket={props.socket} />
         <div className='w-full h-[calc(100%-50px)] flex flex-row'>
-            <SideBar/>
+            <SideBar socket={props.socket}/>
         </div>
     </div>
     )

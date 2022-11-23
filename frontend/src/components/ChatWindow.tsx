@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar } from '../API/Group';
+import { APIcreateNotification } from '../API/Notification';
 import { APIgetAllPostByGroupId } from '../API/Post';
 import { APIfindUserByName } from '../API/User';
 import { Context } from '../context/Context';
@@ -95,6 +96,21 @@ const ChatWindow = (props: any) => {
       if (window.confirm('Are you sure you want to delete the group ?')) {
         const { status }: any = await APIdeleteGroup(group.groupId)
         if (status) {
+          props.socket?.current?.emit("sendNotification", {
+            sendUserName: user.name,
+            sendUserId: user.userId,
+            groupName: group.name,
+            groupId: group.groupId,
+            type: 12
+          });
+
+          await APIcreateNotification({
+            sendUserName: user.name,
+            sendUserId: user.userId,
+            groupName: group.name,
+            groupId: group.groupId,
+            type: 12
+          })
           navigate('/')
         }
       }
@@ -124,12 +140,30 @@ const ChatWindow = (props: any) => {
     }
   }
 
-  const handleClickAddMemberIntoGroup = async (user: any) => {
-    const { status } = await APIaddMemberIntoGroup(group.groupId, user.userId)
+  const handleClickAddMemberIntoGroup = async (addUser: any) => {
+    const { status } = await APIaddMemberIntoGroup(group.groupId, addUser.userId)
     if (status) {
+      props.socket?.current?.emit("sendNotification", {
+        sendUserName: user.name,
+        sendUserId: user.userId,
+        groupName: group.name,
+        groupId: group.groupId,
+        affectedUserName: addUser.name,
+        type: 9
+      });
+
+      await APIcreateNotification({
+        sendUserName: user.name,
+        sendUserId: user.userId,
+        groupName: group.name,
+        groupId: group.groupId,
+        affectedUserName: addUser.name,
+        type: 9
+      })
+
       setMembers((prev: any) => [...prev,
       {
-        userId: user.userId,
+        userId: addUser.userId,
         groupId: group.groupId,
         name: '',
         type: 'user',
@@ -139,21 +173,55 @@ const ChatWindow = (props: any) => {
     }
   }
 
-  const handleClickDeleteMemberInGroup = async (user: any) => {
+  const handleClickDeleteMemberInGroup = async (deleteUser: any) => {
     if (window.confirm('Are you sure you want to remove this user from the group ?')) {
-      const { status } = await APIdeleteMemberInGroup(group.groupId, user.userId)
+      const { status } = await APIdeleteMemberInGroup(group.groupId, deleteUser.userId)
       if (status) {
-        setMembers(() => members.filter((member: any) => member.userId != user.userId));
+        props.socket?.current?.emit("sendNotification", {
+          sendUserName: user.name,
+          sendUserId: user.userId,
+          groupName: group.name,
+          groupId: group.groupId,
+          affectedUserName: deleteUser.name,
+          type: 10
+        });
+
+        await APIcreateNotification({
+          sendUserName: user.name,
+          sendUserId: user.userId,
+          groupName: group.name,
+          groupId: group.groupId,
+          affectedUserName: deleteUser.name,
+          type: 10
+        })
+        setMembers(() => members.filter((member: any) => member.userId != deleteUser.userId));
       }
     }
   }
 
-  const handleClickPromoteAdminInGroup = async (user: any) => {
-    const { status } = await APIpromoteAdminInGroup(group.groupId, user.userId)
+  const handleClickPromoteAdminInGroup = async (promoteUser: any) => {
+    const { status } = await APIpromoteAdminInGroup(group.groupId, promoteUser.userId)
     if (status) {
+      props.socket?.current?.emit("sendNotification", {
+        sendUserName: user.name,
+        sendUserId: user.userId,
+        groupName: group.name,
+        groupId: group.groupId,
+        affectedUserName: promoteUser.name,
+        type: 11
+      });
+
+      await APIcreateNotification({
+        sendUserName: user.name,
+        sendUserId: user.userId,
+        groupName: group.name,
+        groupId: group.groupId,
+        affectedUserName: promoteUser.name,
+        type: 11
+      })
       let data: any = []
       for (let i = 0; i < members.length; i++) {
-        if (members[i].userId == user.userId) {
+        if (members[i].userId == promoteUser.userId) {
           data.push({
             userId: members[i].userId,
             groupId: members[i].groupId,
@@ -180,7 +248,7 @@ const ChatWindow = (props: any) => {
 
   const UpdateAvatarAlert = () => {
     return (
-      <div className='fixed top-[120px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
+      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
         <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Change Group Avatar</h1>
         </div>
@@ -223,7 +291,7 @@ const ChatWindow = (props: any) => {
 
   const AddMemberAlert = () => {
     return (
-      <div className='fixed top-[120px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
+      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
         <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Add Member</h1>
         </div>
@@ -244,11 +312,14 @@ const ChatWindow = (props: any) => {
               </svg>
             </div>
           </div>
-          <div className='px-2'>
+          <div className=''>
             {searchingUsers.map((searchingUser: any) => (
-              <div className='flex flex-row justify-between'>
+              <div className='flex flex-row justify-between hover:bg-neutral-300 p-2 rounded-xl'>
                 <div className='flex flex-row'>
-                  <div className='my-2'>
+                  <div onClick={() => {
+                    navigate('/profile/' + searchingUser.userId)
+                  }}
+                    className='my-2'>
                     <img className='rounded-full w-10 h-10' src={searchingUser?.avatar ? ('http://localhost:3001/images/' + searchingUser?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                   </div>
                   <div className='font-bold text-[18px] mt-3 ml-4'>{searchingUser.name}</div>
@@ -274,7 +345,7 @@ const ChatWindow = (props: any) => {
 
   const SettingAlert = () => {
     return (
-      <div className='fixed top-[120px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
+      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
         <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Setting</h1>
         </div>
@@ -282,7 +353,7 @@ const ChatWindow = (props: any) => {
           members.some((member: any) => member.userId == user.userId && member.type == 'admin') ?
             <div className='mx-8 mt-8 bg-neutral-200 rounded-2xl p-4'>
               <div className='flex flex-row text-red-600'>
-                <div className=' mt-2 text-xl font-bold'>Delete Group</div>
+                <div className=' mt-2 text-xl font-bold ml-2'>Delete Group</div>
               </div>
               <div className='flex flex-row rounded-2xl'>
                 <div className='w-full px-2'>
@@ -309,12 +380,12 @@ const ChatWindow = (props: any) => {
 
   const MemberAlert = () => {
     return (
-      <div className='fixed top-[120px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
+      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
         <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Member</h1>
         </div>
         <div className='mx-8 mt-8 bg-neutral-200 rounded-2xl p-4'>
-          <div className='flex flex-row text-yellow-700'>
+          <div className='flex flex-row text-yellow-700 ml-2'>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 mt-2">
               <path fillRule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clipRule="evenodd" />
               <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
@@ -331,11 +402,14 @@ const ChatWindow = (props: any) => {
               </svg>
             </div>
           </div>
-          <div className='px-2'>
+          <div className='max-h-[200px] overflow-auto'>
             {members.map((member: any) => (
-              <div className='flex flex-row justify-between'>
+              <div className='flex flex-row justify-between hover:bg-neutral-300 p-2 rounded-xl'>
                 <div className='flex flex-row'>
-                  <div className='my-2'>
+                  <div onClick={() => {
+                    navigate('/profile/' + member.userId)
+                  }}
+                    className='my-2' >
                     <img className='rounded-full w-10 h-10' src={member?.avatar ? ('http://localhost:3001/images/' + member?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                   </div>
                   <div>
@@ -345,16 +419,16 @@ const ChatWindow = (props: any) => {
                 </div>
                 {members.some((member: any) => member.userId == user.userId && member.type == 'admin') && member.type == 'user' ?
                   <div className=' mt-2 flex flex-row'>
-                    <button onClick={() => handleClickPromoteAdminInGroup(member)} className="w-12 rounded-xl text-white py-2 px-2 font-medium text-medium bg-sky-900 mr-4 text-center hover:bg-green-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 ml-1">
+                    <button onClick={() => handleClickPromoteAdminInGroup(member)} title='Promote to Admin' className=" rounded-xl text-neutral-500 font-medium text-medium text-center hover:text-green-600 mr-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
                         <path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.172-.311a54.614 54.614 0 014.653-2.52.75.75 0 00-.65-1.352 56.129 56.129 0 00-4.78 2.589 1.858 1.858 0 00-.859 1.228 49.803 49.803 0 00-4.634-1.527.75.75 0 01-.231-1.337A60.653 60.653 0 0111.7 2.805z" />
                         <path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 00-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.661a6.729 6.729 0 00.551-1.608 1.5 1.5 0 00.14-2.67v-.645a48.549 48.549 0 013.44 1.668 2.25 2.25 0 002.12 0z" />
                         <path d="M4.462 19.462c.42-.419.753-.89 1-1.394.453.213.902.434 1.347.661a6.743 6.743 0 01-1.286 1.794.75.75 0 11-1.06-1.06z" />
                       </svg>
 
                     </button>
-                    <button onClick={() => handleClickDeleteMemberInGroup(member)} className="w-12 rounded-xl text-white py-2 px-2 font-medium text-medium bg-sky-900 text-center hover:bg-red-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 ml-1">
+                    <button onClick={() => handleClickDeleteMemberInGroup(member)} title='Delete User' className=" rounded-xl text-neutral-500 font-medium text-medium text-center hover:text-red-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
                         <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
                       </svg>
                     </button>

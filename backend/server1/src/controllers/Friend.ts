@@ -74,6 +74,32 @@ const FriendController = {
                     friendId: parseInt(req.body.friendId)
                 }
             })
+
+            await prisma.friend.create({
+                data: {
+                    userId: parseInt(req.body.friendId),
+                    friendId: req.user.userId,
+                }
+            })
+            const newGroup = await prisma.group.create({
+                data: {
+                    name: '',
+                    desc: '',
+                    type: 'DirectMessage'
+                }
+            })
+            await prisma.groupUser.create({
+                data: {
+                    groupId: newGroup.groupId,
+                    userId: parseInt(req.user.userId)
+                }
+            })
+            await prisma.groupUser.create({
+                data: {
+                    groupId: newGroup.groupId,
+                    userId: parseInt(req.body.friendId)
+                }
+            })
             res.status(200).json('Add friend successfully !');
         } catch (err) {
             console.log(err)
@@ -90,6 +116,40 @@ const FriendController = {
                     friendId: parseInt(req.params.friendId)
                 }
             })
+            const groupUser1 = await prisma.groupUser.findMany({
+                where: {
+                    userId: req.user.userId
+                }
+            })
+            const groupUser2 = await prisma.groupUser.findMany({
+                where: {
+                    userId: parseInt(req.params.friendId)
+                }
+            })
+            for(let i=0;i<groupUser1.length;i++){
+                for(let j= 0;j<groupUser2.length;j++){
+                    if(groupUser1[i].groupId == groupUser2[j].groupId){
+                        await prisma.group.delete({
+                            where: {
+                                groupId : groupUser1[i].groupId
+                            }
+                        })
+
+                        await prisma.groupUser.deleteMany({
+                            where: {
+                                groupId : groupUser1[i].groupId,
+                                userId : req.user.userId
+                            }
+                        })
+                        await prisma.groupUser.deleteMany({
+                            where: {
+                                groupId : groupUser1[i].groupId,
+                                userId : parseInt(req.params.friendId)
+                            }
+                        })
+                    }
+                }
+            }
             res.status(200).json('Delete friend successfully !');
         } catch (err) {
             res.status(500).json(err);

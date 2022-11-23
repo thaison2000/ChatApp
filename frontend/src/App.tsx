@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import { Context } from './context/Context';
 import { io } from "socket.io-client";
 import Group from './pages/Group';
+import DirectMessage from './pages/DirectMessage';
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
         <Route path='register' element={<Register/>}></Route>
         <Route path='profile/:userId' element={user?<Profile socket={socket}/>:<Login/>}></Route>
         <Route path='group/:groupId' element={user?<Group socket={socket}/>:<Login/>}></Route>
+        <Route path='directMessage/:groupId' element={user?<DirectMessage socket={socket}/>:<Login/>}></Route>
         <Route path='/' element={user?<Home socket={socket}/>:<Login/>}></Route>
       </Routes>
     </div>

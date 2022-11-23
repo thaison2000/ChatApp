@@ -13,6 +13,7 @@ groupRoute.post('/promoteAdmin/',verifyToken,groupController.promoteAdmin)
 groupRoute.get('/',verifyToken,groupController.getAllGroups)
 groupRoute.get('/directMessage/',verifyToken,groupController.getAllDirectMessageGroups)
 groupRoute.get('/:groupId',verifyToken,groupController.getGroupByGroupId)
+groupRoute.get('/directMessage/:groupId',verifyToken,groupController.getDirectMessageByGroupId)
 groupRoute.get('/members/:groupId',verifyToken,groupController.getAllGroupMemberByGroupId)
 
 export default groupRoute

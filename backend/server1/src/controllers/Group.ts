@@ -191,17 +191,23 @@ const groupController = {
                             groupId: group.groupId
                         }
                     })
+                    
                     groupAnotherUser = groupAnotherUser.filter((groupAnotherUser:any)=>{
-                        groupAnotherUser.userId != req.user.userId
+                        return groupAnotherUser.userId != req.user.userId
                     })
-                    let user = await prisma.user.findUnique({
-                        where: {
-                            userId: groupAnotherUser[0].userId
-                        }
-                    })
+                    let user
+                    for(let i=0;i<groupAnotherUser.length;i++){
+                        user = await prisma.user.findUnique({
+                            where: {
+                                userId: groupAnotherUser[0].userId
+                            }
+                        })
+                    }
                     data.push({
                         groupId: group.groupId,
-                        name: user?.name
+                        name: user?.name,
+                        avatar: user?.avatar,
+                        userId: user?.userId
                     })
                 }
             }
@@ -221,6 +227,48 @@ const groupController = {
                 }
             })
             res.status(200).json(group)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+    getDirectMessageByGroupId: async (req: any, res: Response) => {
+        try {
+            const group = await prisma.group.findUnique({
+                where: {
+                    groupId: parseInt(req.params.groupId)
+                }
+            })
+            if(group){
+                let groupAnotherUser = await prisma.groupUser.findMany({
+                    where: {
+                        groupId: group.groupId
+                    }
+                })
+                groupAnotherUser = groupAnotherUser.filter((groupAnotherUser:any)=>{
+                    return groupAnotherUser.userId != req.user.userId
+                })
+                let user
+                for(let i=0;i<groupAnotherUser.length;i++){
+                    user = await prisma.user.findUnique({
+                        where: {
+                            userId: groupAnotherUser[0].userId
+                        }
+                    })
+                }
+                return res.status(200).json({
+                    groupId: group.groupId,
+                    name: user?.name,
+                    avatar: user?.avatar,
+                    userId: user?.userId
+                })
+            }
+            else{
+                return res.status(200).json([])
+            }
+            
         }
         catch (err) {
             console.log(err)

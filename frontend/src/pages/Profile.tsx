@@ -41,10 +41,7 @@ const Profile = (props: any) => {
   useEffect(() => {
     if (newNotification.type == 5) {
       const addFriend = async () => {
-        const { status } = await APIaddFriend(newNotification.sendUserId)
-        if (status) {
           setUserCondition('friend')
-        }
       }
       addFriend()
     }
@@ -251,7 +248,7 @@ const Profile = (props: any) => {
     <div className='w-screen h-screen pointer-events-auto'>
       <TopBar socket={props.socket} />
       <div className='w-full h-[calc(100%-50px)] flex flex-row'>
-        <SideBar />
+        <SideBar socket={props.socket}/>
         <div className='flex flex-row p-4'>
           <div className='flex flex-row'>
             <div className='flex flex-col'>

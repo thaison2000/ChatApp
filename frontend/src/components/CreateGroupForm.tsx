@@ -1,4 +1,3 @@
-import axios from "axios"
 import { useState } from "react"
 import { APIcreateGroup } from "../API/Group";
 
@@ -27,7 +26,7 @@ const CreateGroupForm = (props: any) => {
 
 
     return (
-        <div className='fixed top-[120px] left-[520px] z-10 w-[500px] bg-white drop-shadow-xl rounded-lg'>
+        <div className='fixed top-[60px] left-[520px] z-10 w-[500px] bg-white drop-shadow-xl rounded-lg'>
             <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
                 <h1 className='text-center text-white text-2xl font-medium p-2'>Create Chanel</h1>
             </div>

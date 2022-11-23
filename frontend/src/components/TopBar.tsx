@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { APIaddFriend, APIdeleteFriendRequest, APIgetAllFriendRequestByReceiveUserId } from '../API/Friend'
-import { APIcreateGroup } from '../API/Group'
-import { APIcreateFriendRequestNotification, APIgetAllNotificationsByReceiveUserId } from '../API/Notification'
+import { APIfetchAllGroups } from '../API/Group'
+import { APIcreateFriendRequestNotification, APIdeleteNotification, APIgetAllNotificationsByGroupIds, APIgetAllNotificationsByReceiveUserId } from '../API/Notification'
 import { APIfindUserByName } from '../API/User'
 import { Context } from '../context/Context'
 
@@ -17,8 +17,9 @@ const TopBar = (props: any) => {
     const [friendRequests, setFriendRequests] = useState<any>();
     const [notificationAlert, setNotificationAlert] = useState<boolean>(false);
     const [notifications, setNotifications] = useState<any>([]);
-    const [countNewNotifications, setCountNewNotifications] = useState<number>(-1);
+    const [countNewNotifications, setCountNewNotifications] = useState<number>(0);
     const [newNotification, setNewNotification] = useState<any>();
+    const [groups, setGroups] = useState<any>();
 
     const handleClickLogout = () => {
         localStorage.removeItem('user')
@@ -30,8 +31,18 @@ const TopBar = (props: any) => {
     }
 
     useEffect(() => {
-        scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [notifications]);
+        scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    }, [notifications, newNotification, notificationAlert]);
+
+    useEffect(() => {
+        const fetchAllGroups = async () => {
+            const { status, data } = await APIfetchAllGroups()
+            if (status) {
+                setGroups(data)
+            }
+        }
+        fetchAllGroups();
+    }, [newNotification]);
 
     useEffect(() => {
         const getAllNotificationsByReceiveUserId = async () => {
@@ -40,8 +51,18 @@ const TopBar = (props: any) => {
                 setNotifications(data)
             }
         }
+        const getAllNotificationsByGroupIds = async () => {
+            if (groups) {
+                const { status, data }: any = await APIgetAllNotificationsByGroupIds(groups)
+                if (status) {
+                    setNotifications((prev: any) => prev.concat(data))
+                }
+            }
+        }
         getAllNotificationsByReceiveUserId()
-    }, []);
+        getAllNotificationsByGroupIds()
+    }, [groups]);
+
 
     useEffect(() => {
         const getAllFriendRequestByReceiveUserId = async () => {
@@ -62,15 +83,19 @@ const TopBar = (props: any) => {
                 receiveUserId: data.receiveUserId,
                 type: data.type,
                 post: data.post,
-                createdAt: data.timestamp
+                createdAt: data.timestamp,
+                affectedUserName: data.affectedUserName,
+                groupName: data.groupName,
+                groupId: data.groupId
             })
         });
     }, [props.socket?.current]);
 
     useEffect(() => {
-        newNotification &&
+        if (newNotification && newNotification.sendUserId != user.userId) {
             setNotifications((prev: any) => [...prev, newNotification]);
-        setCountNewNotifications(countNewNotifications + 1)
+            setCountNewNotifications(countNewNotifications + 1)
+        }
     }, [newNotification]);
 
     const handleClickNotificationAlert = () => {
@@ -79,6 +104,7 @@ const TopBar = (props: any) => {
 
     const handleClickDeleteFriendRequest = async (sendUserId: number, receiveUserId: number) => {
         await APIdeleteFriendRequest(sendUserId, receiveUserId)
+        await APIdeleteNotification(sendUserId, receiveUserId, 4)
 
         await APIcreateFriendRequestNotification({
             sendUserName: user.name,
@@ -100,8 +126,8 @@ const TopBar = (props: any) => {
 
     const handleClickAcceptFriendRequest = async (sendUserId: number, receiveUserId: number) => {
         await APIaddFriend(sendUserId)
-        await APIcreateGroup('','','DirectMessage')
         await APIdeleteFriendRequest(sendUserId, receiveUserId)
+        await APIdeleteNotification(sendUserId, receiveUserId, 4)
 
         await APIcreateFriendRequestNotification({
             sendUserName: user.name,
@@ -144,7 +170,7 @@ const TopBar = (props: any) => {
                     friendRequests.some((friendRequest: any) => friendRequest.sendUserId == notification.sendUserId && friendRequest.receiveUserId == notification.receiveUserId)
                 ) {
                     return (
-                        <div className='py-2 px-4'>
+                        <div className='py-2 px-4' ref={scrollRef}>
                             You have a <span className='text-[18px] font-medium text-sky-900'>friend request</span> from <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span>
                             <div className='flex flex-row justify-center mt-2'>
                                 <div onClick={async () => await handleClickAcceptFriendRequest(notification.sendUserId, notification.receiveUserId)} className='py-1 px-8 bg-sky-900 text-white h-8 rounded-2xl hover:bg-green-500 mr-4'>Accept</div>
@@ -155,26 +181,63 @@ const TopBar = (props: any) => {
                 }
                 if (notification.type == 5) {
                     return (
-                        <div className='py-2 px-4'>
+                        <div className='py-2 px-4' ref={scrollRef}>
                             You and <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> are <span className='text-[18px] font-medium text-sky-900'>Friends</span> !
                         </div>
                     )
                 }
                 if (notification.type == 6) {
                     return (
-                        <div className='py-2 px-4'>
+                        <div className='py-2 px-4' ref={scrollRef}>
                             <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has rejected your <span className='text-[18px] font-medium text-sky-900'>Friend Request</span> !
                         </div>
                     )
                 }
                 if (notification.type == 7) {
                     return (
-                        <div className='py-2 px-4'>
+                        <div className='py-2 px-4' ref={scrollRef}>
                             <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has <span className='text-[18px] font-medium text-sky-900'>Unfriend</span> you !
                         </div>
                     )
                 }
+                if (notification.sendUserId != user.userId && notification.type == 9 && groups.some((group: any) => {
+                    return group.groupId == notification.groupId
+                })) {
+                    return (
+                        <div className='py-2 px-4' ref={scrollRef}>
+                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has added <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span>  in to group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                        </div>
+                    )
+                }
+                if (notification.sendUserId != user.userId && notification.type == 10 && groups.some((group: any) => {
+                    return group.groupId == notification.groupId
+                })) {
+                    return (
+                        <div className='py-2 px-4' ref={scrollRef}>
+                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has kicked <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span>  out of group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                        </div>
+                    )
+                }
+                if (notification.sendUserId != user.userId && notification.type == 11 && groups.some((group: any) => {
+                    return group.groupId == notification.groupId
+                })) {
+                    return (
+                        <div className='py-2 px-4' ref={scrollRef}>
+                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has promoted <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span> to become <span className='text-[18px] font-medium text-sky-900'>Admin</span> in group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                        </div>
+                    )
+                }
+                if (notification.sendUserId != user.userId && notification.type == 12 && groups.some((group: any) => {
+                    return group.groupId == notification.groupId
+                })) {
+                    return (
+                        <div className='py-2 px-4' ref={scrollRef}>
+                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has deleted group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                        </div>
+                    )
+                }
             }
+
             )}
         </div>
     )
@@ -189,7 +252,7 @@ const TopBar = (props: any) => {
                     }
                     } className='p-4 flex flex-row hover:bg-gray-100'>
                         <div>
-                            <img className='w-6 h-6' src={user?.avatar? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                            <img className='w-6 h-6' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                         </div>
                         <div className='ml-4'>{searchingUser.name}</div>
                     </div>
