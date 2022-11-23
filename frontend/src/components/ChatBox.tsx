@@ -1,6 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { APIgetUserProfile } from '../API/User';
+import TimeAgo from 'javascript-time-ago'
+
+// English.
+import en from 'javascript-time-ago/locale/en'
+
+TimeAgo.addDefaultLocale(en)
+
+// Create formatter (English).
+const timeAgo = new TimeAgo('en-US')
 
 const ChatBox = (props: any) => {
 
@@ -105,11 +114,12 @@ const ChatBox = (props: any) => {
           }}
             className='w-8 h-8 m-4 rounded-full' src={user?.avatar? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
         </div>
-        <div>
-          <h1 className='my-4 mx-0 text-xl font-bold'>{user?.name}</h1>
+        <div className='flex flex-col mt-2'>
+          <h1 className='mx-0 text-md font-bold'>{user?.name}</h1>
+          <div className="text-xs">{timeAgo.format(new Date(props.post.createdAt))}</div>
         </div>
       </div>
-      <div className='ml-4'>
+      <div className='ml-4 pb-4'>
         <div dangerouslySetInnerHTML={{ __html: props.post.content }}></div>
       </div>
       {commentWindow ? <CommentWindow /> : null}

@@ -5,6 +5,15 @@ import { APIfetchAllGroups } from '../API/Group'
 import { APIcreateFriendRequestNotification, APIdeleteNotification, APIgetAllNotificationsByGroupIds, APIgetAllNotificationsByReceiveUserId } from '../API/Notification'
 import { APIfindUserByName } from '../API/User'
 import { Context } from '../context/Context'
+import TimeAgo from 'javascript-time-ago'
+
+// English.
+import en from 'javascript-time-ago/locale/en'
+
+TimeAgo.addDefaultLocale(en)
+
+// Create formatter (English).
+const timeAgo = new TimeAgo('en-US')
 
 const TopBar = (props: any) => {
 
@@ -172,6 +181,7 @@ const TopBar = (props: any) => {
                     return (
                         <div className='py-2 px-4' ref={scrollRef}>
                             You have a <span className='text-[18px] font-medium text-sky-900'>friend request</span> from <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span>
+                            <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
                             <div className='flex flex-row justify-center mt-2'>
                                 <div onClick={async () => await handleClickAcceptFriendRequest(notification.sendUserId, notification.receiveUserId)} className='py-1 px-8 bg-sky-900 text-white h-8 rounded-2xl hover:bg-green-500 mr-4'>Accept</div>
                                 <div onClick={async () => await handleClickDeleteFriendRequest(notification.sendUserId, notification.receiveUserId)} className='py-1 px-8 bg-sky-900 text-white h-8 rounded-2xl hover:bg-red-500'>Reject</div>
@@ -182,21 +192,28 @@ const TopBar = (props: any) => {
                 if (notification.type == 5) {
                     return (
                         <div className='py-2 px-4' ref={scrollRef}>
-                            You and <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> are <span className='text-[18px] font-medium text-sky-900'>Friends</span> !
+                            <div>
+                                You and <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> are <span className='text-[18px] font-medium text-sky-900'>Friends</span> !
+                            </div>
+                            <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
+
                         </div>
                     )
                 }
                 if (notification.type == 6) {
                     return (
                         <div className='py-2 px-4' ref={scrollRef}>
-                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has rejected your <span className='text-[18px] font-medium text-sky-900'>Friend Request</span> !
+                            <div>
+                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has rejected your <span className='text-[18px] font-medium text-sky-900'>Friend Request</span> 
+                                <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
+                            </div>
                         </div>
                     )
                 }
                 if (notification.type == 7) {
                     return (
                         <div className='py-2 px-4' ref={scrollRef}>
-                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has <span className='text-[18px] font-medium text-sky-900'>Unfriend</span> you !
+                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has <span className='text-[18px] font-medium text-sky-900'>Unfriend</span> you 
                         </div>
                     )
                 }
@@ -205,7 +222,10 @@ const TopBar = (props: any) => {
                 })) {
                     return (
                         <div className='py-2 px-4' ref={scrollRef}>
-                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has added <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span>  in to group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                            <div>
+                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has added <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span>  in to group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                                <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
+                            </div>
                         </div>
                     )
                 }
@@ -214,7 +234,10 @@ const TopBar = (props: any) => {
                 })) {
                     return (
                         <div className='py-2 px-4' ref={scrollRef}>
-                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has kicked <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span>  out of group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                            <div>
+                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has kicked <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span>  out of group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                                <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
+                            </div>
                         </div>
                     )
                 }
@@ -223,7 +246,10 @@ const TopBar = (props: any) => {
                 })) {
                     return (
                         <div className='py-2 px-4' ref={scrollRef}>
-                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has promoted <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span> to become <span className='text-[18px] font-medium text-sky-900'>Admin</span> in group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                            <div>
+                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has promoted <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span> to become <span className='text-[18px] font-medium text-sky-900'>Admin</span> in group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                                <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
+                            </div>
                         </div>
                     )
                 }
@@ -232,7 +258,10 @@ const TopBar = (props: any) => {
                 })) {
                     return (
                         <div className='py-2 px-4' ref={scrollRef}>
-                            <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has deleted group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                            <div>
+                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has deleted group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                                <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
+                            </div>
                         </div>
                     )
                 }
