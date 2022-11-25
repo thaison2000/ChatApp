@@ -2,15 +2,15 @@ const mongoose = require('mongoose')
 
 const LikeSchema = mongoose.Schema(
     {
-        user_id: {
+        userId: {
             type: Number,
             required: true
         },
-        group_id: {
+        groupId: {
             type: Number,
             required: true
         },
-        post_id: {
+        postId: {
             type: String,
             required: true
         },

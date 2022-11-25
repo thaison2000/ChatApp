@@ -6,6 +6,7 @@ import { APIgetAllPostByGroupId } from '../API/Post';
 import { APIfindUserByName } from '../API/User';
 import { Context } from '../context/Context';
 import ChatBox from './ChatBox'
+import CommentWindow from './CommentWindow';
 import Editor from './Editor'
 
 const ChatWindow = (props: any) => {
@@ -20,6 +21,8 @@ const ChatWindow = (props: any) => {
   const [group, setGroup] = useState<any>()
   const [members, setMembers] = useState<Array<any>>([])
   const [newPostCount, setNewPostCount] = useState<number>(0)
+  const [commentWindow, setCommentWindow] = useState<boolean>(false)
+  const [postThread, setPostThread] = useState<any>({})
 
   const addMemberName = useRef<any>()
   const deleteGroupName = useRef<any>()
@@ -71,6 +74,11 @@ const ChatWindow = (props: any) => {
     fetchAllGroupMembers();
 
   }, [props.groupId, addMemberAlert]);
+
+  const handleClickCommentWindow = (postThread: any) => {
+    setPostThread(postThread)
+    setCommentWindow(!commentWindow)
+  }
 
   const handleUpdateNewPostCount = () => {
     setNewPostCount((prev: any) => prev + 1)
@@ -447,12 +455,13 @@ const ChatWindow = (props: any) => {
   }
 
   return (
-    <div className='w-[calc(100%-250px)]'>
+    <div className='w-[calc(100%-250px)] flex flex-row p-0'>
+      <div className='w-full'>
       {updateAvatarAlert ? <UpdateAvatarAlert /> : null}
       {addMemberAlert ? <AddMemberAlert /> : null}
       {settingAlert ? <SettingAlert /> : null}
       {memberAlert ? <MemberAlert /> : null}
-      <div className='h-full'>
+      <div className='w-full h-[92%] relative'>
         <div className='flex flex-row justify-between bg-neutral-200'>
           <div className='flex flex-row'>
             <div className='p-2 ml-2'>
@@ -479,19 +488,21 @@ const ChatWindow = (props: any) => {
             </svg>
           </div>
         </div>
-        <div className='h-[440px] flex flex-col overflow-auto divide-y relative z-0 divide-y'>
+        <div className='h-[460px] flex flex-col overflow-auto divide-y relative z-0 divide-y'>
           {posts?.map((post: any) => {
             return (
               <div key={post.postId} ref={scrollRef}>
-                <ChatBox post={post} />
+                <ChatBox post={post} handleClickCommentWindow={handleClickCommentWindow}/>
               </div>
             )
           })}
         </div>
-        <div className=''>
-          <Editor socket={props.socket} groupId={props.groupId} handleUpdateNewPostCount={handleUpdateNewPostCount} />
+        <div className='relative h-[90px]'>
+          <Editor type={'post'} socket={props.socket} groupId={props.groupId} handleUpdateNewPostCount={handleUpdateNewPostCount} />
         </div>
       </div>
+      </div>
+      {commentWindow? <CommentWindow postThread={postThread} groupId={props.groupId} handleClickCommentWindow={handleClickCommentWindow}/>: null}
     </div>
   )
 }

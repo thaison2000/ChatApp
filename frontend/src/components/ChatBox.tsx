@@ -31,7 +31,7 @@ const ChatBox = (props: any) => {
   }, [props.post.userId]);
 
   const handleClickCommentWindow = () => {
-    setCommentWindow(!commentWindow)
+    props.handleClickCommentWindow(props.post)
   }
 
   const handleClickSubmitComment = async () => {
@@ -42,24 +42,6 @@ const ChatBox = (props: any) => {
           'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
         },
       }
-      // await axios.post("http://localhost:3001/api/comment/", {
-      //   name: name.current?.value,
-      //   dateOfBirth: dateOfBirth.current?.value,
-      //   phone: phone.current?.value,
-      //   address: address.current?.value,
-      //   gender: gender.current?.value
-      // },
-      //   config);
-      // dispatch({
-      //   type: 'UPDATE_PROFILE', payload: {
-      //     name: name.current?.value,
-      //     dateOfBirth: dateOfBirth.current?.value,
-      //     phone: phone.current?.value,
-      //     address: address.current?.value,
-      //     gender: gender.current?.value
-      //   }
-      // })
-      // setClickProfileEdit(!clickProfileEdit)
 
     }
     catch (err) {
@@ -119,8 +101,12 @@ const ChatBox = (props: any) => {
           <div className="text-xs">{timeAgo.format(new Date(props.post.createdAt))}</div>
         </div>
       </div>
-      <div className='ml-4 pb-4'>
+      <div className='ml-16 pb-4'>
         <div dangerouslySetInnerHTML={{ __html: props.post.content }}></div>
+      </div>
+      <div className='ml-16 pb-4 flex flex-row'>
+        <div className='mr-4 text-base font-bold'>0 likes</div>
+        <div onClick={handleClickCommentWindow} className='text-sky-900 text-base font-bold hover:underline'>0 replies</div>
       </div>
       {commentWindow ? <CommentWindow /> : null}
     </div>
