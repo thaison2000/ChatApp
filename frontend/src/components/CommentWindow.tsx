@@ -1,14 +1,14 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Editor from './Editor'
 import TimeAgo from 'javascript-time-ago'
 
 // English.
 import en from 'javascript-time-ago/locale/en'
-import { APIgetCommentsByPostId } from '../API/Comment'
-import { APIgetUserProfile } from '../API/User'
 import ChatBox from './ChatBox'
+import { APIgetCommentsByPostId } from '../API/Comment'
+import { Context } from '../context/Context'
 
 TimeAgo.addDefaultLocale(en)
 
@@ -17,43 +17,41 @@ const timeAgo = new TimeAgo('en-US')
 
 const CommentWindow = (props: any) => {
 
-    const [commentUsers, setCommentUsers] = useState<Array<any>>([])
-    const [comments, setComments] = useState<Array<any>>([])
-    const [commentCount, setCommentCount] = useState<number>(0)
+    const [comments, setComments] = useState<any>([])
+    const [newCommentCount, setNewCommentCount] = useState<number>(0)
     let navigate = useNavigate()
+
+    const scrollRef = useRef<any>();
+
+    const { user } = useContext(Context)
+
+    useEffect(() => {
+        scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    }, [comments]);
+
+    useEffect(() => {
+        props.socket?.current?.on("getNotification", (data:any) => {
+            console.log(data)
+            if (props.members?.some((member: any) => member.userId == user.userId)) {
+                setNewCommentCount((prev: number) => prev + 1)
+
+            }
+        });
+    }, [props.socket?.current]);
 
     useEffect(() => {
         const getCommentsByPostId = async () => {
             const { status, data } = await APIgetCommentsByPostId(props.postThread.postId)
             if (status) {
                 setComments(data)
-                setCommentCount(data.length)
             }
         }
         getCommentsByPostId();
-    }, [props.postThread, commentCount]);
-
-    useEffect(() => {
-        for(let i=0;i<comments.length;i++){
-            const fetchUserByUserId = async () => {
-                const { status, data } = await APIgetUserProfile(props.postThread.userId)
-                if (status) {
-                    let value: any = commentUsers
-                    value.push(data)
-                  setCommentUsers(value)
-                }
-              }
-            fetchUserByUserId();
-        }
-    }, [props.postThread, commentCount, comments]);
-
-    const handleUpdateNewCommentCount = () => {
-        setCommentCount((prev: any) => prev + 1)
-    }
+    }, [props.postThread, newCommentCount]);
 
     const handleClickCommentWindow = () => {
         props.handleClickCommentWindow(props.postThread)
-      }
+    }
 
     return (
         <div className='w-[700px] p-0 flex flex-col'>
@@ -67,37 +65,35 @@ const CommentWindow = (props: any) => {
 
             </div>
             <div>
-                <ChatBox post={props.postThread} handleClickCommentWindow={() => { }} />
+                <ChatBox post={props.postThread} socket={props.socket} members={props.members} />
             </div>
             <div className='flex flex-row'>
                 <div className='flex flex-row'>
-                    <div className='font-semibold px-1 text-neutral-500'>{commentCount}</div>
+                    <div className='font-semibold px-1 text-neutral-500'>{comments.length}</div>
                     <div className='font-semibold px-1 text-neutral-500'>replies</div>
                 </div>
                 <div className='w-full h-[1px] bg-neutral-500 mt-3 mx-2'></div>
             </div>
-            <div className='h-[250px] overflow-auto'>
+            <div className='h-[260px] overflow-auto'>
                 {
-                    comments?.map((comment: any) => {
-                        let user = commentUsers.filter((commentUser:any)=>{
-                            return commentUser.userId === comment.userId
-                        })
+                    comments.map((comment: any) => {
                         return <div
+                            key={comment.commentId}
                             className='w-full bg-white hover:bg-gray-100 relative'>
                             <div className='flex flex-row relative'>
                                 <div>
                                     <img onClick={() => {
-                                        navigate('/profile/' + comment.userId, { replace: true })
+                                        navigate('/profile/' + comment.userId)
                                         window.location.reload()
                                     }}
-                                        className='w-8 h-8 m-4 rounded-full' src={user[0]?.avatar ? ('http://localhost:3001/images/' + user[0]?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                                        className='w-8 h-8 m-4 rounded-full' src={comment.avatar ? ('http://localhost:3001/images/' + comment.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                                 </div>
                                 <div className='flex flex-col mt-2'>
-                                    <h1 className='mx-0 text-md font-bold'>{user[0]?.name}</h1>
+                                    <h1 className='mx-0 text-md font-bold'>{comment.name}</h1>
                                     <div className="text-xs">{timeAgo.format(new Date(comment.createdAt))}</div>
                                 </div>
                             </div>
-                            <div className='ml-16 pb-4'>
+                            <div className='ml-16 pb-4' ref={scrollRef}>
                                 <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
                             </div>
                         </div>
@@ -105,7 +101,7 @@ const CommentWindow = (props: any) => {
                 }
             </div>
             <div className=' relative my-4 h-[90px]'>
-                <Editor type={'comment'} groupId={props.groupId} postId={props.postThread.postId} handleUpdateNewCommentCount={handleUpdateNewCommentCount} />
+                <Editor socket={props.socket} type={'comment'} groupId={props.groupId} postId={props.postThread.postId} />
             </div>
 
         </div>

@@ -1,10 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { APIgetUserProfile } from '../API/User';
 import TimeAgo from 'javascript-time-ago'
+import { Context } from '../context/Context';
 
 // English.
 import en from 'javascript-time-ago/locale/en'
+import { APIgetCommentsByPostId } from '../API/Comment';
 
 TimeAgo.addDefaultLocale(en)
 
@@ -14,11 +16,33 @@ const timeAgo = new TimeAgo('en-US')
 const ChatBox = (props: any) => {
 
   const [user, setUser] = useState<any>()
-  const [commentWindow, setCommentWindow] = useState<Boolean>(false)
   const [interactiveAlert, setInteractiveAlert] = useState<Boolean>(false)
-  const comment = useRef<any>()
+  const [comments, setComments] = useState<any>([])
+  const [newCommentCount, setNewCommentCount] = useState<number>(0)
+
+  const { user: currentUser } = useContext(Context)
+  
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    props.socket?.current?.on("getNotification", () => {
+      if (props.members?.some((member: any) => member?.userId == currentUser?.userId)) {
+
+        setNewCommentCount((prev: number) => prev + 1)
+      }
+    });
+  }, [props.socket?.current]);
+
+  useEffect(() => {
+    const getCommentsByPostId = async () => {
+      const { status, data } = await APIgetCommentsByPostId(props.post.postId)
+      if (status) {
+        setComments(data)
+      }
+    }
+    getCommentsByPostId();
+  }, [props.post, props.socket?.current, newCommentCount]);
 
   useEffect(() => {
     const fetchUserByUserId = async () => {
@@ -32,34 +56,6 @@ const ChatBox = (props: any) => {
 
   const handleClickCommentWindow = () => {
     props.handleClickCommentWindow(props.post)
-  }
-
-  const handleClickSubmitComment = async () => {
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
-        },
-      }
-
-    }
-    catch (err) {
-      console.log(err)
-    }
-  }
-
-  const CommentWindow = () => {
-    return (
-      <div className='bg-gray-300 h-64 p-4'>
-        <div className='relative flex flex-row'>
-          <input type="text" className='my-2 py-2 w-[75%] rounded-lg px-4' ref={comment} />
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 hover:text-green-500 mt-4 ml-2">
-            <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-          </svg>
-        </div>
-      </div>
-    )
   }
 
   const InteractiveAlert = () => {
@@ -94,7 +90,7 @@ const ChatBox = (props: any) => {
             navigate('/profile/' + user.userId, { replace: true })
             window.location.reload()
           }}
-            className='w-8 h-8 m-4 rounded-full' src={user?.avatar? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+            className='w-8 h-8 m-4 rounded-full' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
         </div>
         <div className='flex flex-col mt-2'>
           <h1 className='mx-0 text-md font-bold'>{user?.name}</h1>
@@ -106,9 +102,8 @@ const ChatBox = (props: any) => {
       </div>
       <div className='ml-16 pb-4 flex flex-row'>
         <div className='mr-4 text-base font-bold'>0 likes</div>
-        <div onClick={handleClickCommentWindow} className='text-sky-900 text-base font-bold hover:underline'>0 replies</div>
+        <div onClick={handleClickCommentWindow} className='text-sky-900 text-base font-bold hover:underline'>{comments.length} replies</div>
       </div>
-      {commentWindow ? <CommentWindow /> : null}
     </div>
   )
 }

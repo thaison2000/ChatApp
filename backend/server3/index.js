@@ -7,14 +7,17 @@ const io = require("socket.io")(3003, {
 let users = [];
 
 const addUser = (userId, socketId) => {
-  if (users.some((user) => user.userId == userId)) {
-    users = users.filter((user) => user.userId != userId)
-    users.push({ userId, socketId })
-    console.log(users)
+  if (userId != null) {
+    if (users.some((user) => user.userId == userId)) {
+      users = users.filter((user) => user.userId != userId)
+      users.push({ userId, socketId })
+      console.log(users)
+    }
+    else {
+      users.push({ userId, socketId });
+    }
   }
-  else {
-    users.push({ userId, socketId });
-  }
+
 };
 
 const removeUser = (socketId) => {
@@ -35,6 +38,7 @@ io.on("connection", (socket) => {
 
   //send and get message
   socket.on("sendMessage", ({ sendUserId, content, sendUserName }) => {
+    console.log(content)
     io.emit("getMessage", {
       sendUserName,
       sendUserId,
@@ -44,7 +48,6 @@ io.on("connection", (socket) => {
 
   socket.on("sendNotification", ({ sendUserName, sendUserId, receiveUserId, type, post, affectedUserName, groupName, groupId }) => {
     const receiver = getUser(receiveUserId);
-    console.log(typeof (receiveUserId))
     console.log(type)
     if (receiver) {
       io.to(receiver.socketId).emit("getNotification", {

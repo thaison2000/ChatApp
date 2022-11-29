@@ -126,7 +126,7 @@ const SideBar = (props:any) => {
                             {groups?.map((group => (
                                 <div key={group.groupId} onClick={() => {
                                     navigate('/group/' + group.groupId)
-                                    // window.location.reload()
+                                    window.location.reload()
                                 }} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
                                     <img className='w-6 h-6 rounded-full mt-[1px]' src={group?.avatar ? ('http://localhost:3001/images/' + group?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                                     <span className='text-white ml-2'>{group.name}</span>
@@ -146,6 +146,7 @@ const SideBar = (props:any) => {
                             {directMessages?.map((directMessage: any) => (
                                 <div key={directMessage.groupId} onClick={() => {
                                     navigate('/directMessage/' + directMessage.groupId)
+                                    window.location.reload()
                                 }} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
                                     <img className='w-6 h-6 rounded-full mt-[1px]' src={directMessage?.avatar ? ('http://localhost:3001/images/' + directMessage?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                                     <span className='text-white ml-2'>{directMessage.name}</span>

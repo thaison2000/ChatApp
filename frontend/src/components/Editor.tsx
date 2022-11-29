@@ -31,7 +31,6 @@ const Editor = (props: any) => {
           groupId: props.groupId,
           content: state,
         });
-        props.handleUpdateNewPostCount()
       }
     }
 
@@ -45,13 +44,13 @@ const Editor = (props: any) => {
       if(status){
         quillRef.current.firstChild.innerHTML = ''
   
-        props.socket?.current?.emit("sendMessage", {
+        props.socket?.current?.emit("sendNotification", {
           sendUserName: user.name,
           sendUserId: user.userId,
           groupId: props.groupId,
           content: state,
+          type: 2
         });
-        props.handleUpdateNewCommentCount()
       }
     }
     
@@ -83,7 +82,7 @@ const Editor = (props: any) => {
           <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5" />
         </svg>
       </div>
-      <div className='absolute top-24 right-4'>
+      <div className='absolute bottom-[-35px] right-2'>
         <svg onClick={handleClickSend} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className=" w-6 h-6 hover:text-green-500">
           <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
         </svg>

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { APIgetCommentsByPostId } from '../API/Comment';
 import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar } from '../API/Group';
 import { APIcreateNotification } from '../API/Notification';
 import { APIgetAllPostByGroupId } from '../API/Post';
@@ -23,6 +24,8 @@ const ChatWindow = (props: any) => {
   const [newPostCount, setNewPostCount] = useState<number>(0)
   const [commentWindow, setCommentWindow] = useState<boolean>(false)
   const [postThread, setPostThread] = useState<any>({})
+  const [newCommentCount, setNewCommentCount] = useState<number>(0)
+  
 
   const addMemberName = useRef<any>()
   const deleteGroupName = useRef<any>()
@@ -45,6 +48,15 @@ const ChatWindow = (props: any) => {
   }, [props.socket?.current]);
 
   useEffect(() => {
+    props.socket?.current?.on("getNotification", () => {
+      console.log('gg')
+      if (members.some((member: any) => member.userId == user.userId)) {
+        setNewCommentCount((prev: number) => prev + 1)
+      }
+    });
+  }, [props.socket?.current]);
+
+  useEffect(() => {
     const fetchAllPosts = async () => {
       const { status, data } = await APIgetAllPostByGroupId(props.groupId)
       if (status) {
@@ -52,7 +64,7 @@ const ChatWindow = (props: any) => {
       }
     };
     fetchAllPosts();
-  }, [props.groupId, newPostCount]);
+  }, [props.groupId, newPostCount, newCommentCount]);
 
   useEffect(() => {
     const fetchGroupByGroupId = async () => {
@@ -73,15 +85,11 @@ const ChatWindow = (props: any) => {
     };
     fetchAllGroupMembers();
 
-  }, [props.groupId, addMemberAlert]);
+  }, [props.groupId, addMemberAlert, props.socket?.current]);
 
   const handleClickCommentWindow = (postThread: any) => {
     setPostThread(postThread)
     setCommentWindow(!commentWindow)
-  }
-
-  const handleUpdateNewPostCount = () => {
-    setNewPostCount((prev: any) => prev + 1)
   }
 
   const handleSubmitUpdateGroupAvatar = async () => {
@@ -488,21 +496,21 @@ const ChatWindow = (props: any) => {
             </svg>
           </div>
         </div>
-        <div className='h-[460px] flex flex-col overflow-auto divide-y relative z-0 divide-y'>
+        <div className='h-[470px] flex flex-col overflow-auto divide-y relative z-0 divide-y'>
           {posts?.map((post: any) => {
             return (
               <div key={post.postId} ref={scrollRef}>
-                <ChatBox post={post} handleClickCommentWindow={handleClickCommentWindow}/>
+                <ChatBox post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread}/>
               </div>
             )
           })}
         </div>
-        <div className='relative h-[90px]'>
-          <Editor type={'post'} socket={props.socket} groupId={props.groupId} handleUpdateNewPostCount={handleUpdateNewPostCount} />
+        <div className='relative h-[90px] pl-2'>
+          <Editor type={'post'} socket={props.socket} groupId={props.groupId} />
         </div>
       </div>
       </div>
-      {commentWindow? <CommentWindow postThread={postThread} groupId={props.groupId} handleClickCommentWindow={handleClickCommentWindow}/>: null}
+      {commentWindow? <CommentWindow socket={props.socket} postThread={postThread} groupId={props.groupId} handleClickCommentWindow={handleClickCommentWindow} members={members}/>: null}
     </div>
   )
 }

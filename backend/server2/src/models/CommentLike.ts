@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const LikeSchema = mongoose.Schema(
+const CommentLikeSchema = mongoose.Schema(
     {
         userId: {
             type: Number,
@@ -21,6 +21,6 @@ const LikeSchema = mongoose.Schema(
     },
     { timestamps: true })
 
-const Like = mongoose.model('Like', LikeSchema)
+const CommentLike = mongoose.model('Like', CommentLikeSchema)
 
-export default Like
+export default CommentLike

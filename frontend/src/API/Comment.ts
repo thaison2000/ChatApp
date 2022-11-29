@@ -34,10 +34,23 @@ export const APIgetCommentsByPostId = async (postId: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get("http://localhost:3002/api/comment/" + postId, config);
+        let data = []
+        const res1 = await axios.get("http://localhost:3002/api/comment/" + postId, config);
+
+        for (let i =0;i <res1.data.length;i++){
+            let res2 = await axios.get("http://localhost:3001/api/user/" + res1.data[i].userId, config)
+            data.push({
+                commentId: res1.data[i].commentId,
+                userId: res2.data.userId,
+                avatar: res2.data.avatar,
+                name: res1.data[i].name,
+                createdAt: res1.data[i].createdAt,
+                content: res1.data[i].content
+            })
+        }
         return {
             status: true,
-            data: res.data
+            data: data
         }
     }
     catch (err) {
