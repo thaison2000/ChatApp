@@ -26,7 +26,7 @@ const commentController = {
           const comments = await Comment.find({
             postId: req.params.postId,
           });
-          console.log(comments)
+          
           res.status(200).json(comments);
         } catch (err) {
           console.log(err)

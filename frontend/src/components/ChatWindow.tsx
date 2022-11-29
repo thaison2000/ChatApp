@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { APIgetCommentsByPostId } from '../API/Comment';
 import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar } from '../API/Group';
 import { APIcreateNotification } from '../API/Notification';
-import { APIgetAllPostByGroupId } from '../API/Post';
+import { APIdeletePost, APIgetAllPostByGroupId } from '../API/Post';
 import { APIfindUserByName } from '../API/User';
 import { Context } from '../context/Context';
 import ChatBox from './ChatBox'
@@ -25,6 +25,7 @@ const ChatWindow = (props: any) => {
   const [commentWindow, setCommentWindow] = useState<boolean>(false)
   const [postThread, setPostThread] = useState<any>({})
   const [newCommentCount, setNewCommentCount] = useState<number>(0)
+  const [newLikeCount, setNewLikeCount] = useState<number>(0)
   
 
   const addMemberName = useRef<any>()
@@ -48,10 +49,17 @@ const ChatWindow = (props: any) => {
   }, [props.socket?.current]);
 
   useEffect(() => {
-    props.socket?.current?.on("getNotification", () => {
-      console.log('gg')
+    props.socket?.current?.on("getNotification", (data: any) => {
       if (members.some((member: any) => member.userId == user.userId)) {
-        setNewCommentCount((prev: number) => prev + 1)
+        if(data.type == 2){
+          setNewCommentCount((prev: number) => prev + 1)
+        }
+        if(data.type == 1){
+          setNewLikeCount((prev: number) => prev + 1)
+        }
+        if(data.type == 15){
+          setNewCommentCount((prev: number) => prev - 1)
+        }
       }
     });
   }, [props.socket?.current]);
@@ -64,7 +72,7 @@ const ChatWindow = (props: any) => {
       }
     };
     fetchAllPosts();
-  }, [props.groupId, newPostCount, newCommentCount]);
+  }, [props.groupId, newPostCount, newCommentCount, newLikeCount]);
 
   useEffect(() => {
     const fetchGroupByGroupId = async () => {
@@ -259,6 +267,15 @@ const ChatWindow = (props: any) => {
         }
       }
       setMembers(data);
+    }
+  }
+
+  const handleClickDeletePost = async (postId: string) => {
+    if (window.confirm('Are you sure you want to remove this post in group ?')){
+      const { status } = await APIdeletePost(postId)
+      if (status) {
+        setNewPostCount((prev: number) => prev - 1)
+      }
     }
   }
 
@@ -500,7 +517,7 @@ const ChatWindow = (props: any) => {
           {posts?.map((post: any) => {
             return (
               <div key={post.postId} ref={scrollRef}>
-                <ChatBox post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread}/>
+                <ChatBox handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread}/>
               </div>
             )
           })}

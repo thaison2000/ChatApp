@@ -9,6 +9,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import postRoute from "./routes/Post";
 import commentRoute from "./routes/Comment";
+import likeRoute from "./routes/Like";
 
 dotenv.config()
 
@@ -51,6 +52,7 @@ app.use("/images", express.static("public/images"));
 app.use('/api/notification', notificationRoute)
 app.use('/api/post', postRoute)
 app.use('/api/comment', commentRoute)
+app.use('/api/like', likeRoute)
 
 app.get('/test', (req: Request, res: Response) => {
     return res.send("RUN NOW!")

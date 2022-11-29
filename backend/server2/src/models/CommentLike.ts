@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 
 const CommentLikeSchema = mongoose.Schema(
     {
+        likeId: {
+            type: String,
+            required: true
+        },
         userId: {
             type: Number,
             required: true
@@ -10,17 +14,13 @@ const CommentLikeSchema = mongoose.Schema(
             type: Number,
             required: true
         },
-        postId: {
-            type: String,
-            required: true
-        },
-        content: {
+        commentId: {
             type: String,
             required: true
         },
     },
     { timestamps: true })
 
-const CommentLike = mongoose.model('Like', CommentLikeSchema)
+const CommentLike = mongoose.model('CommentLike', CommentLikeSchema)
 
 export default CommentLike

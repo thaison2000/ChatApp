@@ -26,7 +26,9 @@ const postController = {
                 userId: req.user.userId,
                 postId: req.params.postId
             });
-            await deletePost.deleteOne();
+            if(deletePost){
+                await deletePost.deleteOne();
+            }
             res.status(200).json('delete post successfully');
         } catch (err) {
             console.log(err)
@@ -37,7 +39,7 @@ const postController = {
     getPostByPostId: async (req: any, res: Response) => {
         try {
             const post = await Post.findOne({
-                userId: req.userId,
+                userId: req.user.userId,
                 postId: req.params.postId
             });
             res.status(200).json(post);

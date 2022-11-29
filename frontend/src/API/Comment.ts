@@ -43,7 +43,7 @@ export const APIgetCommentsByPostId = async (postId: string) => {
                 commentId: res1.data[i].commentId,
                 userId: res2.data.userId,
                 avatar: res2.data.avatar,
-                name: res1.data[i].name,
+                name: res2.data.name,
                 createdAt: res1.data[i].createdAt,
                 content: res1.data[i].content
             })

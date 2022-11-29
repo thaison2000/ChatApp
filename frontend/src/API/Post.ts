@@ -27,6 +27,28 @@ export const APIcreatePost = async (postCreate: postCreateInterface) => {
     }
 }
 
+export const APIdeletePost = async (postId : string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.delete("http://localhost:3002/api/post/" + postId, config);
+        return {
+            status: true
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
 export const APIgetAllPostByGroupId = async (groupId: string) => {
     try {
         const config = {

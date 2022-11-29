@@ -19,6 +19,8 @@ const CommentWindow = (props: any) => {
 
     const [comments, setComments] = useState<any>([])
     const [newCommentCount, setNewCommentCount] = useState<number>(0)
+    const [newLikeCount, setNewLikeCount] = useState<number>(0)
+    
     let navigate = useNavigate()
 
     const scrollRef = useRef<any>();
@@ -33,7 +35,12 @@ const CommentWindow = (props: any) => {
         props.socket?.current?.on("getNotification", (data:any) => {
             console.log(data)
             if (props.members?.some((member: any) => member.userId == user.userId)) {
-                setNewCommentCount((prev: number) => prev + 1)
+                if(data.type == 2){
+                    setNewCommentCount((prev: number) => prev + 1)
+                  }
+                  if(data.type == 1){
+                    setNewLikeCount((prev: number) => prev + 1)
+                  }
 
             }
         });
@@ -47,16 +54,16 @@ const CommentWindow = (props: any) => {
             }
         }
         getCommentsByPostId();
-    }, [props.postThread, newCommentCount]);
+    }, [props.postThread, newCommentCount, newLikeCount]);
 
     const handleClickCommentWindow = () => {
         props.handleClickCommentWindow(props.postThread)
     }
 
     return (
-        <div className='w-[700px] p-0 flex flex-col'>
-            <div>
-                <div className='font-bold text-2xl p-3 bg-neutral-500 text-white flex flex-row justify-between'>
+        <div className='w-[700px] p-0 flex flex-col relative'>
+            <div className='relative'>
+                <div className='font-bold text-2xl p-3 bg-neutral-500 text-white flex flex-row justify-between relative z-0'>
                     <h1>Thread</h1>
                     <svg onClick={handleClickCommentWindow} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-bg-white hover:text-red-600">
                         <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clipRule="evenodd" />
@@ -64,7 +71,7 @@ const CommentWindow = (props: any) => {
                 </div>
 
             </div>
-            <div>
+            <div className='max-h-[144px] max-w-[453px] overflow-auto relative'>
                 <ChatBox post={props.postThread} socket={props.socket} members={props.members} />
             </div>
             <div className='flex flex-row'>
