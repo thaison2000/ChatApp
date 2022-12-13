@@ -55,7 +55,6 @@ export const APIupdateUserAvatar = async (avatar: any) => {
         const fileName = Date.now() + avatar.name;
         data.append("name", fileName);
         data.append("file", avatar);
-        console.log(avatar)
         const config = {
             headers: {
                 'Content-Type': 'application/json',

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { APIgetAllMemberByGroupId, APIgetDirectMessageByGroupId } from '../API/Group'
-import { APIgetAllPostByGroupId } from '../API/Post'
+import { APIdeletePost, APIgetAllPostByGroupId, APIupdatePost } from '../API/Post'
 import ChatBox from '../components/ChatBox'
 import CommentWindow from '../components/CommentWindow'
 import Editor from '../components/Editor'
@@ -18,8 +18,8 @@ const DirectMessage = (props: any) => {
     const [members, setMembers] = useState<Array<any>>([])
     const [commentWindow, setCommentWindow] = useState<boolean>(false)
     const [postThread, setPostThread] = useState<any>({})
-    const [comments, setComments] = useState<Array<any>>([])
-    const [commentCount, setCommentCount] = useState<number>(0)
+    const [newCommentCount, setNewCommentCount] = useState<number>(0)
+    const [newLikeCount, setNewLikeCount] = useState<number>(0)
 
     const scrollRef = useRef<any>();
 
@@ -29,15 +29,26 @@ const DirectMessage = (props: any) => {
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-    }, [posts]);
+    }, [posts.length]);
 
     useEffect(() => {
-        props.socket?.current?.on("getNotification", () => {
-          if (members.some((member: any) => member.userId == user.userId)) {
-            setCommentCount((prev: number) => prev + 1)
-          }
+        props.socket?.current?.on("getNotification", (data: any) => {
+            if (members.some((member: any) => member.userId == user.userId)) {
+                if (data.type == 2) {
+                    setNewCommentCount((prev: number) => prev + 1)
+                }
+                if (data.type == 1) {
+                    setNewLikeCount((prev: number) => prev + 1)
+                }
+                if (data.type == 15) {
+                    setNewCommentCount((prev: number) => prev - 1)
+                }
+                if (data.type == 16) {
+                    setNewPostCount((prev: number) => prev + 1)
+                  }
+            }
         });
-      }, [props.socket?.current]);
+    }, [props.socket?.current]);
 
     useEffect(() => {
         props.socket?.current?.on("getMessage", () => {
@@ -55,7 +66,7 @@ const DirectMessage = (props: any) => {
             }
         };
         fetchAllPosts();
-    }, [groupId, newPostCount]);
+    }, [groupId, newPostCount, newLikeCount, newCommentCount]);
 
     useEffect(() => {
         const fetchGroupByGroupId = async () => {
@@ -87,6 +98,27 @@ const DirectMessage = (props: any) => {
         setCommentWindow(!commentWindow)
     }
 
+    const handleClickDeletePost = async (postId: string) => {
+        if (window.confirm('Are you sure you want to remove this post in group ?')) {
+            const { status } = await APIdeletePost(postId)
+            if (status) {
+                if (postThread.postId == postId) {
+                    setCommentWindow(false)
+                }
+                setNewPostCount((prev: number) => prev - 1)
+            }
+        }
+    }
+
+    const handleClickUpdatePost = async (postId: string, content: string) => {
+        if (window.confirm('Are you sure you want to update this post in group ?')) {
+            const { status } = await APIupdatePost(postId, content)
+            if (status) {
+                setNewPostCount((prev: number) => prev + 1)
+            }
+        }
+    }
+
 
     return (
         <div className='w-screen h-screen pointer-events-auto'>
@@ -95,8 +127,8 @@ const DirectMessage = (props: any) => {
                 <SideBar socket={props.socket} />
                 <div className='w-[calc(100%-250px)] flex flex-row'>
                     <div className='h-full w-full'>
-                        <div className='flex flex-row justify-between bg-neutral-200'>
-                            <div className='flex flex-row'>
+                        <div className='flex flex-row justify-between bg-neutral-200 h-[65px]'>
+                            <div className='flex flex-row pt-2'>
                                 <div className='p-2 ml-2'>
                                     <img onClick={() => {
                                         navigate('/profile/' + group.userId)
@@ -112,16 +144,16 @@ const DirectMessage = (props: any) => {
                             {posts?.map((post: any) => {
                                 return (
                                     <div key={post.postId} ref={scrollRef}>
-                                        <ChatBox post={post} members={members} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} postThread={postThread}/>
+                                        <ChatBox post={post} members={members} handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} postThread={postThread} />
                                     </div>
                                 )
                             })}
                         </div>
-                        <div className='relative h-[90px]'>
-                            <Editor  socket={props.socket} groupId={groupId} type={'post'} handleUpdateNewPostCount={handleUpdateNewPostCount} />
+                        <div className='relative h-[90px] pl-2'>
+                            <Editor socket={props.socket} groupId={groupId} type={'post'} handleUpdateNewPostCount={handleUpdateNewPostCount} />
                         </div>
                     </div>
-                    {commentWindow ? <CommentWindow commentCount={commentCount} type={'comment'} socket={props.socket} postThread={postThread} groupId={groupId} handleClickCommentWindow={handleClickCommentWindow} members={members} /> : null}
+                    {commentWindow ? <CommentWindow socket={props.socket} postThread={postThread} groupId={groupId} handleClickCommentWindow={handleClickCommentWindow} members={members} /> : null}
                 </div>
             </div>
         </div>

@@ -8,7 +8,8 @@ import { Context } from '../context/Context';
 import en from 'javascript-time-ago/locale/en'
 import { APIgetCommentsByPostId } from '../API/Comment';
 import { APIcreatePostLike, APIdeleteLike, APIgetLikesByPostId } from '../API/Like';
-import { APIdeletePost } from '../API/Post';
+import { APIdeletePost, APIupdatePost } from '../API/Post';
+import Editor from './Editor';
 
 TimeAgo.addDefaultLocale(en)
 
@@ -24,6 +25,7 @@ const ChatBox = (props: any) => {
   const [likes, setLikes] = useState<any>([])
   const [newLikeCount, setNewLikeCount] = useState<number>(0)
   const [currentUserLike, setCurrentUserLike] = useState<boolean>(false)
+  const [editPost, setEditPost] = useState<boolean>(false)
 
   const { user: currentUser } = useContext(Context)
 
@@ -42,6 +44,7 @@ const ChatBox = (props: any) => {
         if (data.type == 13) {
           setNewLikeCount((prev: number) => prev - 1)
         }
+        
       }
     });
   }, [props.socket?.current]);
@@ -92,7 +95,7 @@ const ChatBox = (props: any) => {
   const handleClickLike = async () => {
     const { status } = await APIcreatePostLike({
       postId: props.post.postId,
-      userId: user.userId,
+      userId: currentUser.userId,
       groupId: props.post.groupId
     })
     if (status) {
@@ -109,6 +112,10 @@ const ChatBox = (props: any) => {
     props.handleClickDeletePost(props.post?.postId)
   }
 
+  const handleClickEditPost = async () => {
+    setEditPost(!editPost)
+  }
+
   const handleClickUnLike = async () => {
     const likeArray = likes.filter((like: any) => like.userId == currentUser.userId)
     if (likeArray) {
@@ -122,6 +129,11 @@ const ChatBox = (props: any) => {
         });
       }
     }
+  }
+
+  const handleClickSavePost = async (content: string) => {
+    props.handleClickUpdatePost(props.post?.postId, content)
+    setEditPost(!editPost)
   }
 
   const InteractiveAlert = () => {
@@ -146,7 +158,7 @@ const ChatBox = (props: any) => {
           <div className='mx-2'>
             {
               props.post.userId == currentUser.userId ?
-                <div>
+                <div onClick={handleClickEditPost}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 hover:text-yellow-500">
                     <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
                     <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
@@ -170,32 +182,60 @@ const ChatBox = (props: any) => {
   }
 
   return (
-    <div
-      onMouseEnter={() => setInteractiveAlert(true)}
-      onMouseLeave={() => setInteractiveAlert(false)}
-      className='w-full bg-white hover:bg-gray-100 relative'>
-      <div className='flex flex-row relative'>
-        {interactiveAlert ? <InteractiveAlert /> : null}
-        <div>
-          <img onClick={() => {
-            navigate('/profile/' + user.userId, { replace: true })
-            window.location.reload()
-          }}
-            className='w-8 h-8 m-4 rounded-full' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
-        </div>
-        <div className='flex flex-col mt-2'>
-          <h1 className='mx-0 text-md font-bold'>{user?.name}</h1>
-          <div className="text-xs">{timeAgo.format(new Date(props.post.createdAt))}</div>
-        </div>
-      </div>
-      <div className='ml-16 pb-4'>
-        <div dangerouslySetInnerHTML={{ __html: props.post.content }}></div>
-      </div>
-      <div className='ml-16 pb-4 flex flex-row'>
-        <div onClick={handleClickLike} className='mr-4 text-base font-bold pointer-events-auto'>{likes.length} likes</div>
-        <div onClick={handleClickCommentWindow} className='text-sky-900 text-base font-bold hover:underline pointer-events-auto'>{comments.length} replies</div>
-      </div>
+    <div>
+      {editPost ?
+        <div className='border-2 w-[97%] m-4 relative h-[220px] bg-white'>
+          <div onClick={handleClickEditPost} className='absolute top-2 right-2'>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-red-500">
+              <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clipRule="evenodd" />
+            </svg>
+
+          </div>
+          <div className='flex flex-row'>
+            <div>
+              <img onClick={() => {
+                navigate('/profile/' + user.userId, { replace: true })
+                window.location.reload()
+              }}
+                className='w-8 h-8 m-4 rounded-full' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+            </div>
+            <div className='flex flex-col mt-2'>
+              <h1 className='mx-0 text-md font-bold'>{user?.name}</h1>
+              <div className="text-xs">{timeAgo.format(new Date(props.post.createdAt))}</div>
+            </div>
+          </div>
+          <div className='absolute h-[100px] p-4 w-[99%] z-1'>
+            <Editor type={'updatePost'} content={props.post.content} handleClickSavePost={handleClickSavePost} />
+          </div>
+        </div> :
+        <div
+          onMouseEnter={() => setInteractiveAlert(true)}
+          onMouseLeave={() => setInteractiveAlert(false)}
+          className='w-full bg-white hover:bg-gray-100 relative'>
+          <div className='flex flex-row relative'>
+            {interactiveAlert ? <InteractiveAlert /> : null}
+            <div>
+              <img onClick={() => {
+                navigate('/profile/' + user.userId, { replace: true })
+                window.location.reload()
+              }}
+                className='w-8 h-8 m-4 rounded-full' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+            </div>
+            <div className='flex flex-col mt-2'>
+              <h1 className='mx-0 text-md font-bold'>{user?.name}</h1>
+              <div className="text-xs">{timeAgo.format(new Date(props.post.createdAt))}</div>
+            </div>
+          </div>
+          <div className='ml-16 pb-4'>
+            <div dangerouslySetInnerHTML={{ __html: props.post.content }}></div>
+          </div>
+          <div className='ml-16 pb-4 flex flex-row'>
+            <div onClick={handleClickLike} className='mr-4 text-base font-bold pointer-events-auto'>{likes.length} likes</div>
+            <div onClick={handleClickCommentWindow} className='text-sky-900 text-base font-bold hover:underline pointer-events-auto'>{comments.length} replies</div>
+          </div>
+        </div>}
     </div>
+
   )
 }
 

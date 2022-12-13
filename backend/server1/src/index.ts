@@ -111,6 +111,42 @@ app.post("/api/group/updateAvatar", verifyToken, upload.single("file"), async (r
     }
 })
 
+//upload file
+app.post("/api/group/uploadFile", verifyToken, upload.single("file"), async (req: any, res: Response) => {
+    try {
+        console.log(req.body)
+        await prisma.uploadFile.create({
+            data: {
+                userId: parseInt(req.body.userId),
+                groupId: parseInt(req.body.groupId),
+                name: req.body.name
+            }
+        })
+
+        res.status(200).json('Upload file successfully !')
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+//upload link
+app.post("/api/group/uploadLink", verifyToken, async (req: any, res: Response) => {
+    try {
+        const link = await prisma.uploadLink.create({
+            data: {
+                userId: parseInt(req.body.userId),
+                groupId: parseInt(req.body.groupId),
+                name: req.body.name,
+                value: req.body.value
+            }
+        })
+
+        res.status(200).json('Upload link successfully !')
+    } catch (error) {
+        console.error(error);
+    }
+})
+
 app.get('/test', (req: Request, res: Response) => {
     return res.send("RUN NOW!")
 })

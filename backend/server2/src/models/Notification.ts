@@ -46,6 +46,7 @@ const NotificationSchema = mongoose.Schema(
         // 13 la xoa like
         // 14 la xoa comment
         // 15 la xoa post
+        // 16 la sua tin nhan
     },
     { timestamps: true })
 

@@ -8,6 +8,9 @@ import { Context } from './context/Context';
 import { io } from "socket.io-client";
 import Group from './pages/Group';
 import DirectMessage from './pages/DirectMessage';
+import Draft from './pages/Draft';
+import Thread from './pages/Thread';
+
 
 function App() {
 
@@ -28,6 +31,9 @@ function App() {
         <Route path='group/:groupId' element={user?<Group socket={socket}/>:<Login/>}></Route>
         <Route path='directMessage/:groupId' element={user?<DirectMessage socket={socket}/>:<Login/>}></Route>
         <Route path='/' element={user?<Home socket={socket}/>:<Login/>}></Route>
+        <Route path='draft' element={user?<Draft socket={socket}/>:<Login/>}></Route>
+        <Route path='thread' element={user?<Thread socket={socket}/>:<Login/>}></Route>
+
       </Routes>
     </div>
   );

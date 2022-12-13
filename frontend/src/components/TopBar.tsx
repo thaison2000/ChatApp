@@ -179,7 +179,7 @@ const TopBar = (props: any) => {
                     friendRequests.some((friendRequest: any) => friendRequest.sendUserId == notification.sendUserId && friendRequest.receiveUserId == notification.receiveUserId)
                 ) {
                     return (
-                        <div className='py-2 px-4' ref={scrollRef}>
+                        <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             You have a <span className='text-[18px] font-medium text-sky-900'>friend request</span> from <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span>
                             <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
                             <div className='flex flex-row justify-center mt-2'>
@@ -191,7 +191,7 @@ const TopBar = (props: any) => {
                 }
                 if (notification.type == 5) {
                     return (
-                        <div className='py-2 px-4' ref={scrollRef}>
+                        <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
                                 You and <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> are <span className='text-[18px] font-medium text-sky-900'>Friends</span> !
                             </div>
@@ -202,7 +202,7 @@ const TopBar = (props: any) => {
                 }
                 if (notification.type == 6) {
                     return (
-                        <div className='py-2 px-4' ref={scrollRef}>
+                        <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
                                 <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has rejected your <span className='text-[18px] font-medium text-sky-900'>Friend Request</span> 
                                 <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
@@ -212,7 +212,7 @@ const TopBar = (props: any) => {
                 }
                 if (notification.type == 7) {
                     return (
-                        <div className='py-2 px-4' ref={scrollRef}>
+                        <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has <span className='text-[18px] font-medium text-sky-900'>Unfriend</span> you 
                         </div>
                     )
@@ -221,7 +221,11 @@ const TopBar = (props: any) => {
                     return group.groupId == notification.groupId
                 })) {
                     return (
-                        <div className='py-2 px-4' ref={scrollRef}>
+                        <div onClick={()=>{
+                            navigate('/group/' + notification.groupId)
+                            window.location.reload()
+                        }
+                        } className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
                                 <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has added <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span>  in to group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
                                 <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
@@ -233,7 +237,7 @@ const TopBar = (props: any) => {
                     return group.groupId == notification.groupId
                 })) {
                     return (
-                        <div className='py-2 px-4' ref={scrollRef}>
+                        <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
                                 <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has kicked <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span>  out of group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
                                 <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
@@ -245,7 +249,7 @@ const TopBar = (props: any) => {
                     return group.groupId == notification.groupId
                 })) {
                     return (
-                        <div className='py-2 px-4' ref={scrollRef}>
+                        <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
                                 <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has promoted <span className='text-[18px] font-medium text-sky-900'>{notification.affectedUserName}</span> to become <span className='text-[18px] font-medium text-sky-900'>Admin</span> in group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
                                 <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
@@ -257,7 +261,7 @@ const TopBar = (props: any) => {
                     return group.groupId == notification.groupId
                 })) {
                     return (
-                        <div className='py-2 px-4' ref={scrollRef}>
+                        <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
                                 <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has deleted group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
                                 <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
@@ -279,7 +283,7 @@ const TopBar = (props: any) => {
                         navigate('/profile/' + searchingUser.userId, { replace: true })
                         window.location.reload()
                     }
-                    } className='p-4 flex flex-row hover:bg-gray-100'>
+                    } className='p-4 flex flex-row hover:bg-neutral-100'>
                         <div>
                             <img className='w-6 h-6' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                         </div>

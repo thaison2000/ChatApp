@@ -225,3 +225,49 @@ export const APIdeleteGroup = async (groupId: string) => {
         return {status: false}
     }
 };
+
+export const APIuploadFile = async (file: any, groupId: string, userId: string, name: any) => {
+    try {
+        const data = new FormData();
+        const fileName = Date.now() + '' + name;
+        data.append("name", fileName);
+        data.append("groupId", groupId);
+        data.append("userId", userId);
+        data.append("file", file);
+        console.log(file)
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.post("http://localhost:3001/api/group/uploadFile", data, config);
+        return {
+            status: true
+        }
+    } catch (err) {
+        console.log(err)
+        return {status: false}
+    }
+};
+
+export const APIuploadLink = async (link: any, groupId: string, userId: string, name: any) => {
+    try {
+        
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.post("http://localhost:3001/api/group/uploadLink", {
+            value: link, groupId, userId, name
+        }, config);
+        return {
+            status: true
+        }
+    } catch (err) {
+        console.log(err)
+        return {status: false}
+    }
+};

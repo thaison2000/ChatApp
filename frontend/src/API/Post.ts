@@ -5,6 +5,10 @@ interface postCreateInterface {
     content: string
 }
 
+interface draftPostCreateInterface {
+    content: string
+}
+
 export const APIcreatePost = async (postCreate: postCreateInterface) => {
     try {
         const config = {
@@ -27,7 +31,73 @@ export const APIcreatePost = async (postCreate: postCreateInterface) => {
     }
 }
 
-export const APIdeletePost = async (postId : string) => {
+export const APIupdatePost = async (postId: string, content: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.put("http://localhost:3002/api/post/" + postId,{content}, config);
+        return {
+            status: true
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
+export const APIcreateDraftPost = async (draftPostCreate: draftPostCreateInterface) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.post("http://localhost:3002/api/post/draftPost/", draftPostCreate, config);
+        return {
+            status: true
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
+export const APIupdateDraftPost = async (draftPostId: string, draftPostCreate: draftPostCreateInterface) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.put("http://localhost:3002/api/post/draftPost/" + draftPostId, draftPostCreate, config);
+        return {
+            status: true
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
+export const APIdeletePost = async (postId: string) => {
     try {
         const config = {
             headers: {
@@ -49,6 +119,29 @@ export const APIdeletePost = async (postId : string) => {
     }
 }
 
+export const APIdeleteDraftPost = async (postId: string) => {
+    console.log(postId)
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.delete("http://localhost:3002/api/post/draftPost/" + postId, config);
+        return {
+            status: true
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
 export const APIgetAllPostByGroupId = async (groupId: string) => {
     try {
         const config = {
@@ -57,10 +150,78 @@ export const APIgetAllPostByGroupId = async (groupId: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get("http://localhost:3002/api/post/group/"+ groupId,config);
+        const res = await axios.get("http://localhost:3002/api/post/group/" + groupId, config);
         return {
             status: true,
             data: res.data
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
+export const APIgetAllDraftPostByUserId = async () => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        const res = await axios.get("http://localhost:3002/api/post/draftPost/", config);
+        return {
+            status: true,
+            data: res.data
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
+export const APIgetPostThread = async () => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        const res1 = await axios.get("http://localhost:3002/api/post/thread/", config);
+
+        let postThread = res1.data
+
+        for (let i = 0; i < postThread.length; i++) {
+            let res2 = await axios.get("http://localhost:3001/api/group/" + postThread[i].groupId, config);
+            let res3 = await axios.get("http://localhost:3001/api/user/" + postThread[i].userId, config)
+            let res4 = await axios.get("http://localhost:3002/api/comment/" + postThread[i].postId, config);
+            if (res2.data && res3.data && res4.data) {
+                postThread[i].groupName = res2.data.name
+                postThread[i].groupAvatar = res2.data.avatar
+                postThread[i].userName = res3.data.name 
+                postThread[i].userAvatar = res3.data.avatar
+                postThread[i].comment = res4.data
+            }
+            for(let j=0;j<postThread[i].comment.length;j++){
+                let res5 = await axios.get("http://localhost:3001/api/user/" + postThread[i].comment[j].userId, config)
+                if(res5.data){
+                    postThread[i].comment[j].userName = res5.data.name
+                    postThread[i].comment[j].userAvatar = res5.data.avatar
+                }
+            }
+        }
+        return {
+            status: true,
+            data: postThread
         }
 
     }

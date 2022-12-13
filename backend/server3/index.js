@@ -37,12 +37,15 @@ io.on("connection", (socket) => {
   });
 
   //send and get message
-  socket.on("sendMessage", ({ sendUserId, content, sendUserName }) => {
+  socket.on("sendMessage", ({ sendUserId, content, sendUserName,type, groupId }) => {
     console.log(content)
+    console.log(users)
     io.emit("getMessage", {
       sendUserName,
       sendUserId,
       content,
+      type,
+      groupId
     });
   });
 

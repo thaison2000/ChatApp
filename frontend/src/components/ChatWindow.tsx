@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { APIgetCommentsByPostId } from '../API/Comment';
-import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar } from '../API/Group';
+import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar, APIuploadFile, APIuploadLink } from '../API/Group';
 import { APIcreateNotification } from '../API/Notification';
-import { APIdeletePost, APIgetAllPostByGroupId } from '../API/Post';
+import { APIdeletePost, APIgetAllPostByGroupId, APIupdatePost } from '../API/Post';
 import { APIfindUserByName } from '../API/User';
 import { Context } from '../context/Context';
 import ChatBox from './ChatBox'
@@ -14,10 +14,14 @@ const ChatWindow = (props: any) => {
 
   const [posts, setPosts] = useState([])
   const [avatar, setAvatar] = useState<any>()
+  const [linkAndFileBox, setLinkAndFileBox] = useState<boolean>()
+  const [uploadFile, setUploadFile] = useState<any>()
+  const [files, setFiles] = useState([])
   const [updateAvatarAlert, setUpdateAvatarAlert] = useState<boolean>(false)
   const [settingAlert, setSettingAlert] = useState<boolean>(false)
   const [addMemberAlert, setAddMemberAlert] = useState<boolean>(false)
   const [memberAlert, setMemberAlert] = useState<boolean>(false)
+  const [uploadFileAndLinkAlert, setUploadFileAndLinkAlert] = useState<boolean>(false)
   const [searchingUsers, setSearchingUsers] = useState<any>([])
   const [group, setGroup] = useState<any>()
   const [members, setMembers] = useState<Array<any>>([])
@@ -26,9 +30,12 @@ const ChatWindow = (props: any) => {
   const [postThread, setPostThread] = useState<any>({})
   const [newCommentCount, setNewCommentCount] = useState<number>(0)
   const [newLikeCount, setNewLikeCount] = useState<number>(0)
-  
+
 
   const addMemberName = useRef<any>()
+  const uploadFileName = useRef<any>()
+  const uploadLinkName = useRef<any>()
+  const linkValue = useRef<any>()
   const deleteGroupName = useRef<any>()
   const scrollRef = useRef<any>();
 
@@ -38,7 +45,7 @@ const ChatWindow = (props: any) => {
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-  }, [posts]);
+  }, [posts.length]);
 
   useEffect(() => {
     props.socket?.current?.on("getMessage", () => {
@@ -51,14 +58,17 @@ const ChatWindow = (props: any) => {
   useEffect(() => {
     props.socket?.current?.on("getNotification", (data: any) => {
       if (members.some((member: any) => member.userId == user.userId)) {
-        if(data.type == 2){
+        if (data.type == 2) {
           setNewCommentCount((prev: number) => prev + 1)
         }
-        if(data.type == 1){
+        if (data.type == 1) {
           setNewLikeCount((prev: number) => prev + 1)
         }
-        if(data.type == 15){
+        if (data.type == 15) {
           setNewCommentCount((prev: number) => prev - 1)
+        }
+        if (data.type == 16) {
+          setNewPostCount((prev: number) => prev + 1)
         }
       }
     });
@@ -112,6 +122,24 @@ const ChatWindow = (props: any) => {
     }
   };
 
+  const handleSubmitUploadFile = async () => {
+    if (uploadFile) {
+      const { status }: any = await APIuploadFile(uploadFile, group.groupId, user.userId, uploadFileName.current.value)
+      if (status) {
+        setUploadFile(null)
+        // window.location.reload()
+      }
+    }
+  };
+
+  const handleSubmitUploadLink = async () => {
+    const { status }: any = await APIuploadLink(linkValue.current.value, group.groupId, user.userId, uploadLinkName.current.value)
+    if (status) {
+
+      // window.location.reload()
+    }
+  };
+
   const handleSubmitDeleteGroup = async () => {
     if (deleteGroupName.current.value != group.name) {
       window.alert('Wrong group name !')
@@ -155,6 +183,10 @@ const ChatWindow = (props: any) => {
 
   const handleClickMemberAlert = () => {
     setMemberAlert(!memberAlert)
+  }
+
+  const handleClickUploadFileAndLinkAlert = () => {
+    setUploadFileAndLinkAlert(!uploadFileAndLinkAlert)
   }
 
   const handleClickSearchUserByName = async (name: string) => {
@@ -271,12 +303,99 @@ const ChatWindow = (props: any) => {
   }
 
   const handleClickDeletePost = async (postId: string) => {
-    if (window.confirm('Are you sure you want to remove this post in group ?')){
+    if (window.confirm('Are you sure you want to remove this post in group ?')) {
       const { status } = await APIdeletePost(postId)
       if (status) {
+        if (postThread.postId == postId) {
+          setCommentWindow(false)
+        }
         setNewPostCount((prev: number) => prev - 1)
       }
     }
+  }
+
+  const handleClickUpdatePost = async (postId: string, content: string) => {
+    if (window.confirm('Are you sure you want to update this post in group ?')) {
+      const { status } = await APIupdatePost(postId, content)
+      if (status) {
+        props.socket?.current?.emit("sendNotification", {
+          type: 16
+        });
+        setNewPostCount((prev: number) => prev + 1)
+      }
+    }
+  }
+
+  const UploadFileAndLinkAlert = () => {
+    return (
+      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
+        <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
+          <h1 className='text-center text-white text-2xl font-medium p-2'>Add File and Link</h1>
+        </div>
+        <div className='mx-8 mt-8 bg-neutral-200 rounded-2xl p-4'>
+          <div className='flex flex-row text-yellow-700'>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h- mt-2">
+              <path fillRule="evenodd" d="M5.625 1.5H9a3.75 3.75 0 013.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 013.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 01-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875zm6.905 9.97a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72V18a.75.75 0 001.5 0v-4.19l1.72 1.72a.75.75 0 101.06-1.06l-3-3z" clipRule="evenodd" />
+              <path d="M14.25 5.25a5.23 5.23 0 00-1.279-3.434 9.768 9.768 0 016.963 6.963A5.23 5.23 0 0016.5 7.5h-1.875a.375.375 0 01-.375-.375V5.25z" />
+            </svg>
+
+            <div className='pl-4 mt-2 text-xl font-bold'>Add file</div>
+          </div>
+          <div className='flex flex-col rounded-2xl'>
+            <div className='w-full px-2'>
+              <input ref={uploadFileName} className='w-full py-4 focus:outline-none bg-neutral-200' type="text" placeholder='name ...' />
+            </div>
+            <div className='w-full flex flex-row justify-between'>
+              <input className="block w-[240px] text-sm text-slate-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-violet-50 file:text-violet-700
+                  hover:file:bg-violet-100"
+                type="file"
+                id="file"
+
+              // onChange={(e: any) => setUploadFile(e.target.files[0])}
+              ></input>
+              <div>
+                <button onClick={handleSubmitUploadFile} className="rounded-full text-white py-2 px-4 font-medium text-xl bg-green-600 hover:bg-sky-900 hover:text-white">Add</button>
+
+              </div>
+            </div>
+          </div>
+          <div className='flex flex-row text-yellow-700'>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mt-2">
+              <path fillRule="evenodd" d="M18.97 3.659a2.25 2.25 0 00-3.182 0l-10.94 10.94a3.75 3.75 0 105.304 5.303l7.693-7.693a.75.75 0 011.06 1.06l-7.693 7.693a5.25 5.25 0 11-7.424-7.424l10.939-10.94a3.75 3.75 0 115.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 015.91 15.66l7.81-7.81a.75.75 0 011.061 1.06l-7.81 7.81a.75.75 0 001.054 1.068L18.97 6.84a2.25 2.25 0 000-3.182z" clipRule="evenodd" />
+            </svg>
+
+            <div className='pl-4 mt-2 text-xl font-bold'>Add link</div>
+          </div>
+          <div className='flex flex-col rounded-2xl'>
+            <div className='w-full px-2'>
+              <input ref={uploadLinkName} defaultValue={addMemberName.current?.value} className='w-full py-4 focus:outline-none bg-neutral-200' type="text" placeholder='name ...' />
+            </div>
+            <div className='flex flex-row justify-between'>
+              <div className='w-full px-2'>
+                <input ref={linkValue} defaultValue={addMemberName.current?.value} className='w-full py-2 focus:outline-none bg-neutral-200' type="text" placeholder='value ...' />
+              </div>
+              <div>
+                <button onClick={handleSubmitUploadLink} className="rounded-full text-white py-2 px-4 font-medium text-xl bg-green-600 hover:bg-sky-900 hover:text-white">Add</button>
+
+              </div>
+            </div>
+
+            <div className='mt-9 mr-4'>
+
+            </div>
+          </div>
+
+        </div>
+        <div className='w-full flex flex-row justify-center '>
+          <button onClick={handleClickUploadFileAndLinkAlert} className="rounded-full text-white py-2 px-8 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white my-4">Cancel</button>
+        </div>
+      </div>
+
+    )
   }
 
   const UpdateAvatarAlert = () => {
@@ -296,8 +415,7 @@ const ChatWindow = (props: any) => {
                   file:bg-violet-50 file:text-violet-700
                   hover:file:bg-violet-100"
             type="file"
-            id="avatar"
-            accept=".png,.jpeg,.jpg"
+            id="uploadFile"
             onChange={(e: any) => setAvatar(e.target.files[0])}
           ></input>
           {avatar ? <div className="w-[250px] flex flex-row">
@@ -479,55 +597,92 @@ const ChatWindow = (props: any) => {
     )
   }
 
+  const LinkAndFileBox = () => (
+   <div className='absolute top-12 right-4 bg-white rounded-xl z-20 drop-shadow-2xl'>
+     <div className='flex flex-row'>
+      <div className='pl-4 p-2 flex flex-row text-orange-800 hover:bg-neutral-300'>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+            <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z" />
+            <path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
+          </svg>
+        </div>
+        <div>File</div>
+      </div>
+      <div className='flex flex-row p-2 pl-4 text-lime-700 hover:bg-neutral-300'>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+            <path fillRule="evenodd" d="M18.97 3.659a2.25 2.25 0 00-3.182 0l-10.94 10.94a3.75 3.75 0 105.304 5.303l7.693-7.693a.75.75 0 011.06 1.06l-7.693 7.693a5.25 5.25 0 11-7.424-7.424l10.939-10.94a3.75 3.75 0 115.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 015.91 15.66l7.81-7.81a.75.75 0 011.061 1.06l-7.81 7.81a.75.75 0 001.054 1.068L18.97 6.84a2.25 2.25 0 000-3.182z" clipRule="evenodd" />
+          </svg>
+        </div>
+        <div>Link</div>
+      </div>
+    </div>
+   </div>
+  )
+
   return (
     <div className='w-[calc(100%-250px)] flex flex-row p-0'>
       <div className='w-full'>
-      {updateAvatarAlert ? <UpdateAvatarAlert /> : null}
-      {addMemberAlert ? <AddMemberAlert /> : null}
-      {settingAlert ? <SettingAlert /> : null}
-      {memberAlert ? <MemberAlert /> : null}
-      <div className='w-full h-[92%] relative'>
-        <div className='flex flex-row justify-between bg-neutral-200'>
-          <div className='flex flex-row'>
-            <div className='p-2 ml-2'>
-              <img className='w-8 h-8 mt-2 rounded-full' src={group?.avatar ? ('http://localhost:3001/images/' + group?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
-            </div>
-            <div className='flex flex-col p-2'>
-              <div>{group?.name}</div>
-              <div>{group?.desc}</div>
-            </div>
-          </div>
-          <div className='flex flex-row '>
-            <svg onClick={handleClickUpdateAvatarAlert} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-green-600">
-              <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
-            </svg>
-            <svg onClick={handleClickAddMemberAlert} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-blue-600">
-              <path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z" />
-            </svg>
-            <svg onClick={handleClickMemberAlert} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-orange-600">
-              <path fillRule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clipRule="evenodd" />
-              <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
-            </svg>
-            <svg onClick={handleClickSettingAlert} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-gray-600">
-              <path fillRule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clipRule="evenodd" />
-            </svg>
-          </div>
-        </div>
-        <div className='h-[470px] flex flex-col overflow-auto divide-y relative z-0 divide-y'>
-          {posts?.map((post: any) => {
-            return (
-              <div key={post.postId} ref={scrollRef}>
-                <ChatBox handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread}/>
+        {updateAvatarAlert ? <UpdateAvatarAlert /> : null}
+        {addMemberAlert ? <AddMemberAlert /> : null}
+        {settingAlert ? <SettingAlert /> : null}
+        {memberAlert ? <MemberAlert /> : null}
+        {uploadFileAndLinkAlert ? <UploadFileAndLinkAlert /> : null}
+        { }
+        <div className='w-full h-[92%] relative'>
+          <div onMouseEnter={() => setLinkAndFileBox(true)}
+            onMouseLeave={() => setLinkAndFileBox(false)}
+            className='flex flex-row justify-between bg-neutral-200'>
+            <div>
+              <div className='flex flex-row'>
+                <div className='p-2 ml-2'>
+                  <img className='w-8 h-8 mt-2 rounded-full' src={group?.avatar ? ('http://localhost:3001/images/' + group?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                </div>
+                <div className='flex flex-col p-2'>
+                  <div>{group?.name}</div>
+                  <div>{group?.desc}</div>
+                </div>
               </div>
-            )
-          })}
-        </div>
-        <div className='relative h-[90px] pl-2'>
-          <Editor type={'post'} socket={props.socket} groupId={props.groupId} />
+              {linkAndFileBox ? <LinkAndFileBox /> : null}
+
+            </div>
+            <div className='flex flex-row '>
+              <svg onClick={handleClickUploadFileAndLinkAlert} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-red-600">
+                <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z" />
+                <path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
+              </svg>
+
+              <svg onClick={handleClickUpdateAvatarAlert} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-green-600">
+                <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
+              </svg>
+              <svg onClick={handleClickAddMemberAlert} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-blue-600">
+                <path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z" />
+              </svg>
+              <svg onClick={handleClickMemberAlert} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-orange-600">
+                <path fillRule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clipRule="evenodd" />
+                <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
+              </svg>
+              <svg onClick={handleClickSettingAlert} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-gray-600">
+                <path fillRule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clipRule="evenodd" />
+              </svg>
+            </div>
+          </div>
+          <div className='h-[459px] flex flex-col overflow-auto divide-y relative z-0 divide-y'>
+            {posts?.map((post: any) => {
+              return (
+                <div key={post.postId} ref={scrollRef}>
+                  <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
+                </div>
+              )
+            })}
+          </div>
+          <div className='relative h-[90px] pl-2'>
+            <Editor type={'post'} socket={props.socket} groupId={props.groupId} />
+          </div>
         </div>
       </div>
-      </div>
-      {commentWindow? <CommentWindow socket={props.socket} postThread={postThread} groupId={props.groupId} handleClickCommentWindow={handleClickCommentWindow} members={members}/>: null}
+      {commentWindow ? <CommentWindow socket={props.socket} postThread={postThread} groupId={props.groupId} handleClickCommentWindow={handleClickCommentWindow} members={members} /> : null}
     </div>
   )
 }

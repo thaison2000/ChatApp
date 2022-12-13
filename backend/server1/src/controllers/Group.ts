@@ -51,6 +51,18 @@ const groupController = {
                     }
                 })
 
+                await prisma.uploadFile.deleteMany({
+                    where: {
+                        groupId: parseInt(req.params.groupId)
+                    }
+                })
+
+                await prisma.uploadLink.deleteMany({
+                    where: {
+                        groupId: parseInt(req.params.groupId)
+                    }
+                })
+
                 await prisma.groupAdmin.deleteMany({
                     where: {
                         groupId: parseInt(req.params.groupId)

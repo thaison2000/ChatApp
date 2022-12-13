@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { APIfetchAllDirectMessageGroups, APIfetchAllGroups } from '../API/Group';
 import { Context } from '../context/Context'
 import CreateGroupForm from './CreateGroupForm'
 
 const SideBar = (props:any) => {
+
+    const groupId = useParams().groupId
 
     const navigate = useNavigate()
     const { user } = useContext(Context)
@@ -15,6 +17,7 @@ const SideBar = (props:any) => {
     const [groups, setGroups] = useState<Array<any>>()
     const [directMessages, setDirectMessages] = useState<Array<any>>()
     const [newNotification, setNewNotification] = useState<any>({});
+    const [newPosts, setNewPosts] = useState<Array<number>>([]);
 
     useEffect(() => {
         props.socket.current?.on("getNotification", (data: any) => {
@@ -28,7 +31,24 @@ const SideBar = (props:any) => {
         });
       }, [props.socket.current]);
 
+    useEffect(() => {
+        props.socket.current?.on("getMessage", (data: any) => {
+            console.log(data)
+          setNewNotification({
+            sendUserId: data.sendUserId,
+            type: data.type,
+            groupId: data.groupId,
+            createdAt: data.timestamp
+          })
+        });
+      }, [props.socket.current]);
 
+      useEffect(() => {
+        if((groupId != newNotification.groupId) && (newNotification.type == 8)){
+
+            setNewPosts([...newPosts,newNotification.groupId])
+        }
+      }, [newNotification]);
 
     const handleClickProfile = () => {
         navigate('/profile/' + user.userId)
@@ -75,7 +95,10 @@ const SideBar = (props:any) => {
                     <h1 className='text-2xl text-white font-bold px-4 py-2 overflow-auto'>{user.name}</h1>
                 </div>
                 <div>
-                    <div className='flex flex-row py-2 hover:bg-sky-800'>
+                    <div onClick={() => {
+                                    navigate('/thread')
+                                    window.location.reload()
+                                }} className='flex flex-row py-2 hover:bg-sky-800'>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
                         </svg>
@@ -87,7 +110,10 @@ const SideBar = (props:any) => {
                         </svg>
                         <span className='text-white ml-2'>Mentions & reactions</span>
                     </div>
-                    <div className='flex flex-row py-2 hover:bg-sky-800'>
+                    <div onClick={() => {
+                                    navigate('/draft')
+                                    window.location.reload()
+                                }} className='flex flex-row py-2 hover:bg-sky-800'>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                         </svg>
@@ -118,20 +144,27 @@ const SideBar = (props:any) => {
                     {displayChanel ?
                         <div>
                             <div onClick={handleClickCreateGroup} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white mt-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white mt-1">
                                     <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
                                 </svg>
-                                <span className='text-white ml-2'>Add Chanel</span>
+                                <span className='text-white ml-4 mt-1'>Add Chanel</span>
                             </div>
-                            {groups?.map((group => (
+                            {groups?.map((group => {
+                                let newPostCount: number = 0
+                                for(let i=0;i<newPosts.length;i++){
+                                    if(newPosts[i] == group.groupId){
+                                        newPostCount = newPostCount + 1
+                                    }
+                                }
+                                return(
                                 <div key={group.groupId} onClick={() => {
                                     navigate('/group/' + group.groupId)
                                     window.location.reload()
-                                }} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                                    <img className='w-6 h-6 rounded-full mt-[1px]' src={group?.avatar ? ('http://localhost:3001/images/' + group?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
-                                    <span className='text-white ml-2'>{group.name}</span>
+                                }} className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
+                                    <img className='w-6 h-6 rounded-full' src={group?.avatar ? ('http://localhost:3001/images/' + group?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                                    <span className='text-white ml-4'>{group.name}</span>
                                 </div>
-                            )))}
+                            )}))}
                         </div> : null}
                 </div>
                 <div>
@@ -143,15 +176,22 @@ const SideBar = (props:any) => {
                     </div>
                     {displayDirectMessage ?
                         <div>
-                            {directMessages?.map((directMessage: any) => (
+                            {directMessages?.map((directMessage: any) => {
+                                let newPostCount: number = 0
+                                for(let i=0;i<newPosts.length;i++){
+                                    if(newPosts[i] == directMessage.groupId){
+                                        newPostCount = newPostCount + 1
+                                    }
+                                }
+                                return (
                                 <div key={directMessage.groupId} onClick={() => {
                                     navigate('/directMessage/' + directMessage.groupId)
                                     window.location.reload()
-                                }} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
+                                }} className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
                                     <img className='w-6 h-6 rounded-full mt-[1px]' src={directMessage?.avatar ? ('http://localhost:3001/images/' + directMessage?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
-                                    <span className='text-white ml-2'>{directMessage.name}</span>
+                                    <span className='text-white ml-4'>{directMessage.name}</span>
                                 </div>
-                            ))}
+                            )})}
                         </div> : null}
                 </div>
             </div>

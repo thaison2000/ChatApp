@@ -36,7 +36,7 @@ const CreateGroupForm = (props: any) => {
                     <input onChange={handleNameChange} className='bg-neutral-200 w-full my-2 py-4 focus:outline-none' type="text" placeholder='name ...' />
                 </div>
                 <div className='w-full px-12'>
-                    <input onChange={handleDescChange} className='bg-neutral-200 w-full my-2 py-4 focus:outline-none' type="password" placeholder='description ...' />
+                    <input onChange={handleDescChange} className='bg-neutral-200 w-full my-2 py-4 focus:outline-none' type="text" placeholder='description ...' />
                 </div>
                </div>
                 <div className='w-full flex flex-row justify-center mb-4'>

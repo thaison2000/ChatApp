@@ -36,6 +36,8 @@ model User {
   friendRequestReceiveUser    FriendRequest[] @relation("receiveUser")
   friendUser                  Friend[]        @relation("user")
   friendFriend                Friend[]        @relation("friend")
+  uploadFile                  UploadFile[]    @relation("uploadUser")
+  uploadLink                  UploadLink[]    @relation("uploadUser")
   groupAdmin                  GroupAdmin[]
   groupUser                   GroupUser[]
 }
@@ -46,10 +48,15 @@ model Group {
   name                  String
   desc                  String?
   type                  GroupType @default(Chanel)
+  groupAdmin            GroupAdmin[]    @relation("group")
+  groupUser             GroupUser[]     @relation("group")
+  uploadFile            UploadFile[]    @relation("uploadGroup")
+  uploadLink            UploadLink[]    @relation("uploadGroup")
 }
 
 model GroupAdmin {
   groupAdminId          Int     @id @default(autoincrement())
+  group                 Group   @relation("group", fields: [groupId], references: [groupId], onDelete: Cascade)
   groupId               Int
   user                  User    @relation(fields: [userId], references: [userId])
   userId                Int     
@@ -57,6 +64,7 @@ model GroupAdmin {
 
 model GroupUser {
   groupUserId           Int     @id @default(autoincrement())
+  group                 Group   @relation("group", fields: [groupId], references: [groupId], onDelete: Cascade)
   groupId               Int
   user                  User    @relation(fields: [userId], references: [userId])
   userId                Int     
@@ -77,6 +85,27 @@ model FriendRequest {
   receiveUser           User    @relation("receiveUser", fields: [receiveUserId], references: [userId])
   receiveUserId         Int
 }
+
+model UploadFile {
+  uploadFileId          Int     @id @default(autoincrement())
+  uploadUser            User    @relation("uploadUser", fields: [userId], references: [userId])
+  userId                Int
+  uploadGroup           Group   @relation("uploadGroup", fields: [groupId], references: [groupId], onDelete: Cascade)
+  groupId               Int
+  name                  String
+}
+
+model UploadLink {
+  uploadLinkId          Int     @id @default(autoincrement())
+  uploadUser            User    @relation("uploadUser", fields: [userId], references: [userId])
+  userId                Int
+  uploadGroup           Group   @relation("uploadGroup", fields: [groupId], references: [groupId], onDelete: Cascade)
+  groupId               Int
+  name                  String
+  value                 String
+}
+
+
 
 
 

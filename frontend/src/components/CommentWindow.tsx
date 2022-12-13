@@ -20,7 +20,7 @@ const CommentWindow = (props: any) => {
     const [comments, setComments] = useState<any>([])
     const [newCommentCount, setNewCommentCount] = useState<number>(0)
     const [newLikeCount, setNewLikeCount] = useState<number>(0)
-    
+
     let navigate = useNavigate()
 
     const scrollRef = useRef<any>();
@@ -32,15 +32,15 @@ const CommentWindow = (props: any) => {
     }, [comments]);
 
     useEffect(() => {
-        props.socket?.current?.on("getNotification", (data:any) => {
+        props.socket?.current?.on("getNotification", (data: any) => {
             console.log(data)
             if (props.members?.some((member: any) => member.userId == user.userId)) {
-                if(data.type == 2){
+                if (data.type == 2) {
                     setNewCommentCount((prev: number) => prev + 1)
-                  }
-                  if(data.type == 1){
+                }
+                if (data.type == 1) {
                     setNewLikeCount((prev: number) => prev + 1)
-                  }
+                }
 
             }
         });
