@@ -94,7 +94,7 @@ const DraftPost = (props: any) => {
                 <div className='border-2 w-[97%] m-4 relative bg-white mb-4 flex flex-row pt-4 max-h-[400px]'>
                     <div className='mb-4 bg-white min-h-[100px] max-h-[500px] p-4 w-[100%] z-1 border-2 ml-4 w-[78%] overflow-auto' dangerouslySetInnerHTML={{ __html: props.draftPost.content }}>
                     </div>
-                    <div className='ml-3 mt-12 overflow-auto w-[18%] mb-4'>
+                    <div className='ml-3 mt-12 overflow-auto w-[18%] mb-4 max-h-[150px]'>
                         {groups.map((group: any) => {
                             return (
                                 <div key={group.groupId}>

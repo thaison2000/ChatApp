@@ -8,7 +8,7 @@ import { Context } from '../context/Context';
 import en from 'javascript-time-ago/locale/en'
 import { APIgetCommentsByPostId } from '../API/Comment';
 import { APIcreatePostLike, APIdeleteLike, APIgetLikesByPostId } from '../API/Like';
-import { APIdeletePost, APIupdatePost } from '../API/Post';
+import { APIactiveImportantPost, APIdeletePost, APIinactiveImportantPost, APIupdatePost } from '../API/Post';
 import Editor from './Editor';
 
 TimeAgo.addDefaultLocale(en)
@@ -44,7 +44,7 @@ const ChatBox = (props: any) => {
         if (data.type == 13) {
           setNewLikeCount((prev: number) => prev - 1)
         }
-        
+
       }
     });
   }, [props.socket?.current]);
@@ -108,6 +108,30 @@ const ChatBox = (props: any) => {
     }
   }
 
+  const handleClickActiveImportantPost = async () => {
+    const { status } = await APIactiveImportantPost(props.post.postId)
+    if (status) {
+      props.socket?.current?.emit("sendNotification", {
+        sendUserName: user.name,
+        sendUserId: user.userId,
+        groupId: props.groupId,
+        type: 17
+      });
+    }
+  }
+
+  const handleClickInActiveImportantPost = async () => {
+    const { status } = await APIinactiveImportantPost(props.post.postId)
+    if (status) {
+      props.socket?.current?.emit("sendNotification", {
+        sendUserName: user.name,
+        sendUserId: user.userId,
+        groupId: props.groupId,
+        type: 18
+      });
+    }
+  }
+
   const handleClickDeletePost = async () => {
     props.handleClickDeletePost(props.post?.postId)
   }
@@ -140,6 +164,22 @@ const ChatBox = (props: any) => {
     return (
       <div className='absolute right-1 top-1 z-100 p-1 bg-white rounded-2xl shadow-2xl'>
         <div className='flex flex-row'>
+          <div className='mx-2'>
+            {
+              props.post.userId == currentUser.userId ?
+                (props.post.type == 1 ?
+                  <div onClick={handleClickInActiveImportantPost}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-red-600">
+                      <path fillRule="evenodd" d="M3 2.25a.75.75 0 01.75.75v.54l1.838-.46a9.75 9.75 0 016.725.738l.108.054a8.25 8.25 0 005.58.652l3.109-.732a.75.75 0 01.917.81 47.784 47.784 0 00.005 10.337.75.75 0 01-.574.812l-3.114.733a9.75 9.75 0 01-6.594-.77l-.108-.054a8.25 8.25 0 00-5.69-.625l-2.202.55V21a.75.75 0 01-1.5 0V3A.75.75 0 013 2.25z" clipRule="evenodd" />
+                    </svg>
+                  </div> :
+                  <div onClick={handleClickActiveImportantPost}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                      <path fillRule="evenodd" d="M3 2.25a.75.75 0 01.75.75v.54l1.838-.46a9.75 9.75 0 016.725.738l.108.054a8.25 8.25 0 005.58.652l3.109-.732a.75.75 0 01.917.81 47.784 47.784 0 00.005 10.337.75.75 0 01-.574.812l-3.114.733a9.75 9.75 0 01-6.594-.77l-.108-.054a8.25 8.25 0 00-5.69-.625l-2.202.55V21a.75.75 0 01-1.5 0V3A.75.75 0 013 2.25z" clipRule="evenodd" />
+                    </svg>
+                  </div>) : null
+            }
+          </div>
           <div className='mx-2'>
             {
               currentUserLike ?
@@ -209,9 +249,19 @@ const ChatBox = (props: any) => {
           </div>
         </div> :
         <div
+          style={props.post.type == 1 ? { backgroundColor: '#FFE4E1' } : { backgroundColor: 'white' }}
           onMouseEnter={() => setInteractiveAlert(true)}
           onMouseLeave={() => setInteractiveAlert(false)}
           className='w-full bg-white hover:bg-gray-100 relative'>
+          {props.post.type == 1 ?
+            (
+              <div className='absolute bottom-4 right-4'>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-red-600 ">
+                  <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                </svg>
+
+              </div>
+            ) : null}
           <div className='flex flex-row relative'>
             {interactiveAlert ? <InteractiveAlert /> : null}
             <div>

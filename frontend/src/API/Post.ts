@@ -53,6 +53,50 @@ export const APIupdatePost = async (postId: string, content: string) => {
     }
 }
 
+export const APIactiveImportantPost = async (postId: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.put("http://localhost:3002/api/post/active/" + postId,{}, config);
+        return {
+            status: true
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
+export const APIinactiveImportantPost = async (postId: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.put("http://localhost:3002/api/post/inactive/" + postId,{}, config);
+        return {
+            status: true
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
 export const APIcreateDraftPost = async (draftPostCreate: draftPostCreateInterface) => {
     try {
         const config = {
@@ -151,6 +195,29 @@ export const APIgetAllPostByGroupId = async (groupId: string) => {
             },
         }
         const res = await axios.get("http://localhost:3002/api/post/group/" + groupId, config);
+        return {
+            status: true,
+            data: res.data
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
+export const APIgetAllImportantPostByGroupId = async (groupId: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        const res = await axios.get("http://localhost:3002/api/post/group/important/" + groupId, config);
         return {
             status: true,
             data: res.data

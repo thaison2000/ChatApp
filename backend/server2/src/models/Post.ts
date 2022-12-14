@@ -20,7 +20,13 @@ const PostSchema = mongoose.Schema(
         },
         likes: {
             type: Array
+        },
+        type: {
+            type: Number,
+            default: 0
         }
+        //type 0 : normal
+        //type 1 : important
     },
     { timestamps: true })
 

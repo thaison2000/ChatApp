@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { APIgetCommentsByPostId } from '../API/Comment';
-import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar, APIuploadFile, APIuploadLink } from '../API/Group';
+import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar} from '../API/Group';
 import { APIcreateNotification } from '../API/Notification';
-import { APIdeletePost, APIgetAllPostByGroupId, APIupdatePost } from '../API/Post';
+import { APIdeletePost, APIgetAllImportantPostByGroupId, APIgetAllPostByGroupId, APIupdatePost } from '../API/Post';
 import { APIfindUserByName } from '../API/User';
 import { Context } from '../context/Context';
 import ChatBox from './ChatBox'
@@ -13,10 +13,9 @@ import Editor from './Editor'
 const ChatWindow = (props: any) => {
 
   const [posts, setPosts] = useState([])
+  const [importantPosts, setImportantPosts] = useState([])
+  const [importantPostsWindow, setImportantPostsWindow] = useState<boolean>(false)
   const [avatar, setAvatar] = useState<any>()
-  const [linkAndFileBox, setLinkAndFileBox] = useState<boolean>()
-  const [uploadFile, setUploadFile] = useState<any>()
-  const [files, setFiles] = useState([])
   const [updateAvatarAlert, setUpdateAvatarAlert] = useState<boolean>(false)
   const [settingAlert, setSettingAlert] = useState<boolean>(false)
   const [addMemberAlert, setAddMemberAlert] = useState<boolean>(false)
@@ -33,9 +32,6 @@ const ChatWindow = (props: any) => {
 
 
   const addMemberName = useRef<any>()
-  const uploadFileName = useRef<any>()
-  const uploadLinkName = useRef<any>()
-  const linkValue = useRef<any>()
   const deleteGroupName = useRef<any>()
   const scrollRef = useRef<any>();
 
@@ -70,6 +66,12 @@ const ChatWindow = (props: any) => {
         if (data.type == 16) {
           setNewPostCount((prev: number) => prev + 1)
         }
+        if (data.type == 17) {
+          setNewPostCount((prev: number) => prev + 1)
+        }
+        if (data.type == 18) {
+          setNewPostCount((prev: number) => prev + 1)
+        }
       }
     });
   }, [props.socket?.current]);
@@ -82,6 +84,16 @@ const ChatWindow = (props: any) => {
       }
     };
     fetchAllPosts();
+  }, [props.groupId, newPostCount, newCommentCount, newLikeCount]);
+
+  useEffect(() => {
+    const fetchAllImportantPosts = async () => {
+      const { status, data } = await APIgetAllImportantPostByGroupId(props.groupId)
+      if (status) {
+        setImportantPosts(data)
+      }
+    };
+    fetchAllImportantPosts();
   }, [props.groupId, newPostCount, newCommentCount, newLikeCount]);
 
   useEffect(() => {
@@ -122,24 +134,6 @@ const ChatWindow = (props: any) => {
     }
   };
 
-  const handleSubmitUploadFile = async () => {
-    if (uploadFile) {
-      const { status }: any = await APIuploadFile(uploadFile, group.groupId, user.userId, uploadFileName.current.value)
-      if (status) {
-        setUploadFile(null)
-        // window.location.reload()
-      }
-    }
-  };
-
-  const handleSubmitUploadLink = async () => {
-    const { status }: any = await APIuploadLink(linkValue.current.value, group.groupId, user.userId, uploadLinkName.current.value)
-    if (status) {
-
-      // window.location.reload()
-    }
-  };
-
   const handleSubmitDeleteGroup = async () => {
     if (deleteGroupName.current.value != group.name) {
       window.alert('Wrong group name !')
@@ -168,6 +162,10 @@ const ChatWindow = (props: any) => {
       }
     }
   };
+
+  const handleClickImportantPostsWindow = () => {
+    setImportantPostsWindow(!importantPostsWindow)
+  }
 
   const handleClickUpdateAvatarAlert = () => {
     setUpdateAvatarAlert(!updateAvatarAlert)
@@ -324,78 +322,6 @@ const ChatWindow = (props: any) => {
         setNewPostCount((prev: number) => prev + 1)
       }
     }
-  }
-
-  const UploadFileAndLinkAlert = () => {
-    return (
-      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
-        <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
-          <h1 className='text-center text-white text-2xl font-medium p-2'>Add File and Link</h1>
-        </div>
-        <div className='mx-8 mt-8 bg-neutral-200 rounded-2xl p-4'>
-          <div className='flex flex-row text-yellow-700'>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h- mt-2">
-              <path fillRule="evenodd" d="M5.625 1.5H9a3.75 3.75 0 013.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 013.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 01-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875zm6.905 9.97a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72V18a.75.75 0 001.5 0v-4.19l1.72 1.72a.75.75 0 101.06-1.06l-3-3z" clipRule="evenodd" />
-              <path d="M14.25 5.25a5.23 5.23 0 00-1.279-3.434 9.768 9.768 0 016.963 6.963A5.23 5.23 0 0016.5 7.5h-1.875a.375.375 0 01-.375-.375V5.25z" />
-            </svg>
-
-            <div className='pl-4 mt-2 text-xl font-bold'>Add file</div>
-          </div>
-          <div className='flex flex-col rounded-2xl'>
-            <div className='w-full px-2'>
-              <input ref={uploadFileName} className='w-full py-4 focus:outline-none bg-neutral-200' type="text" placeholder='name ...' />
-            </div>
-            <div className='w-full flex flex-row justify-between'>
-              <input className="block w-[240px] text-sm text-slate-500
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-full file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-violet-50 file:text-violet-700
-                  hover:file:bg-violet-100"
-                type="file"
-                id="file"
-
-              // onChange={(e: any) => setUploadFile(e.target.files[0])}
-              ></input>
-              <div>
-                <button onClick={handleSubmitUploadFile} className="rounded-full text-white py-2 px-4 font-medium text-xl bg-green-600 hover:bg-sky-900 hover:text-white">Add</button>
-
-              </div>
-            </div>
-          </div>
-          <div className='flex flex-row text-yellow-700'>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mt-2">
-              <path fillRule="evenodd" d="M18.97 3.659a2.25 2.25 0 00-3.182 0l-10.94 10.94a3.75 3.75 0 105.304 5.303l7.693-7.693a.75.75 0 011.06 1.06l-7.693 7.693a5.25 5.25 0 11-7.424-7.424l10.939-10.94a3.75 3.75 0 115.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 015.91 15.66l7.81-7.81a.75.75 0 011.061 1.06l-7.81 7.81a.75.75 0 001.054 1.068L18.97 6.84a2.25 2.25 0 000-3.182z" clipRule="evenodd" />
-            </svg>
-
-            <div className='pl-4 mt-2 text-xl font-bold'>Add link</div>
-          </div>
-          <div className='flex flex-col rounded-2xl'>
-            <div className='w-full px-2'>
-              <input ref={uploadLinkName} defaultValue={addMemberName.current?.value} className='w-full py-4 focus:outline-none bg-neutral-200' type="text" placeholder='name ...' />
-            </div>
-            <div className='flex flex-row justify-between'>
-              <div className='w-full px-2'>
-                <input ref={linkValue} defaultValue={addMemberName.current?.value} className='w-full py-2 focus:outline-none bg-neutral-200' type="text" placeholder='value ...' />
-              </div>
-              <div>
-                <button onClick={handleSubmitUploadLink} className="rounded-full text-white py-2 px-4 font-medium text-xl bg-green-600 hover:bg-sky-900 hover:text-white">Add</button>
-
-              </div>
-            </div>
-
-            <div className='mt-9 mr-4'>
-
-            </div>
-          </div>
-
-        </div>
-        <div className='w-full flex flex-row justify-center '>
-          <button onClick={handleClickUploadFileAndLinkAlert} className="rounded-full text-white py-2 px-8 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white my-4">Cancel</button>
-        </div>
-      </div>
-
-    )
   }
 
   const UpdateAvatarAlert = () => {
@@ -597,30 +523,6 @@ const ChatWindow = (props: any) => {
     )
   }
 
-  const LinkAndFileBox = () => (
-   <div className='absolute top-12 right-4 bg-white rounded-xl z-20 drop-shadow-2xl'>
-     <div className='flex flex-row'>
-      <div className='pl-4 p-2 flex flex-row text-orange-800 hover:bg-neutral-300'>
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-            <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z" />
-            <path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
-          </svg>
-        </div>
-        <div>File</div>
-      </div>
-      <div className='flex flex-row p-2 pl-4 text-lime-700 hover:bg-neutral-300'>
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-            <path fillRule="evenodd" d="M18.97 3.659a2.25 2.25 0 00-3.182 0l-10.94 10.94a3.75 3.75 0 105.304 5.303l7.693-7.693a.75.75 0 011.06 1.06l-7.693 7.693a5.25 5.25 0 11-7.424-7.424l10.939-10.94a3.75 3.75 0 115.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 015.91 15.66l7.81-7.81a.75.75 0 011.061 1.06l-7.81 7.81a.75.75 0 001.054 1.068L18.97 6.84a2.25 2.25 0 000-3.182z" clipRule="evenodd" />
-          </svg>
-        </div>
-        <div>Link</div>
-      </div>
-    </div>
-   </div>
-  )
-
   return (
     <div className='w-[calc(100%-250px)] flex flex-row p-0'>
       <div className='w-full'>
@@ -628,11 +530,8 @@ const ChatWindow = (props: any) => {
         {addMemberAlert ? <AddMemberAlert /> : null}
         {settingAlert ? <SettingAlert /> : null}
         {memberAlert ? <MemberAlert /> : null}
-        {uploadFileAndLinkAlert ? <UploadFileAndLinkAlert /> : null}
-        { }
         <div className='w-full h-[92%] relative'>
-          <div onMouseEnter={() => setLinkAndFileBox(true)}
-            onMouseLeave={() => setLinkAndFileBox(false)}
+          <div
             className='flex flex-row justify-between bg-neutral-200'>
             <div>
               <div className='flex flex-row'>
@@ -644,7 +543,6 @@ const ChatWindow = (props: any) => {
                   <div>{group?.desc}</div>
                 </div>
               </div>
-              {linkAndFileBox ? <LinkAndFileBox /> : null}
 
             </div>
             <div className='flex flex-row '>

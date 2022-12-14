@@ -86,6 +86,42 @@ const postController = {
         }
     },
 
+    activeImporttantPostByPostId: async (req: any, res: Response) => {
+        try {
+            const updatePost = await Post.updateOne({
+                userId: req.user.userId,
+                postId: req.params.postId
+            },
+                {
+                    type: 1
+                });
+            if (updatePost) {
+                return res.status(200).json('update post successfully');
+            }
+        } catch (err) {
+            console.log(err)
+            res.status(500).json(err);
+        }
+    },
+
+    inactiveImporttantPostByPostId: async (req: any, res: Response) => {
+        try {
+            const updatePost = await Post.updateOne({
+                userId: req.user.userId,
+                postId: req.params.postId
+            },
+                {
+                    type: 0
+                });
+            if (updatePost) {
+                return res.status(200).json('update post successfully');
+            }
+        } catch (err) {
+            console.log(err)
+            res.status(500).json(err);
+        }
+    },
+
     updateDraftPostByDraftPostId: async (req: any, res: Response) => {
         try {
             const updatePost = await DraftPost.findOne({
@@ -122,6 +158,19 @@ const postController = {
         try {
             const posts = await Post.find({
                 groupId: req.params.groupId
+            });
+            res.status(200).json(posts);
+        } catch (err) {
+            console.log(err)
+            res.status(500).json(err);
+        }
+    },
+
+    getImportantPostByGroupId: async (req: any, res: Response) => {
+        try {
+            const posts = await Post.find({
+                groupId: req.params.groupId,
+                type: 1
             });
             res.status(200).json(posts);
         } catch (err) {
