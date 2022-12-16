@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { APIfetchAllDirectMessageGroups, APIfetchAllGroups } from '../API/Group';
+import {  APIgetAllUnreadPosts, APIupdateAllUnreadPostByGroupId } from '../API/Post';
 import { Context } from '../context/Context'
 import CreateGroupForm from './CreateGroupForm'
 
@@ -18,9 +19,14 @@ const SideBar = (props:any) => {
     const [directMessages, setDirectMessages] = useState<Array<any>>()
     const [newNotification, setNewNotification] = useState<any>({});
     const [newPosts, setNewPosts] = useState<Array<number>>([]);
+    const [unreadPosts, setUnreadPosts] = useState<Array<any>>([]);
+    const [unreadPostsCount, setUnreadPostsCount] = useState<number>();
+
+
 
     useEffect(() => {
         props.socket.current?.on("getNotification", (data: any) => {
+            console.log(data.type)
           setNewNotification({
             sendUserId: data.sendUserId,
             receiveUserId: data.receiveUserId,
@@ -49,6 +55,25 @@ const SideBar = (props:any) => {
             setNewPosts([...newPosts,newNotification.groupId])
         }
       }, [newNotification]);
+
+      useEffect(() => {
+        const fetchAllUnreadPosts = async () => {
+            const { status, data } = await APIgetAllUnreadPosts()
+            if (status) {
+                setUnreadPosts(data)
+            }
+        }
+        fetchAllUnreadPosts();
+      }, [newNotification, unreadPostsCount]);
+
+      const handleClickUpdateUnreadPostsToReadPosts = async (groupId: string) => {
+        const { status } = await APIupdateAllUnreadPostByGroupId(groupId)
+        if(status){
+            setUnreadPostsCount((prev: any)=> prev-1)
+            navigate('/group/' + groupId)
+            window.location.reload()
+        }
+    }
 
     const handleClickProfile = () => {
         navigate('/profile/' + user.userId)
@@ -150,19 +175,19 @@ const SideBar = (props:any) => {
                                 <span className='text-white ml-4 mt-1'>Add Chanel</span>
                             </div>
                             {groups?.map((group => {
+                                let unreadPostsbyGroup
                                 let newPostCount: number = 0
-                                for(let i=0;i<newPosts.length;i++){
-                                    if(newPosts[i] == group.groupId){
-                                        newPostCount = newPostCount + 1
-                                    }
+                                if(groupId != group.groupId){
+                                    unreadPostsbyGroup = unreadPosts.filter((unreadPost : any)=> unreadPost.groupId == group.groupId)
+                                    newPostCount = unreadPostsbyGroup.length
                                 }
                                 return(
-                                <div key={group.groupId} onClick={() => {
-                                    navigate('/group/' + group.groupId)
-                                    window.location.reload()
-                                }} className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
+                                <div key={group.groupId} onClick={() => handleClickUpdateUnreadPostsToReadPosts(group.groupId)
+                                    
+                                } className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
                                     <img className='w-6 h-6 rounded-full' src={group?.avatar ? ('http://localhost:3001/images/' + group?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                                     <span className='text-white ml-4'>{group.name}</span>
+                                   {newPostCount> 0 ?  <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{newPostCount}</div>: null}
                                 </div>
                             )}))}
                         </div> : null}

@@ -128,7 +128,12 @@ const FriendController = {
             })
             for(let i=0;i<groupUser1.length;i++){
                 for(let j= 0;j<groupUser2.length;j++){
-                    if(groupUser1[i].groupId == groupUser2[j].groupId){
+                    const group: any = await prisma.group.findUnique({
+                        where: {
+                            groupId : groupUser1[i].groupId
+                        }
+                    })
+                    if(groupUser1[i].groupId == groupUser2[j].groupId && group?.type == 'DirectMessage'){
                         await prisma.group.delete({
                             where: {
                                 groupId : groupUser1[i].groupId

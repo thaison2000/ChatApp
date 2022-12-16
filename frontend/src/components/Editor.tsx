@@ -2,11 +2,14 @@ import { useContext, useEffect, useState } from 'react';
 import { useQuill } from 'react-quilljs';
 import BlotFormatter from 'quill-blot-formatter';
 import 'quill/dist/quill.snow.css';
-import { APIcreatePost } from '../API/Post';
+import { APIcreatePost, APIupdateAllUnreadPostByGroupId } from '../API/Post';
 import { Context } from '../context/Context';
 import { APIcreateComment } from '../API/Comment';
+import { useParams } from 'react-router-dom';
 
 const Editor = (props: any) => {
+
+  const groupId = useParams().groupId
 
   const { user } = useContext(Context)
   const [state, setState] = useState<any>()
@@ -16,13 +19,23 @@ const Editor = (props: any) => {
   const [editorHeight, setEditorHeight] = useState<any>()
 
   useEffect(() => {
-    if(props.content){
+    if (props.content) {
       if (quill) {
         quill.clipboard.dangerouslyPasteHTML(props.content);
         //quillRef.current.firstChild.innerHTML = props.content
       }
     }
-  },[quill]);
+  }, [quill]);
+
+  useEffect(() => {
+    if (groupId == props.groupId && groupId != undefined) {
+      const handleClickUpdateUnreadPostsToReadPosts = async () => {
+        const { status } = await APIupdateAllUnreadPostByGroupId(props.groupId)
+      }
+      handleClickUpdateUnreadPostsToReadPosts()
+    }
+
+  }, [state]);
 
   //xu ly khi click dang bai viet
   const handleClickSend = async () => {
@@ -79,42 +92,42 @@ const Editor = (props: any) => {
       quillRef.current.firstChild.innerHTML = ''
     }
 
-}
-
-if (Quill && !quill) {
-  Quill.register('modules/blotFormatter', BlotFormatter);
-}
-
-useEffect(() => {
-  if (quill) {
-    quill.on('text-change', (delta, oldContents) => {
-      let data = quillRef.current.firstChild.innerHTML
-      setState(data)
-    });
   }
-}, [quill, Quill]);
 
-return (
-  <div style={editorHeight} className='w-[98%] h-[90px] z-100 bg-white absolute bottom-0'>
-    <div ref={quillRef} className='relative z-100 bg-white' />
-    <div onClick={() => setEditorHeight({ height: '300px' })} className='absolute top-2 right-8 flex flex-row'>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 absolute top-0">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l7.5-7.5 7.5 7.5m-15 6l7.5-7.5 7.5 7.5" />
-      </svg>
-    </div>
-    <div onClick={() => setEditorHeight({ height: '90px' })} className='absolute top-2 right-8 flex flex-row mx-2'>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5" />
-      </svg>
-    </div>
-    <div className='absolute bottom-[-35px] right-2'>
-      <svg onClick={handleClickSend} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className=" w-6 h-6 hover:text-green-500">
-        <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-      </svg>
+  if (Quill && !quill) {
+    Quill.register('modules/blotFormatter', BlotFormatter);
+  }
 
+  useEffect(() => {
+    if (quill) {
+      quill.on('text-change', (delta, oldContents) => {
+        let data = quillRef.current.firstChild.innerHTML
+        setState(data)
+      });
+    }
+  }, [quill, Quill]);
+
+  return (
+    <div style={editorHeight} className='w-[98%] h-[90px] z-100 bg-white absolute bottom-0'>
+      <div ref={quillRef} className='relative z-100 bg-white' />
+      <div onClick={() => setEditorHeight({ height: '300px' })} className='absolute top-2 right-8 flex flex-row'>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 absolute top-0">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l7.5-7.5 7.5 7.5m-15 6l7.5-7.5 7.5 7.5" />
+        </svg>
+      </div>
+      <div onClick={() => setEditorHeight({ height: '90px' })} className='absolute top-2 right-8 flex flex-row mx-2'>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </div>
+      <div className='absolute bottom-[-35px] right-2'>
+        <svg onClick={handleClickSend} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className=" w-6 h-6 hover:text-green-500">
+          <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+        </svg>
+
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default Editor;

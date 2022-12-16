@@ -24,9 +24,14 @@ const PostSchema = mongoose.Schema(
         type: {
             type: Number,
             default: 0
-        }
+        },
         //type 0 : normal
         //type 1 : important
+        read: Array,
+        default: []
+        //status 0 : chua xem
+        //status 1 : da xem
+        
     },
     { timestamps: true })
 

@@ -249,19 +249,9 @@ const ChatBox = (props: any) => {
           </div>
         </div> :
         <div
-          style={props.post.type == 1 ? { backgroundColor: '#FFE4E1' } : { backgroundColor: 'white' }}
           onMouseEnter={() => setInteractiveAlert(true)}
           onMouseLeave={() => setInteractiveAlert(false)}
-          className='w-full bg-white hover:bg-gray-100 relative'>
-          {props.post.type == 1 ?
-            (
-              <div className='absolute bottom-4 right-4'>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-red-600 ">
-                  <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
-                </svg>
-
-              </div>
-            ) : null}
+          className={props.post.type == 1 ? 'w-full bg-red-100 hover:bg-red-200 relative': 'w-full bg-white hover:bg-gray-100 relative'}>
           <div className='flex flex-row relative'>
             {interactiveAlert ? <InteractiveAlert /> : null}
             <div>
@@ -271,9 +261,20 @@ const ChatBox = (props: any) => {
               }}
                 className='w-8 h-8 m-4 rounded-full' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
             </div>
-            <div className='flex flex-col mt-2'>
+            <div className='flex flex-col mt-3'>
               <h1 className='mx-0 text-md font-bold'>{user?.name}</h1>
-              <div className="text-xs">{timeAgo.format(new Date(props.post.createdAt))}</div>
+              <div className='flex flex-row'>
+                <div className="text-xs">{timeAgo.format(new Date(props.post.createdAt))}</div>
+                {props.post.type == 1 ?
+                  (
+                    <div className='ml-2'>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500 ">
+                        <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                      </svg>
+
+                    </div>
+                  ) : null}
+              </div>
             </div>
           </div>
           <div className='ml-16 pb-4'>

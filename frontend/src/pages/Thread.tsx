@@ -101,7 +101,7 @@ const Thread = (props: any) => {
                                         </div>
                                         <div className='ml-20 divide-y mr-6'>
                                             {
-                                                post.comment.map((comment: any) => {
+                                                post.comment?.map((comment: any) => {
                                                     return (
                                                         <div className='flex flex-row hover:bg-gray-100 pt-2'>
                                                             <div>

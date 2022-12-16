@@ -97,6 +97,28 @@ export const APIinactiveImportantPost = async (postId: string) => {
     }
 }
 
+export const APIupdateAllUnreadPostByGroupId = async (groupId: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.put("http://localhost:3002/api/post/unreadPosts/" + groupId,{}, config);
+        return {
+            status: true
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
 export const APIcreateDraftPost = async (draftPostCreate: draftPostCreateInterface) => {
     try {
         const config = {
@@ -163,6 +185,28 @@ export const APIdeletePost = async (postId: string) => {
     }
 }
 
+export const APIdeletePostByGroupId = async (groupId: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.delete("http://localhost:3002/api/post/group/" + groupId, config);
+        return {
+            status: true
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
 export const APIdeleteDraftPost = async (postId: string) => {
     console.log(postId)
     try {
@@ -195,6 +239,29 @@ export const APIgetAllPostByGroupId = async (groupId: string) => {
             },
         }
         const res = await axios.get("http://localhost:3002/api/post/group/" + groupId, config);
+        return {
+            status: true,
+            data: res.data
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
+export const APIgetAllUnreadPosts = async () => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        const res = await axios.get("http://localhost:3002/api/post/unreadPosts" , config);
         return {
             status: true,
             data: res.data
@@ -278,7 +345,7 @@ export const APIgetPostThread = async () => {
                 postThread[i].userAvatar = res3.data.avatar
                 postThread[i].comment = res4.data
             }
-            for(let j=0;j<postThread[i].comment.length;j++){
+            for(let j=0;j<postThread[i].comment?.length;j++){
                 let res5 = await axios.get("http://localhost:3001/api/user/" + postThread[i].comment[j].userId, config)
                 if(res5.data){
                     postThread[i].comment[j].userName = res5.data.name
@@ -286,6 +353,11 @@ export const APIgetPostThread = async () => {
                 }
             }
         }
+        postThread = postThread.sort((p1: any, p2: any) => {
+            let time1: any = new Date(p2.createdAt)
+            let time2: any = new Date(p1.createdAt)
+            return (time2 - time1);
+        })
         return {
             status: true,
             data: postThread

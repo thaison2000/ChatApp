@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { APIgetCommentsByPostId } from '../API/Comment';
-import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar} from '../API/Group';
+import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar } from '../API/Group';
 import { APIcreateNotification } from '../API/Notification';
-import { APIdeletePost, APIgetAllImportantPostByGroupId, APIgetAllPostByGroupId, APIupdatePost } from '../API/Post';
+import { APIdeletePost, APIdeletePostByGroupId, APIgetAllImportantPostByGroupId, APIgetAllPostByGroupId, APIupdatePost } from '../API/Post';
 import { APIfindUserByName } from '../API/User';
 import { Context } from '../context/Context';
 import ChatBox from './ChatBox'
@@ -41,7 +41,7 @@ const ChatWindow = (props: any) => {
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-  }, [posts.length]);
+  }, [posts.length, importantPostsWindow]);
 
   useEffect(() => {
     props.socket?.current?.on("getMessage", () => {
@@ -140,8 +140,9 @@ const ChatWindow = (props: any) => {
     }
     else {
       if (window.confirm('Are you sure you want to delete the group ?')) {
-        const { status }: any = await APIdeleteGroup(group.groupId)
-        if (status) {
+        const { status1 }: any = await APIdeleteGroup(group.groupId)
+        const { status2 }: any = await APIdeletePostByGroupId(group.groupId)
+        if (status1 && status2) {
           props.socket?.current?.emit("sendNotification", {
             sendUserName: user.name,
             sendUserId: user.userId,
@@ -326,11 +327,11 @@ const ChatWindow = (props: any) => {
 
   const UpdateAvatarAlert = () => {
     return (
-      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
-        <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
+      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl '>
+        <div className='w-full h-[50px] bg-sky-900 '>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Change Group Avatar</h1>
         </div>
-        <div className='flex flex-col items-center bg-neutral-200 mx-8 mt-8 mb-4 rounded-2xl p-4'>
+        <div className='flex flex-col items-center bg-neutral-200 mx-8 mt-8 mb-4  p-4'>
           <div className='bg-white rounded-full my-4'>
             <img className='w-36 h-36 rounded-full' src={group?.avatar ? ('http://localhost:3001/images/' + group?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
           </div>
@@ -368,18 +369,15 @@ const ChatWindow = (props: any) => {
 
   const AddMemberAlert = () => {
     return (
-      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
-        <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
+      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl '>
+        <div className='w-full h-[50px] bg-sky-900 '>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Add Member</h1>
         </div>
-        <div className='mx-8 mt-8 bg-neutral-200 rounded-2xl p-4'>
+        <div className='mx-8 mt-8 bg-neutral-200  p-4'>
           <div className='flex flex-row text-yellow-700'>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 mt-2">
-              <path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z" />
-            </svg>
-            <div className='pl-4 mt-2 text-xl font-bold'>Add member</div>
+            <div className='pl-2 mt-2 text-xl font-bold'>Add member</div>
           </div>
-          <div className='flex flex-row rounded-2xl'>
+          <div className='flex flex-row '>
             <div className='w-full px-2'>
               <input ref={addMemberName} defaultValue={addMemberName.current?.value} className='w-full my-4 py-4 focus:outline-none bg-neutral-200' type="text" placeholder='name ...' />
             </div>
@@ -391,7 +389,7 @@ const ChatWindow = (props: any) => {
           </div>
           <div className=''>
             {searchingUsers.map((searchingUser: any) => (
-              <div className='flex flex-row justify-between hover:bg-neutral-300 p-2 rounded-xl'>
+              <div className='flex flex-row justify-between hover:bg-neutral-300 p-2'>
                 <div className='flex flex-row'>
                   <div onClick={() => {
                     navigate('/profile/' + searchingUser.userId)
@@ -422,17 +420,17 @@ const ChatWindow = (props: any) => {
 
   const SettingAlert = () => {
     return (
-      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
-        <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
+      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl '>
+        <div className='w-full h-[50px] bg-sky-900'>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Setting</h1>
         </div>
         {
           members.some((member: any) => member.userId == user.userId && member.type == 'admin') ?
-            <div className='mx-8 mt-8 bg-neutral-200 rounded-2xl p-4'>
+            <div className='mx-8 mt-8 bg-neutral-200  p-4'>
               <div className='flex flex-row text-red-600'>
                 <div className=' mt-2 text-xl font-bold ml-2'>Delete Group</div>
               </div>
-              <div className='flex flex-row rounded-2xl'>
+              <div className='flex flex-row'>
                 <div className='w-full px-2'>
                   <input ref={deleteGroupName} defaultValue={deleteGroupName.current?.value} className='w-full my-4 py-4 focus:outline-none bg-neutral-200' type="text" placeholder='Rewrite group name ...' />
                 </div>
@@ -457,19 +455,15 @@ const ChatWindow = (props: any) => {
 
   const MemberAlert = () => {
     return (
-      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl rounded-lg'>
-        <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
+      <div className='fixed top-[60px] left-[520px] z-20 w-[500px] bg-white drop-shadow-xl '>
+        <div className='w-full h-[50px] bg-sky-900 '>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Member</h1>
         </div>
-        <div className='mx-8 mt-8 bg-neutral-200 rounded-2xl p-4'>
+        <div className='mx-8 mt-8 bg-neutral-200 p-4'>
           <div className='flex flex-row text-yellow-700 ml-2'>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 mt-2">
-              <path fillRule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clipRule="evenodd" />
-              <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
-            </svg>
-            <div className='pl-4 mt-2 text-xl font-bold'>Member</div>
+            <div className=' mt-2 text-xl font-bold'>Member</div>
           </div>
-          <div className='flex flex-row rounded-2xl'>
+          <div className='flex flex-row '>
             <div className='w-full px-2'>
               <input ref={addMemberName} defaultValue={addMemberName.current?.value} className='w-full my-4 py-4 focus:outline-none bg-neutral-200' type="text" placeholder='name ...' />
             </div>
@@ -481,7 +475,7 @@ const ChatWindow = (props: any) => {
           </div>
           <div className='max-h-[200px] overflow-auto'>
             {members.map((member: any) => (
-              <div className='flex flex-row justify-between hover:bg-neutral-300 p-2 rounded-xl'>
+              <div className='flex flex-row justify-between hover:bg-neutral-300 p-2 '>
                 <div className='flex flex-row'>
                   <div onClick={() => {
                     navigate('/profile/' + member.userId)
@@ -546,10 +540,17 @@ const ChatWindow = (props: any) => {
 
             </div>
             <div className='flex flex-row '>
-              <svg onClick={handleClickUploadFileAndLinkAlert} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-red-600">
-                <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z" />
-                <path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
-              </svg>
+              {
+                importantPostsWindow ?
+                  <svg onClick={handleClickImportantPostsWindow} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-blue-500">
+                    <path d="M4.913 2.658c2.075-.27 4.19-.408 6.337-.408 2.147 0 4.262.139 6.337.408 1.922.25 3.291 1.861 3.405 3.727a4.403 4.403 0 00-1.032-.211 50.89 50.89 0 00-8.42 0c-2.358.196-4.04 2.19-4.04 4.434v4.286a4.47 4.47 0 002.433 3.984L7.28 21.53A.75.75 0 016 21v-4.03a48.527 48.527 0 01-1.087-.128C2.905 16.58 1.5 14.833 1.5 12.862V6.638c0-1.97 1.405-3.718 3.413-3.979z" />
+                    <path d="M15.75 7.5c-1.376 0-2.739.057-4.086.169C10.124 7.797 9 9.103 9 10.609v4.285c0 1.507 1.128 2.814 2.67 2.94 1.243.102 2.5.157 3.768.165l2.782 2.781a.75.75 0 001.28-.53v-2.39l.33-.026c1.542-.125 2.67-1.433 2.67-2.94v-4.286c0-1.505-1.125-2.811-2.664-2.94A49.392 49.392 0 0015.75 7.5z" />
+                  </svg>
+                  :
+                  <svg onClick={handleClickImportantPostsWindow} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-red-500 ">
+                    <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                  </svg>
+              }
 
               <svg onClick={handleClickUpdateAvatarAlert} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-green-600">
                 <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
@@ -567,13 +568,22 @@ const ChatWindow = (props: any) => {
             </div>
           </div>
           <div className='h-[459px] flex flex-col overflow-auto divide-y relative z-0 divide-y'>
-            {posts?.map((post: any) => {
-              return (
-                <div key={post.postId} ref={scrollRef}>
-                  <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
-                </div>
-              )
-            })}
+
+            {importantPostsWindow ?
+              importantPosts?.map((post: any) => {
+                return (
+                  <div key={post.postId} ref={scrollRef}>
+                    <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
+                  </div>
+                )
+              }) :
+              posts?.map((post: any) => {
+                return (
+                  <div key={post.postId} ref={scrollRef}>
+                    <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
+                  </div>
+                )
+              })}
           </div>
           <div className='relative h-[90px] pl-2'>
             <Editor type={'post'} socket={props.socket} groupId={props.groupId} />

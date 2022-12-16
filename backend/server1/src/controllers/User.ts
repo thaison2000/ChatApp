@@ -46,14 +46,16 @@ const userController = {
     },
 
     findUserByName: async (req: any, res: Response) => {
-        try {
+        try {              
                 const users = await prisma.user.findMany({
+                    
                     where: {
                         name: {
-                            search: req.query.name,
+                            contains: req.query.name,
                         }
                     }
                 })
+                console.log(users)
                 res.status(200).json(users)
             }
         catch (err) {

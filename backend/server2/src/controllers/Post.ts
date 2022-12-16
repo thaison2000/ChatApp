@@ -12,7 +12,8 @@ const postController = {
             userId: req.user.userId,
             groupId: req.body.groupId,
             postId: `${uuid()}${Date.now()}`,
-            content: req.body.content
+            content: req.body.content,
+            read: [req.user.userId]
         });
         try {
             const savePost = await newPost.save();
@@ -52,6 +53,22 @@ const postController = {
         }
     },
 
+    deletePostByGroupId: async (req: any, res: Response) => {
+        try {
+            const deletePost = await Post.findMany({
+                userId: req.user.userId,
+                groupId: req.params.groupId
+            });
+            if (deletePost) {
+                await deletePost.deleteMany();
+            }
+            res.status(200).json('delete posts successfully');
+        } catch (err) {
+            console.log(err)
+            res.status(500).json(err);
+        }
+    },
+
     deleteDraftPostByDraftPostId: async (req: any, res: Response) => {
         try {
             const deletePost = await DraftPost.findOne({
@@ -80,6 +97,35 @@ const postController = {
             if (updatePost) {
                 return res.status(200).json('update post successfully');
             }
+        } catch (err) {
+            console.log(err)
+            res.status(500).json(err);
+        }
+    },
+    updateAllUnreadPostsToReadPostsByGroupId: async (req: any, res: Response) => {
+        try {
+
+            const updatePost = await Post.updateMany({
+                groupId: req.params.groupId
+            },
+            { $push: { read: req.user.userId } })
+            
+            return res.status(200).json('update read posts successfully');
+            
+        } catch (err) {
+            console.log(err)
+            res.status(500).json(err);
+        }
+    },
+
+    getAllUnreadPosts: async (req: any, res: Response) => {
+        try {
+
+            const unreadPosts = await Post.find({
+                read: { $nin: [req.user.userId] } 
+            })
+            console.log(unreadPosts)
+            res.status(200).json(unreadPosts);
         } catch (err) {
             console.log(err)
             res.status(500).json(err);
@@ -193,7 +239,7 @@ const postController = {
 
     getPostThreadByUserId: async (req: any, res: Response) => {
         try {
-            let postThread
+            var postThread
             const postThreadByPost = await Post.find({
                 userId: req.user.userId
             });
@@ -207,7 +253,7 @@ const postController = {
                 postThread = postThreadByPost.concat(post)
 
             }
-
+            console.log(postThread)
             //sap xep theo thoi gian gan nhat
             postThread = postThread.sort((p1: any, p2: any) => {
                 let time1: any = new Date(p2.createdAt)
@@ -217,7 +263,7 @@ const postController = {
 
             //loai bo trung lap
             function deduplicate(arr: any) {
-                let isExist = (arr: any, x: any) => arr.some((element: any)=> element.postId == x.postId);
+                let isExist = (arr: any, x: any) => arr.some((element: any) => element.postId == x.postId);
                 let ans: Array<any> = [];
 
                 arr.forEach((element: any) => {
@@ -227,12 +273,12 @@ const postController = {
             }
             postThread = deduplicate(postThread)
             res.status(200).json(postThread);
-            } catch (err) {
-                console.log(err)
-                res.status(500).json(err);
-            }
-        },
+        } catch (err) {
+            console.log(err)
+            res.status(500).json(err);
+        }
+    },
 
-    }
+}
 
 export default postController;

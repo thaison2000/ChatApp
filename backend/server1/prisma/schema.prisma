@@ -23,7 +23,7 @@ enum GroupType {
 
 model User {
   userId                      Int     @id @default(autoincrement())
-  name                        String
+  name                        String  @db.Text
   @@fulltext([name])
   email                       String  @unique
   phone                       String?
@@ -43,11 +43,13 @@ model User {
 model Group {
   groupId               Int     @id @default(autoincrement())
   avatar                String?
-  name                  String
+  name                  String   @db.Text
+  @@fulltext([name])
   desc                  String?
   type                  GroupType @default(Chanel)
   groupAdmin            GroupAdmin[]    @relation("group")
   groupUser             GroupUser[]     @relation("group")
+ 
 }
 
 model GroupAdmin {

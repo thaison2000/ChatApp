@@ -285,7 +285,7 @@ const TopBar = (props: any) => {
                     }
                     } className='p-4 flex flex-row hover:bg-neutral-100'>
                         <div>
-                            <img className='w-6 h-6' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                            <img className='w-6 h-6' src={searchingUser?.avatar ? ('http://localhost:3001/images/' + searchingUser?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                         </div>
                         <div className='ml-4'>{searchingUser.name}</div>
                     </div>
