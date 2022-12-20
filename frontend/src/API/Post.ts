@@ -342,7 +342,7 @@ export const APIgetPostThread = async () => {
                 postThread[i].groupName = res2.data.name
                 postThread[i].groupAvatar = res2.data.avatar
                 postThread[i].userName = res3.data.name 
-                postThread[i].userAvatar = res3.data.avatar
+                postThread[i].userAvatar = res3.data.avatar 
                 postThread[i].comment = res4.data
             }
             for(let j=0;j<postThread[i].comment?.length;j++){

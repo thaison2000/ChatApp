@@ -157,10 +157,10 @@ const groupController = {
                         groupId: groupUsers[i].groupId
                     }
                 })
-                if(group?.type == 'Chanel'){
+                if (group?.type == 'Chanel') {
                     data.push(group)
                 }
-                
+
             }
             res.status(200).json(data)
         }
@@ -185,18 +185,18 @@ const groupController = {
                         groupId: groupUsers[i].groupId
                     }
                 })
-                if(group?.type == 'DirectMessage'){
+                if (group?.type == 'DirectMessage') {
                     let groupAnotherUser = await prisma.groupUser.findMany({
                         where: {
                             groupId: group.groupId
                         }
                     })
-                    
-                    groupAnotherUser = groupAnotherUser.filter((groupAnotherUser:any)=>{
+
+                    groupAnotherUser = groupAnotherUser.filter((groupAnotherUser: any) => {
                         return groupAnotherUser.userId != req.user.userId
                     })
                     let user
-                    for(let i=0;i<groupAnotherUser.length;i++){
+                    for (let i = 0; i < groupAnotherUser.length; i++) {
                         user = await prisma.user.findUnique({
                             where: {
                                 userId: groupAnotherUser[0].userId
@@ -221,11 +221,38 @@ const groupController = {
 
     getGroupByGroupId: async (req: any, res: Response) => {
         try {
-            const group = await prisma.group.findUnique({
+            let group = await prisma.group.findUnique({
                 where: {
                     groupId: parseInt(req.params.groupId)
                 }
             })
+
+            if (group?.type == 'DirectMessage') {
+                let groupAnotherUser = await prisma.groupUser.findMany({
+                    where: {
+                        groupId: group.groupId
+                    }
+                })
+
+                groupAnotherUser = groupAnotherUser.filter((groupAnotherUser: any) => {
+                    return groupAnotherUser.userId != req.user.userId
+                })
+                let user
+                for (let i = 0; i < groupAnotherUser.length; i++) {
+                    user = await prisma.user.findUnique({
+                        where: {
+                            userId: groupAnotherUser[0].userId
+                        }
+                    })
+                }
+                group = {
+                    groupId: group.groupId,
+                    name: user?.name || '',
+                    avatar: user?.avatar || '',
+                    desc: '',
+                    type: 'DirectMessage'
+                }
+            }
             res.status(200).json(group)
         }
         catch (err) {
@@ -241,17 +268,17 @@ const groupController = {
                     groupId: parseInt(req.params.groupId)
                 }
             })
-            if(group){
+            if (group) {
                 let groupAnotherUser = await prisma.groupUser.findMany({
                     where: {
                         groupId: group.groupId
                     }
                 })
-                groupAnotherUser = groupAnotherUser.filter((groupAnotherUser:any)=>{
+                groupAnotherUser = groupAnotherUser.filter((groupAnotherUser: any) => {
                     return groupAnotherUser.userId != req.user.userId
                 })
                 let user
-                for(let i=0;i<groupAnotherUser.length;i++){
+                for (let i = 0; i < groupAnotherUser.length; i++) {
                     user = await prisma.user.findUnique({
                         where: {
                             userId: groupAnotherUser[0].userId
@@ -265,10 +292,10 @@ const groupController = {
                     userId: user?.userId
                 })
             }
-            else{
+            else {
                 return res.status(200).json([])
             }
-            
+
         }
         catch (err) {
             console.log(err)

@@ -18,20 +18,16 @@ const PostSchema = mongoose.Schema(
             type: String,
             required: true
         },
-        likes: {
-            type: Array
-        },
         type: {
             type: Number,
             default: 0
         },
         //type 0 : normal
         //type 1 : important
-        read: Array,
-        default: []
-        //status 0 : chua xem
-        //status 1 : da xem
-        
+        reads: {
+            type: Array,
+            default: []
+        }    
     },
     { timestamps: true })
 
