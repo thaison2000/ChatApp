@@ -45,7 +45,13 @@ const DirectMessage = (props: any) => {
                 }
                 if (data.type == 16) {
                     setNewPostCount((prev: number) => prev + 1)
-                  }
+                }
+                if (data.type == 17) {
+                    setNewPostCount((prev: number) => prev + 1)
+                }
+                if (data.type == 18) {
+                    setNewPostCount((prev: number) => prev + 1)
+                }
             }
         });
     }, [props.socket?.current]);

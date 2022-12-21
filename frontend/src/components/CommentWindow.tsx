@@ -41,7 +41,6 @@ const CommentWindow = (props: any) => {
                 if (data.type == 1) {
                     setNewLikeCount((prev: number) => prev + 1)
                 }
-
             }
         });
     }, [props.socket?.current]);

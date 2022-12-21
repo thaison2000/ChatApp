@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Response } from "express";
+import { redisClient } from "..";
 
 const prisma = new PrismaClient()
 
@@ -144,25 +145,37 @@ const groupController = {
 
     getAllGroups: async (req: any, res: Response) => {
         try {
-            let data = []
 
-            const groupUsers = await prisma.groupUser.findMany({
-                where: {
-                    userId: req.user.userId
-                }
-            })
-            for (let i = 0; i < groupUsers.length; i++) {
-                const group = await prisma.group.findUnique({
+            const groupRedisKey = 'groups'
+            let groups = await redisClient.get(groupRedisKey)
+
+            // If that key exists in Redis store
+            if (groups) {
+                return res.status(200).json(JSON.parse(groups))
+            }
+            else {
+                let data = []
+
+                const groupUsers = await prisma.groupUser.findMany({
                     where: {
-                        groupId: groupUsers[i].groupId
+                        userId: req.user.userId
                     }
                 })
-                if (group?.type == 'Chanel') {
-                    data.push(group)
-                }
+                for (let i = 0; i < groupUsers.length; i++) {
+                    const group = await prisma.group.findUnique({
+                        where: {
+                            groupId: groupUsers[i].groupId
+                        }
+                    })
+                    if (group?.type == 'Chanel') {
+                        data.push(group)
+                    }
 
+                }
+                await redisClient.set(groupRedisKey, JSON.stringify(data));
+                res.status(200).json(data)
             }
-            res.status(200).json(data)
+
         }
         catch (err) {
             console.log(err)

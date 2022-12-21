@@ -104,11 +104,18 @@ const postController = {
     },
     updateAllUnreadPostsToReadPostsByGroupId: async (req: any, res: Response) => {
         try {
-
-            const updatePost = await Post.updateMany({
+            const posts = await Post.find({
                 groupId: req.params.groupId
-            },
-            { $push: { read: req.user.userId } })
+            })
+            for(let i=0;i< posts.length;i++){
+                if(!posts[i].reads.includes(req.user.userId)){
+                    const updatePost = await Post.updateOne({
+                        postId: posts[i].postId,
+                        groupId: req.params.groupId
+                    },
+                    { $push: { reads: req.user.userId } })
+                }
+            }
             
             return res.status(200).json('update read posts successfully');
             
@@ -122,7 +129,7 @@ const postController = {
         try {
 
             const unreadPosts = await Post.find({
-                read: { $nin: [req.user.userId] } 
+                reads: { $nin: [req.user.userId] } 
             })
             console.log(unreadPosts)
             res.status(200).json(unreadPosts);

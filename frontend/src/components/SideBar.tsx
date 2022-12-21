@@ -22,8 +22,6 @@ const SideBar = (props: any) => {
     const [unreadPosts, setUnreadPosts] = useState<Array<any>>([]);
     const [unreadPostsCount, setUnreadPostsCount] = useState<number>();
 
-
-
     useEffect(() => {
         props.socket.current?.on("getNotification", (data: any) => {
             console.log(data.type)

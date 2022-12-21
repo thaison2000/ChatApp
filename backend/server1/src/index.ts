@@ -12,24 +12,24 @@ import verifyToken from "./controllers/verifyToken";
 import { PrismaClient } from "@prisma/client";
 import groupRoute from "./routes/Group";
 import friendRoute from "./routes/Friend";
-// import { createClient } from "redis";
+import { createClient } from "redis";
 
-// const redisClient = createClient({
-//     socket: {
-//         host: process.env.REDIS_HOST,
-//         port: parseInt(`${process.env.REDIS_PORT}`)
-//     }
-// });
+const redisClient = createClient({
+    socket: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(`${process.env.REDIS_PORT}`)
+    }
+});
 
-// (async () => {
-//     await redisClient.connect();
-// })();
+(async () => {
+    await redisClient.connect();
+})();
 
 
-// redisClient.on('connect', () => console.log('Redis Client Connected'));
-// redisClient.on('error', (err) => console.log('Redis Client Connection Error', err));
+redisClient.on('connect', () => console.log('Redis Client Connected'));
+redisClient.on('error', (err) => console.log('Redis Client Connection Error', err));
 
-// export { redisClient };
+export { redisClient };
 
 
 dotenv.config()
