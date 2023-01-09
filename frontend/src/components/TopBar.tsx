@@ -109,6 +109,7 @@ const TopBar = (props: any) => {
 
     const handleClickNotificationAlert = () => {
         setNotificationAlert(!notificationAlert)
+        setCountNewNotifications(0)
     }
 
     const handleClickDeleteFriendRequest = async (sendUserId: number, receiveUserId: number) => {
@@ -214,6 +215,7 @@ const TopBar = (props: any) => {
                     return (
                         <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has <span className='text-[18px] font-medium text-sky-900'>Unfriend</span> you 
+                            <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
                         </div>
                     )
                 }

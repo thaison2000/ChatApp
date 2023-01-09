@@ -32,6 +32,9 @@ services:
       - redis
       - mysql
     build: ./backend/server1
+    volumes:
+      - ./server1/src/
+
     ports:
       - 3001:3001
 
@@ -44,6 +47,8 @@ services:
       - mongo
       - redis
     build: ./backend/server2
+    volumes:
+      - ./server2/src/
     ports:
       - 3002:3002
 
@@ -53,6 +58,8 @@ services:
     image: server3
     container_name: server3-container
     build: ./backend/server3
+    volumes:
+      - ./server3/src/
     ports:
       - 3003:3003
 
@@ -62,6 +69,8 @@ services:
     image: frontend
     container_name: frontend-container
     build: ./frontend
+    volumes:
+      - ./app/src
     ports:
       - 3000:3000
 

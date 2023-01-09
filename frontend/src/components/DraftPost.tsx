@@ -98,7 +98,7 @@ const DraftPost = (props: any) => {
                         {groups.map((group: any) => {
                             return (
                                 <div key={group.groupId}>
-                                    <div className='flex flex-row bg-neutral-100'>
+                                    <div className='flex flex-row bg-neutral-100 hover:bg-neutral-200'>
                                         <div
                                             className='w-4 h-4 rounded-full border-2 m-2'
                                             onClick={() => {
@@ -113,7 +113,7 @@ const DraftPost = (props: any) => {
                                                 {
                                                     backgroundColor: 'white'
                                                 }}></div>
-                                        <div>
+                                        <div className='w-40 overflow-auto'>
                                             {group.name}
                                         </div>
                                     </div>

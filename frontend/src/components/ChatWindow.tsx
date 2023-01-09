@@ -44,8 +44,8 @@ const ChatWindow = (props: any) => {
   }, [posts.length, importantPostsWindow]);
 
   useEffect(() => {
-    props.socket?.current?.on("getMessage", () => {
-      if (members.some((member: any) => member.userId == user.userId)) {
+    props.socket?.current?.on("getMessage", (data: any) => {
+      if (props.groupId == data.groupId) {
         setNewPostCount((prev: number) => prev + 1)
       }
     });

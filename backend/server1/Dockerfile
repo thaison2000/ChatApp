@@ -1,23 +1,21 @@
 FROM node:16
 
-WORKDIR /app
+WORKDIR /server1
 
 # COPY package.json and package-lock.json files
-COPY package*.json ./
+ADD package*.json ./
 
 # generated prisma files
-COPY prisma ./prisma/
-
-# COPY ENV variable
-COPY .env ./
+ADD prisma ./prisma/
 
 # COPY tsconfig.json file
-COPY tsconfig.json ./
+ADD tsconfig.json ./
 
 # COPY
-COPY . .
+ADD . .
 
 RUN npm install
+RUN npm install -g nodemon 
 
 RUN npx prisma generate
 

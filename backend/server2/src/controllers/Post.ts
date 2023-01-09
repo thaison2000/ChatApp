@@ -131,7 +131,6 @@ const postController = {
             const unreadPosts = await Post.find({
                 reads: { $nin: [req.user.userId] } 
             })
-            console.log(unreadPosts)
             res.status(200).json(unreadPosts);
         } catch (err) {
             console.log(err)
@@ -246,8 +245,8 @@ const postController = {
 
     getPostThreadByUserId: async (req: any, res: Response) => {
         try {
-            var postThread
-            const postThreadByPost = await Post.find({
+            var postThread = []
+            let postThreadByPost = await Post.find({
                 userId: req.user.userId
             });
             const postThreadByComment = await Comment.find({
@@ -257,12 +256,12 @@ const postController = {
                 let post = await Post.find({
                     postId: postThreadByComment[i].postId
                 });
-                postThread = postThreadByPost.concat(post)
+                postThreadByPost.push(post)
 
             }
-            console.log(postThread)
+            postThread = postThreadByPost
             //sap xep theo thoi gian gan nhat
-            postThread = postThread.sort((p1: any, p2: any) => {
+            postThread = postThread?.sort((p1: any, p2: any) => {
                 let time1: any = new Date(p2.createdAt)
                 let time2: any = new Date(p1.createdAt)
                 return (time2 - time1);

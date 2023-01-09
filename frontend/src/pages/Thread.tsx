@@ -9,7 +9,6 @@ import en from 'javascript-time-ago/locale/en'
 import Editor from '../components/Editor'
 import ChatBox from '../components/ChatBox'
 import { Context } from '../context/Context'
-import { APIgetAllMemberByGroupId } from '../API/Group'
 
 TimeAgo.addDefaultLocale(en)
 
@@ -27,7 +26,7 @@ const Thread = (props: any) => {
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-    }, [newPostCount, newCommentCount, newLikeCount, posts.length]);
+    }, [newPostCount, posts.length]);
 
     useEffect(() => {
         props.socket?.current?.on("getNotification", (data: any) => {
@@ -42,8 +41,13 @@ const Thread = (props: any) => {
             }
             if (data.type == 16) {
                 setNewPostCount((prev: number) => prev + 1)
-              }
-
+            }
+            if (data.type == 17) {
+                setNewPostCount((prev: number) => prev + 1)
+            }
+            if (data.type == 18) {
+                setNewPostCount((prev: number) => prev + 1)
+            }
         });
     }, [props.socket?.current]);
 
@@ -55,7 +59,7 @@ const Thread = (props: any) => {
             }
         }
         fetchThread();
-    }, [newPostCount,newCommentCount,newLikeCount])
+    }, [newPostCount, newCommentCount, newLikeCount])
 
     const handleClickDeletePost = async (postId: string) => {
         if (window.confirm('Are you sure you want to remove this post in group ?')) {
@@ -83,8 +87,8 @@ const Thread = (props: any) => {
                 <div className='w-[calc(100%-250px)] overflow-auto'>
                     {posts.map((post: any) => {
                         return (
-                            <div className='m-4 bg-gray-200 border-2' ref={scrollRef}>
-                                <div className='flex flex-row py-2 px-2'>
+                            <div className='mx-4 bg-gray-200 border-2' ref={scrollRef}>
+                                <div className='flex flex-row pb-2 px-2'>
                                     <div>
                                         <img className='w-8 h-8 mt-2 rounded-full' src={post.groupAvatar ? ('http://localhost:3001/images/' + post.groupAvatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
                                     </div>

@@ -5,7 +5,7 @@ import TopBar from '../components/TopBar'
 import { useParams } from 'react-router-dom'
 import { APIgetUserProfile, APIupdateUserAvatar, APIupdateUserProfile } from '../API/User'
 import { APIaddFriend, APIcreateFriendRequest, APIdeleteFriend, APIdeleteFriendRequest, APIgetAllFriendRequestBySendUserId, APIgetAllFriends } from '../API/Friend'
-import { APIcreateFriendRequestNotification, APIdeleteNotification } from '../API/Notification'
+import { APIcreateFriendRequestNotification, APIcreateNotification, APIdeleteNotification } from '../API/Notification'
 
 const Profile = (props: any) => {
 
@@ -41,7 +41,7 @@ const Profile = (props: any) => {
   useEffect(() => {
     if (newNotification.type == 5) {
       const addFriend = async () => {
-          setUserCondition('friend')
+        setUserCondition('friend')
       }
       addFriend()
     }
@@ -145,6 +145,12 @@ const Profile = (props: any) => {
   const handleClickDeleteFriend = async () => {
     const { status }: any = await APIdeleteFriend(user.userId)
     if (status) {
+      await APIcreateNotification({
+        sendUserName: currentUser.name,
+        sendUserId: currentUser.userId,
+        receiveUserId: user.userId,
+        type: 7
+      })
       props.socket?.current?.emit("sendNotification", {
         sendUserName: currentUser.name,
         sendUserId: currentUser.userId,
@@ -247,7 +253,7 @@ const Profile = (props: any) => {
     <div className='w-screen h-screen pointer-events-auto'>
       <TopBar socket={props.socket} />
       <div className='w-full h-[calc(100%-50px)] flex flex-row'>
-        <SideBar socket={props.socket}/>
+        <SideBar socket={props.socket} />
         <div className='flex flex-row p-4'>
           <div className='flex flex-row'>
             <div className='flex flex-col'>

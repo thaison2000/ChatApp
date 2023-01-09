@@ -7,7 +7,6 @@ const prisma = new PrismaClient()
 const groupController = {
     createGroup: async (req: any, res: Response) => {
         try {
-
             const newGroup = await prisma.group.create({
                 data: {
                     name: req.body.name,
@@ -27,6 +26,12 @@ const groupController = {
                     userId: req.user.userId
                 }
             })
+
+            const groupRedisKey = 'groups' + req.user.userId
+            let groups: any = await redisClient.get(groupRedisKey)
+            groups = JSON.parse(groups)
+            groups.push(newGroup)
+            await redisClient.set(groupRedisKey, JSON.stringify(groups));
             res.status(200).json('Create group successfully !')
         }
         catch (err) {
@@ -100,6 +105,16 @@ const groupController = {
                     userId: parseInt(req.body.userId)
                 }
             })
+            let group = await prisma.group.findUnique({
+                where: {
+                    groupId: parseInt(req.body.groupId)
+                }
+            })
+            const groupRedisKey = 'groups' + req.body.userId
+            let groups: any = await redisClient.get(groupRedisKey)
+            groups = JSON.parse(groups)
+            groups.push(group)
+            await redisClient.set(groupRedisKey, JSON.stringify(groups));
             res.status(200).json('Add member into group successfully !')
         }
         catch (err) {
@@ -118,6 +133,11 @@ const groupController = {
                     userId: parseInt(req.params.userId)
                 }
             })
+            const groupRedisKey = 'groups' + req.params.userId
+            let groups: any = await redisClient.get(groupRedisKey)
+            groups = JSON.parse(groups)
+            groups.filter((group: any)=> group.groupId = req.params.groupId)
+            await redisClient.set(groupRedisKey, JSON.stringify(groups));
             res.status(200).json('Delete member in group successfully !')
         }
         catch (err) {
@@ -146,11 +166,11 @@ const groupController = {
     getAllGroups: async (req: any, res: Response) => {
         try {
 
-            const groupRedisKey = 'groups'
-            let groups = await redisClient.get(groupRedisKey)
+            const groupRedisKey = 'groups' + req.user.userId
+            let groups: any = await redisClient.get(groupRedisKey)
 
             // If that key exists in Redis store
-            if (groups) {
+            if (JSON.parse(groups)?.length > 0) {
                 return res.status(200).json(JSON.parse(groups))
             }
             else {

@@ -116,6 +116,12 @@ const FriendController = {
                     friendId: parseInt(req.params.friendId)
                 }
             })
+            await prisma.friend.deleteMany({
+                where: {
+                    friendId: req.user.userId,
+                    userId: parseInt(req.params.friendId)
+                }
+            })
             const groupUser1 = await prisma.groupUser.findMany({
                 where: {
                     userId: req.user.userId

@@ -76,10 +76,9 @@ const notificationController = {
 
   getAllNotificationsByReceiveUserId: async (req: any, res: Response) => {
     try {
-      const notifications = await Notification.find({
+      let notifications = await Notification.find({
         receiveUserId: req.user.userId,
       });
-
       res.status(200).json(notifications);
     } catch (err) {
       console.log(err)

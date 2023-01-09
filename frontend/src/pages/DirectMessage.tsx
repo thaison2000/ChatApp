@@ -57,8 +57,8 @@ const DirectMessage = (props: any) => {
     }, [props.socket?.current]);
 
     useEffect(() => {
-        props.socket?.current?.on("getMessage", () => {
-            if (members.some((member: any) => member.userId == user.userId)) {
+        props.socket?.current?.on("getMessage", (data: any) => {
+            if (groupId == data.groupId) {
                 setNewPostCount((prev: number) => prev + 1)
             }
         });

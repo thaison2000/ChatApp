@@ -24,7 +24,6 @@ const SideBar = (props: any) => {
 
     useEffect(() => {
         props.socket.current?.on("getNotification", (data: any) => {
-            console.log(data.type)
             setNewNotification({
                 sendUserId: data.sendUserId,
                 receiveUserId: data.receiveUserId,
@@ -37,7 +36,6 @@ const SideBar = (props: any) => {
 
     useEffect(() => {
         props.socket.current?.on("getMessage", (data: any) => {
-            console.log(data)
             setNewNotification({
                 sendUserId: data.sendUserId,
                 type: data.type,

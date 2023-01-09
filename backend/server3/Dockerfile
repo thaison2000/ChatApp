@@ -1,4 +1,5 @@
 FROM node:16
-WORKDIR /app
-COPY . .
+WORKDIR /server3
+ADD . .
 RUN npm install
+RUN npm install -g nodemon 

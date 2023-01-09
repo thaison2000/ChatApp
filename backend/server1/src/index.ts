@@ -17,7 +17,8 @@ import { createClient } from "redis";
 const redisClient = createClient({
     socket: {
         host: process.env.REDIS_HOST,
-        port: parseInt(`${process.env.REDIS_PORT}`)
+        port: 6379
+        // port: parseInt(`${process.env.REDIS_PORT}`)
     }
 });
 
@@ -34,11 +35,12 @@ export { redisClient };
 
 dotenv.config()
 
+
 // Middleswares
 app.use(function (req: Request, res: Response, next: NextFunction) {
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', '*');
-  
+
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     // Request headers you wish to allow
@@ -47,7 +49,7 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Headers', '*');
     next();
-  });
+});
 
 app.use(cors())
 app.use(bodyParser.json());
@@ -104,6 +106,16 @@ app.post("/api/group/updateAvatar", verifyToken, upload.single("file"), async (r
                 avatar: req.body.name
             }
         })
+
+        const groupRedisKey = 'groups' + req.user.userId
+        let groups: any = await redisClient.get(groupRedisKey)
+        groups = JSON.parse(groups)
+        groups.map((group:any)=> {
+            if(group.groupId == parseInt(req.body.groupId)){
+                group.avatar = req.body.name
+            }
+        })
+        await redisClient.set(groupRedisKey, JSON.stringify(groups));
 
         res.status(200).json('Update group avatar successfully !')
     } catch (error) {
