@@ -28,7 +28,7 @@ const Friend_1 = __importDefault(require("./routes/Friend"));
 const redis_1 = require("redis");
 const redisClient = (0, redis_1.createClient)({
     socket: {
-        host: process.env.REDIS_HOST,
+        host: 'red-ceueoamn6mpglqckh1rg',
         port: 6379
         // port: parseInt(`${process.env.REDIS_PORT}`)
     }
