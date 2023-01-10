@@ -90,7 +90,7 @@ const Thread = (props: any) => {
                             <div className='mx-4 bg-gray-200 border-2' ref={scrollRef}>
                                 <div className='flex flex-row pb-2 px-2'>
                                     <div>
-                                        <img className='w-8 h-8 mt-2 rounded-full' src={post.groupAvatar ? ('http://localhost:3001/images/' + post.groupAvatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                                        <img className='w-8 h-8 mt-2 rounded-full' src={post.groupAvatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + post.groupAvatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                                     </div>
                                     <div className='flex flex-col'>
                                         <div className='ml-2 mx-0 text-md font-bold'>{post.groupName}</div>
@@ -109,7 +109,7 @@ const Thread = (props: any) => {
                                                     return (
                                                         <div className='flex flex-row hover:bg-gray-100 pt-2'>
                                                             <div>
-                                                                <img className='w-8 h-8 mt-2 rounded-full' src={comment.userAvatar ? ('http://localhost:3001/images/' + comment.userAvatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                                                                <img className='w-8 h-8 mt-2 rounded-full' src={comment.userAvatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + comment.userAvatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                                                             </div>
                                                             <div className='flex flex-col'>
                                                                 <div className='ml-2'>

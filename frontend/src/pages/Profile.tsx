@@ -258,7 +258,7 @@ const Profile = (props: any) => {
           <div className='flex flex-row'>
             <div className='flex flex-col'>
               <div className='my-4 ml-8 mr-4 flex flex-col relative drop-shadow-2xl bg-white rounded-2xl w-[250px] h-[250px] justify-center items-center'>
-                <img className='w-48 h-48 rounded-full' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                <img className='w-48 h-48 rounded-full' src={user?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + user?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
 
               </div>
               {currentUser?.userId == user?.userId ?

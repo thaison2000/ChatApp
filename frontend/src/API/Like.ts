@@ -20,7 +20,7 @@ export const APIcreatePostLike = async (createPostLike: createPostLikeInterface)
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.post("http://localhost:3002/api/like/postLike/", createPostLike, config);
+        await axios.post("https://chatapp-server2.onrender.com/api/like/postLike/", createPostLike, config);
         return {
             status: true
         }
@@ -39,7 +39,7 @@ export const APIcreateCommentLike = async (createCommentLike: createCommentLikeI
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.post("http://localhost:3002/api/like/commentLike/", createCommentLike, config);
+        await axios.post("https://chatapp-server2.onrender.com/api/like/commentLike/", createCommentLike, config);
         return {
             status: true
         }
@@ -58,7 +58,7 @@ export const APIdeleteLike = async (likeId: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.delete("http://localhost:3002/api/like/" + likeId, config);
+        await axios.delete("https://chatapp-server2.onrender.com/api/like/" + likeId, config);
         return {
             status: true
         }
@@ -77,7 +77,7 @@ export const APIgetLikesByPostId = async (postId: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get("http://localhost:3002/api/like/post/" + postId, config);
+        const res = await axios.get("https://chatapp-server2.onrender.com/api/like/post/" + postId, config);
         return {
             status: true,
             data: res.data
@@ -97,7 +97,7 @@ export const APIgetLikesByCommentId = async (commentId: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get("http://localhost:3002/api/like/comment/" + commentId, config);
+        const res = await axios.get("https://chatapp-server2.onrender.com/api/like/comment/" + commentId, config);
         return {
             status: true,
             data: res.data

@@ -333,7 +333,7 @@ const ChatWindow = (props: any) => {
         </div>
         <div className='flex flex-col items-center bg-neutral-200 mx-8 mt-8 mb-4  p-4'>
           <div className='bg-white rounded-full my-4'>
-            <img className='w-36 h-36 rounded-full' src={group?.avatar ? ('http://localhost:3001/images/' + group?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+            <img className='w-36 h-36 rounded-full' src={group?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + group?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
           </div>
           <input className="block w-[240px] text-sm text-slate-500 ml-3
                   file:mr-4 file:py-2 file:px-4
@@ -395,7 +395,7 @@ const ChatWindow = (props: any) => {
                     navigate('/profile/' + searchingUser.userId)
                   }}
                     className='my-2'>
-                    <img className='rounded-full w-10 h-10' src={searchingUser?.avatar ? ('http://localhost:3001/images/' + searchingUser?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                    <img className='rounded-full w-10 h-10' src={searchingUser?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + searchingUser?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                   </div>
                   <div className='font-bold text-[18px] mt-3 ml-4'>{searchingUser.name}</div>
                 </div>
@@ -481,7 +481,7 @@ const ChatWindow = (props: any) => {
                     navigate('/profile/' + member.userId)
                   }}
                     className='my-2' >
-                    <img className='rounded-full w-10 h-10' src={member?.avatar ? ('http://localhost:3001/images/' + member?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                    <img className='rounded-full w-10 h-10' src={member?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + member?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                   </div>
                   <div>
                     <div className='font-bold text-[18px] mt-2 ml-4'>{member.name}</div>
@@ -530,7 +530,7 @@ const ChatWindow = (props: any) => {
             <div>
               <div className='flex flex-row'>
                 <div className='p-2 ml-2'>
-                  <img className='w-8 h-8 mt-2 rounded-full' src={group?.avatar ? ('http://localhost:3001/images/' + group?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                  <img className='w-8 h-8 mt-2 rounded-full' src={group?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + group?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                 </div>
                 <div className='flex flex-col p-2'>
                   <div>{group?.name}</div>

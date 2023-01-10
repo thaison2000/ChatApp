@@ -92,7 +92,7 @@ const CommentWindow = (props: any) => {
                                         navigate('/profile/' + comment.userId)
                                         window.location.reload()
                                     }}
-                                        className='w-8 h-8 m-4 rounded-full' src={comment.avatar ? ('http://localhost:3001/images/' + comment.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                                        className='w-8 h-8 m-4 rounded-full' src={comment.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + comment.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                                 </div>
                                 <div className='flex flex-col mt-2'>
                                     <h1 className='mx-0 text-md font-bold'>{comment.name}</h1>

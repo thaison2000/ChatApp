@@ -18,7 +18,7 @@ function App() {
   const socket = useRef<any>()
 
   useEffect(() => {
-    socket.current = io("http://localhost:3003");
+    socket.current = io("https://chatapp-server3.onrender.com");
     socket.current.emit("addUser", user?.userId);
   }, [socket.current]);
 

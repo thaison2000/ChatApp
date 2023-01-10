@@ -8,7 +8,7 @@ export const APIfetchAllGroups = async () => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get("http://localhost:3001/api/group", config);
+        const res = await axios.get("https://chatapp-server1-y5cc.onrender.com/api/group", config);
         return {
             status: true,
             data: res.data
@@ -28,7 +28,7 @@ export const APIfetchAllDirectMessageGroups = async () => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get("http://localhost:3001/api/group/directMessage", config);
+        const res = await axios.get("https://chatapp-server1-y5cc.onrender.com/api/group/directMessage", config);
         return {
             status: true,
             data: res.data
@@ -48,7 +48,7 @@ export const APIgetGroupByGroupId = async (groupId: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get("http://localhost:3001/api/group/" + groupId, config);
+        const res = await axios.get("https://chatapp-server1-y5cc.onrender.com/api/group/" + groupId, config);
         return {
             status: true,
             data: res.data
@@ -68,7 +68,7 @@ export const APIgetDirectMessageByGroupId = async (groupId: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get("http://localhost:3001/api/group/directMessage/" + groupId, config);
+        const res = await axios.get("https://chatapp-server1-y5cc.onrender.com/api/group/directMessage/" + groupId, config);
         return {
             status: true,
             data: res.data
@@ -94,7 +94,7 @@ export const APIupdateGroupAvatar = async (avatar: any, groupId: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.post("http://localhost:3001/api/group/updateAvatar", data, config);
+        await axios.post("https://chatapp-server1-y5cc.onrender.com/api/group/updateAvatar", data, config);
         return {
             status: true,
             data: fileName
@@ -113,7 +113,7 @@ export const APIaddMemberIntoGroup = async (groupId: string, userId: string) => 
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.post("http://localhost:3001/api/group/addMember/" ,{groupId,userId}, config);
+        await axios.post("https://chatapp-server1-y5cc.onrender.com/api/group/addMember/" ,{groupId,userId}, config);
         return {
             status: true
         }
@@ -132,7 +132,7 @@ export const APIdeleteMemberInGroup = async (groupId: string, userId: string) =>
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.delete("http://localhost:3001/api/group/deleteMember/" + groupId + '/' + userId, config);
+        await axios.delete("https://chatapp-server1-y5cc.onrender.com/api/group/deleteMember/" + groupId + '/' + userId, config);
         return {
             status: true
         }
@@ -151,7 +151,7 @@ export const APIpromoteAdminInGroup = async (groupId: string, userId: string) =>
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.post("http://localhost:3001/api/group/promoteAdmin/",{
+        await axios.post("https://chatapp-server1-y5cc.onrender.com/api/group/promoteAdmin/",{
             groupId,userId
         }, config);
         return {
@@ -172,7 +172,7 @@ export const APIgetAllMemberByGroupId = async (groupId: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get("http://localhost:3001/api/group/members/" + groupId, config);
+        const res = await axios.get("https://chatapp-server1-y5cc.onrender.com/api/group/members/" + groupId, config);
         return {
             status: true,
             data: res.data
@@ -192,7 +192,7 @@ export const APIcreateGroup = async (name: string, desc: string, type: string| u
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.post("http://localhost:3001/api/group/",{
+        await axios.post("https://chatapp-server1-y5cc.onrender.com/api/group/",{
             name,
             desc,
             type
@@ -215,7 +215,7 @@ export const APIdeleteGroup = async (groupId: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.delete("http://localhost:3001/api/group/" + groupId, config);
+        await axios.delete("https://chatapp-server1-y5cc.onrender.com/api/group/" + groupId, config);
         return {
             status: true
         }

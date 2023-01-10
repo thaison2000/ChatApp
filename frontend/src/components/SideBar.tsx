@@ -112,7 +112,7 @@ const SideBar = (props: any) => {
             {createGroupForm ? <CreateGroupForm handleClickCreateGroupForm={handleClickCreateGroup} /> : null}
             <div className='flex flex-col divide-y-2 relative'>
                 <div className=' py-4 flex flex-row w-[250px] hover:bg-sky-800' onClick={handleClickProfile}>
-                    <img className='rounded-full m-2 ml-4 w-8 h-8' src={user?.avatar ? ('http://localhost:3001/images/' + user?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                    <img className='rounded-full m-2 ml-4 w-8 h-8' src={user?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + user?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                     <h1 className='text-2xl text-white font-bold px-4 py-2 overflow-auto'>{user.name}</h1>
                 </div>
                 <div>
@@ -181,7 +181,7 @@ const SideBar = (props: any) => {
                                     <div key={group.groupId} onClick={() => handleClickUpdateUnreadPostsToReadPosts(group.groupId)
 
                                     } className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
-                                        <img className='w-6 h-6 rounded-full' src={group?.avatar ? ('http://localhost:3001/images/' + group?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                                        <img className='w-6 h-6 rounded-full' src={group?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + group?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                                         <span className='text-white ml-4'>{group.name}</span>
                                         {newPostCount > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{newPostCount}</div> : null}
                                     </div>
@@ -209,7 +209,7 @@ const SideBar = (props: any) => {
                                         navigate('/directMessage/' + directMessage.groupId)
                                         window.location.reload()
                                     }} className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
-                                        <img className='w-6 h-6 rounded-full mt-[1px]' src={directMessage?.avatar ? ('http://localhost:3001/images/' + directMessage?.avatar) : 'http://localhost:3001/images/nullAvatar.png'} alt="" />
+                                        <img className='w-6 h-6 rounded-full mt-[1px]' src={directMessage?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + directMessage?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                                         <span className='text-white ml-4'>{directMessage.name}</span>
                                         {newPostCount > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{newPostCount}</div> : null}
                                     </div>

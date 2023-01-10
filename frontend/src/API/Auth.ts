@@ -14,7 +14,7 @@ interface userRegisterInterface {
 export const APILogin = async (userLogin: userLoginInterface) => {
     try {
 
-        const res = await axios.post("http://localhost:3001/api/auth/login", userLogin);
+        const res = await axios.post("https://chatapp-server1-y5cc.onrender.com/api/auth/login", userLogin);
         alert('Đăng nhập thành công')
         return {
             status: true,
@@ -49,7 +49,7 @@ export const APILogin = async (userLogin: userLoginInterface) => {
 
 export const APIRegister = async (userRegister: userRegisterInterface) => {
     try {
-        const res = await axios.post("http://localhost:3001/api/auth/register", userRegister);
+        const res = await axios.post("https://chatapp-server1-y5cc.onrender.com/api/auth/register", userRegister);
         alert('Đăng ký tài khoản thành công')
         return {
             status: true,
