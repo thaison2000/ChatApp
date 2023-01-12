@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
 import { APIcreateDraftPost, APIdeleteDraftPost, APIgetAllDraftPostByUserId } from '../API/Post'
-import ChatWindow from '../components/ChatWindow'
 import DraftPost from '../components/DraftPost'
 import Editor from '../components/Editor'
 import SideBar from '../components/SideBar'
@@ -67,8 +65,8 @@ const Draft = (props: any) => {
 
     const CreateDraftPostForm = () =>
     (
-        <div className='border-2 w-[97%] mx-4 relative h-[160px] mt-12'>
-            <div className='absolute h-[100px] p-4 w-[100%] z-1'>
+        <div className='w-[97%] ml-4 relative mt-2'>
+            <div className='w-[100%] z-1'>
                 <Editor type={'draftPost'} handleClickSaveDraftPost={handleClickSaveDraftPost} />
             </div>
 
@@ -81,10 +79,12 @@ const Draft = (props: any) => {
             <div className='w-full h-[calc(100%-50px)] flex flex-row'>
                 <SideBar socket={props.socket} />
                 <div className='w-[calc(100%-250px)]'>
-                    <div onClick={handleClickCreateDraftPost} className='m-4 bg-sky-700 text-white p-4 font-bold text-xl hover:bg-sky-800 pointer-events-auto w-[220px]'>
-                        Create a draft post
+                    <div className='h-[75px]'>
+                        <div onClick={handleClickCreateDraftPost} className='m-4 bg-sky-700 text-white p-4 font-bold text-xl hover:bg-sky-800 pointer-events-auto w-[220px]'>
+                            Create a draft post
+                        </div>
                     </div>
-                    <div className='h-[570px] overflow-auto'>
+                    <div className='h-[calc(100%-100px)] overflow-auto'>
                         <div className='divide-y'>
                             {
                                 draftPosts.map((draftPost: any) => <div ref={scrollRef} key={draftPost.draftPostId} className='bg-neutral-100 mx-4 py-4'>

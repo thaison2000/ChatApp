@@ -8,7 +8,7 @@ export const APIdeleteFriend = async (userId: string) => {
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    await axios.delete("https://chatapp-server1-y5cc.onrender.com/api/friend/" + userId, config);
+    await axios.delete(`${process.env.REACT_APP_SERVER1_URL}` + "/api/friend/" + userId, config);
     return { status: true }
   }
   catch (err) {
@@ -25,7 +25,7 @@ export const APIaddFriend = async (friendId: number) => {
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    await axios.post("https://chatapp-server1-y5cc.onrender.com/api/friend/", {friendId}, config);
+    await axios.post(`${process.env.REACT_APP_SERVER1_URL}` + "/api/friend/", {friendId}, config);
     return { status: true }
   }
   catch (err) {
@@ -42,7 +42,7 @@ export const APIgetAllFriends = async () => {
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    const res = await axios.get("https://chatapp-server1-y5cc.onrender.com/api/friend/", config);
+    const res = await axios.get(`${process.env.REACT_APP_SERVER1_URL}` + "/api/friend/", config);
     return {
       status: true,
       data: res.data
@@ -62,7 +62,7 @@ export const APIdeleteFriendRequest = async (sendUserId: number, receiveUserId: 
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    await axios.delete("https://chatapp-server1-y5cc.onrender.com/api/friend/request/" + sendUserId + '/' + receiveUserId, config);
+    await axios.delete(`${process.env.REACT_APP_SERVER1_URL}` + "/api/friend/request/" + sendUserId + '/' + receiveUserId, config);
     return { status: true }
   }
   catch (err) {
@@ -79,7 +79,7 @@ export const APIcreateFriendRequest = async (receiveUserId: number) => {
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    await axios.post("https://chatapp-server1-y5cc.onrender.com/api/friend/request/", {receiveUserId}, config);
+    await axios.post(`${process.env.REACT_APP_SERVER1_URL}` + "/api/friend/request/", {receiveUserId}, config);
     return { status: true }
   }
   catch (err) {
@@ -96,7 +96,7 @@ export const APIgetAllFriendRequestBySendUserId = async () => {
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    const res = await axios.get("https://chatapp-server1-y5cc.onrender.com/api/friend/request/sendUser/", config);
+    const res = await axios.get(`${process.env.REACT_APP_SERVER1_URL}` + "/api/friend/request/sendUser/", config);
     return {
       status: true,
       data: res.data
@@ -116,7 +116,7 @@ export const APIgetAllFriendRequestByReceiveUserId = async () => {
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    const res = await axios.get("https://chatapp-server1-y5cc.onrender.com/api/friend/request/receiveUser/", config);
+    const res = await axios.get(`${process.env.REACT_APP_SERVER1_URL}` + "/api/friend/request/receiveUser/", config);
     return {
       status: true,
       data: res.data

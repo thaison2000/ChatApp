@@ -18,7 +18,7 @@ function App() {
   const socket = useRef<any>()
 
   useEffect(() => {
-    socket.current = io("https://chatapp-server3.onrender.com");
+    socket.current = io(`${process.env.REACT_APP_SERVER3_URL}` + "");
     socket.current.emit("addUser", user?.userId);
   }, [socket.current]);
 

@@ -16,7 +16,7 @@ export const APIgetUserProfile = async (userId: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get("https://chatapp-server1-y5cc.onrender.com/api/user/" + userId, config)
+        const res = await axios.get(`${process.env.REACT_APP_SERVER1_URL}` + "/api/user/" + userId, config)
         return {
             status: true,
             data: res.data
@@ -36,7 +36,7 @@ export const APIupdateUserProfile = async (userProfileUpdate: userProfileUpdateI
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.put("https://chatapp-server1-y5cc.onrender.com/api/user/", userProfileUpdate, config);
+        await axios.put(`${process.env.REACT_APP_SERVER1_URL}` + "/api/user/", userProfileUpdate, config);
         return {
             status: true
         }
@@ -61,7 +61,7 @@ export const APIupdateUserAvatar = async (avatar: any) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.post("https://chatapp-server1-y5cc.onrender.com/api/user/updateAvatar", data, config);
+        await axios.post(`${process.env.REACT_APP_SERVER1_URL}` + "/api/user/updateAvatar", data, config);
         return {
             status: true,
             data: fileName
@@ -80,7 +80,7 @@ export const APIfindUserByName = async (name: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get("https://chatapp-server1-y5cc.onrender.com/api/user?name=" + name, config);
+        const res = await axios.get(`${process.env.REACT_APP_SERVER1_URL}` + "/api/user?name=" + name, config);
         return {
             data: res.data,
             status: true

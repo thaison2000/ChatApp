@@ -108,14 +108,14 @@ const Editor = (props: any) => {
   }, [quill, Quill]);
 
   return (
-    <div style={editorHeight} className='w-[98%] h-[90px] z-100 bg-white absolute bottom-0'>
+    <div style={editorHeight} className='w-[100%] z-100 h-[150px] bg-white relative'>
       <div ref={quillRef} className='relative z-100 bg-white' />
       <div onClick={() => setEditorHeight({ height: '300px' })} className='absolute top-2 right-8 flex flex-row'>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 absolute top-0">
           <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l7.5-7.5 7.5 7.5m-15 6l7.5-7.5 7.5 7.5" />
         </svg>
       </div>
-      <div onClick={() => setEditorHeight({ height: '90px' })} className='absolute top-2 right-8 flex flex-row mx-2'>
+      <div onClick={() => setEditorHeight({ height: '150px' })} className='absolute top-2 right-8 flex flex-row mx-2'>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
           <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5" />
         </svg>

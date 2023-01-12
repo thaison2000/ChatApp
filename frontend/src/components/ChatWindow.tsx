@@ -518,18 +518,18 @@ const ChatWindow = (props: any) => {
   }
 
   return (
-    <div className='w-[calc(100%-250px)] flex flex-row p-0'>
-      <div className='w-full'>
+    <div className='h-[calc(100%-100px)] lg:w-[calc(100%-250px)] p-0 bg-white relative z-10'>
+      <div className='w-[100%] h-[calc(100%-100px)]'>
         {updateAvatarAlert ? <UpdateAvatarAlert /> : null}
         {addMemberAlert ? <AddMemberAlert /> : null}
         {settingAlert ? <SettingAlert /> : null}
         {memberAlert ? <MemberAlert /> : null}
-        <div className='w-full h-[92%] relative'>
+        <div className='w-[100%] relative h-full'>
           <div
             className='flex flex-row justify-between bg-neutral-200'>
             <div>
               <div className='flex flex-row'>
-                <div className='p-2 ml-2'>
+                <div className='p-2 pl-4'>
                   <img className='w-8 h-8 mt-2 rounded-full' src={group?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + group?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                 </div>
                 <div className='flex flex-col p-2'>
@@ -539,7 +539,7 @@ const ChatWindow = (props: any) => {
               </div>
 
             </div>
-            <div className='flex flex-row '>
+            <div className='flex flex-row h-[50px]'>
               {
                 importantPostsWindow ?
                   <svg onClick={handleClickImportantPostsWindow} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 m-2 mt-5 hover:text-blue-500">
@@ -567,26 +567,28 @@ const ChatWindow = (props: any) => {
               </svg>
             </div>
           </div>
-          <div className='h-[459px] flex flex-col overflow-auto divide-y relative z-0 divide-y'>
+          <div className='flex flex-col justify-between h-[98%]'>
+            <div className='flex flex-col overflow-auto divide-y relative z-0'>
 
-            {importantPostsWindow ?
-              importantPosts?.map((post: any) => {
-                return (
-                  <div key={post.postId} ref={scrollRef}>
-                    <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
-                  </div>
-                )
-              }) :
-              posts?.map((post: any) => {
-                return (
-                  <div key={post.postId} ref={scrollRef}>
-                    <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
-                  </div>
-                )
-              })}
-          </div>
-          <div className='relative h-[90px] pl-2'>
-            <Editor type={'post'} socket={props.socket} groupId={props.groupId} />
+              {importantPostsWindow ?
+                importantPosts?.map((post: any) => {
+                  return (
+                    <div key={post.postId} ref={scrollRef}>
+                      <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
+                    </div>
+                  )
+                }) :
+                posts?.map((post: any) => {
+                  return (
+                    <div key={post.postId} ref={scrollRef}>
+                      <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
+                    </div>
+                  )
+                })}
+            </div>
+            <div className='relative px-4'>
+              <Editor type={'post'} socket={props.socket} groupId={props.groupId} />
+            </div>
           </div>
         </div>
       </div>

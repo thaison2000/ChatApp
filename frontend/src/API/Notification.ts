@@ -16,7 +16,7 @@ export const APIcreateFriendRequestNotification = async (friendRequestNotificati
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    await axios.post("https://chatapp-server2.onrender.com/api/notification/friendRequest", friendRequestNotification, config);
+    await axios.post(`${process.env.REACT_APP_SERVER2_URL}` + "/api/notification/friendRequest", friendRequestNotification, config);
     return {
       status: true
     }
@@ -35,7 +35,7 @@ export const APIcreateNotification = async ({sendUserId, receiveUserId, sendUser
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    await axios.post("https://chatapp-server2.onrender.com/api/notification/",{
+    await axios.post(`${process.env.REACT_APP_SERVER2_URL}` + "/api/notification/",{
       sendUserId, receiveUserId, sendUserName, type, groupId, groupName, affectedUserName
     }, config);
     return {
@@ -56,7 +56,7 @@ export const APIdeleteNotification = async (sendUserId: number, receiveUserId: n
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    await axios.delete("https://chatapp-server2.onrender.com/api/notification/" + sendUserId + '/' + receiveUserId + '/' + type , config);
+    await axios.delete(`${process.env.REACT_APP_SERVER2_URL}` + "/api/notification/" + sendUserId + '/' + receiveUserId + '/' + type , config);
     return {
       status: true
     }
@@ -75,7 +75,7 @@ export const APIgetAllNotificationsByReceiveUserId = async () => {
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    const req = await axios.get("https://chatapp-server2.onrender.com/api/notification/", config);
+    const req = await axios.get(`${process.env.REACT_APP_SERVER2_URL}` + "/api/notification/", config);
     return {
       status: true,
       data: req.data
@@ -95,7 +95,7 @@ export const APIgetAllNotificationsByGroupIds = async (groups: Array<any>) => {
         'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
       },
     }
-    const req = await axios.post("https://chatapp-server2.onrender.com/api/notification/groups/",{groups}, config);
+    const req = await axios.post(`${process.env.REACT_APP_SERVER2_URL}` + "/api/notification/groups/",{groups}, config);
     return {
       status: true,
       data: req.data
