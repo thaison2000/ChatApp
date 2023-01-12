@@ -21,6 +21,7 @@ const Draft = (props: any) => {
     const [newDraftPostCount, setNewDraftPostCount] = useState(0)
     const [updateDraftPost, setUpdateDraftPost] = useState(false)
     const scrollRef = useRef<any>()
+    const [menu, setMenu] = useState<boolean>(false)
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
@@ -63,10 +64,14 @@ const Draft = (props: any) => {
         }
     }
 
+    const handleClickMenu = () => {
+        setMenu(!menu)
+    }
+
     const CreateDraftPostForm = () =>
     (
-        <div className='w-[97%] ml-4 relative mt-2'>
-            <div className='w-[100%] z-1'>
+        <div className='relative px-4 pt-4'>
+            <div className=''>
                 <Editor type={'draftPost'} handleClickSaveDraftPost={handleClickSaveDraftPost} />
             </div>
 
@@ -76,31 +81,45 @@ const Draft = (props: any) => {
     return (
         <div className='w-screen h-screen pointer-events-auto'>
             <TopBar socket={props.socket} />
-            <div className='w-full h-[calc(100%-50px)] flex flex-row'>
-                <SideBar socket={props.socket} />
-                <div className='w-[calc(100%-250px)]'>
-                    <div className='h-[75px]'>
-                        <div onClick={handleClickCreateDraftPost} className='m-4 bg-sky-700 text-white p-4 font-bold text-xl hover:bg-sky-800 pointer-events-auto w-[220px]'>
-                            Create a draft post
-                        </div>
+            <div className='flex flex-col divide-y h-[calc(100%-50px)]'>
+                <div onClick={handleClickMenu} className='w-full sm:w-[250px] flex flex-row bg-sky-700 hover:bg-sky-800'>
+                    <div className='p-4 h-[50px]'>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-white hover:text-orange-300">
+                            <path fillRule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75H12a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clipRule="evenodd" />
+                        </svg>
                     </div>
-                    <div className='h-[calc(100%-100px)] overflow-auto'>
-                        <div className='divide-y'>
-                            {
-                                draftPosts.map((draftPost: any) => <div ref={scrollRef} key={draftPost.draftPostId} className='bg-neutral-100 mx-4 py-4'>
-                                    <div className='pl-4 font-bold'>{timeAgo.format(new Date(draftPost.updatedAt))}</div>
-                                    <DraftPost draftPost={draftPost} handleClickUpdateDraftPost={handleClickUpdateDraftPost} handleClickDeleteDraftPost={handleClickDeleteDraftPost} />
-                                </div>
-                                )
-                            }
-                            {
-                                clickCreateDraftPost ? <div ref={scrollRef}>
-                                    <CreateDraftPostForm />
-                                </div> : null
-                            }
-                        </div>
-                    </div>
+                    <div className='py-4 text-xl text-white font-bold'>Menu</div>
                 </div>
+                {menu ?
+                    <SideBar socket={props.socket} />
+                    :
+                    <div className='w-full  h-[calc(100%-65px)]'>
+                        <div className='h-[75px]'>
+                            <div onClick={handleClickCreateDraftPost} className='m-4 bg-sky-700 text-white p-4 font-bold text-xl hover:bg-sky-800 pointer-events-auto w-[220px]'>
+                                Create a draft post
+                            </div>
+                        </div>
+                        <div className='h-[calc(100%-125px)] w-full overflow-auto'>
+                            <div className='divide-y'>
+                                <div className='overflow-auto'>
+                                    {
+                                        draftPosts.map((draftPost: any) => <div ref={scrollRef} key={draftPost.draftPostId} className='bg-neutral-100 mx-4 py-4'>
+                                            <div className='pl-4 font-bold'>{timeAgo.format(new Date(draftPost.updatedAt))}</div>
+                                            <DraftPost draftPost={draftPost} handleClickUpdateDraftPost={handleClickUpdateDraftPost} handleClickDeleteDraftPost={handleClickDeleteDraftPost} />
+                                        </div>
+                                        )
+                                    }
+                                </div>
+                                {
+                                    clickCreateDraftPost ?
+                                        <div ref={scrollRef}>
+                                            <CreateDraftPostForm />
+                                        </div> : null
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     )
