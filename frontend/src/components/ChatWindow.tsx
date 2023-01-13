@@ -579,7 +579,7 @@ const ChatWindow = (props: any) => {
     <div className='sm:h-[calc(100%-100px)] sm:h-full sm:w-full lg:w-[calc(100%-250px)] h-[calc(100%-50px)] p-0 bg-white relative z-10 sm:overflow-auto'>
       {commentWindow ?
 
-        <div className='h-[calc(100%-50px)] sm:h-full'>
+        <div className='h-[calc(100%-70px)] sm:h-full'>
           <CommentWindow socket={props.socket} postThread={postThread} groupId={props.groupId} handleClickCommentWindow={handleClickCommentWindow} members={members} />
 
         </div> :
