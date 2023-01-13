@@ -218,12 +218,12 @@ const Profile = (props: any) => {
           <div className='flex flex-row my-2'>
             <span className='w-1 h-8 bg-sky-700 rounded-2xl mr-2'></span>
             <span className='text-xl w-[100px] text-sky-700 font-bold'>Name</span>
-            <input ref={name} className='text-xl text-stone-500 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='text' defaultValue={user.name} />
+            <input ref={name} className='w-[200px] text-xl text-stone-500 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='text' defaultValue={user.name} />
           </div>
           <div className='flex flex-row my-2'>
             <span className='w-1 h-8 bg-sky-700 rounded-2xl mr-2'></span>
             <span className='text-xl w-[100px] text-sky-700 font-bold'>Gender</span>
-            <select className='text-xl text-stone-500 font-normal p-2 pl-4 pr-4 enabled:bg-yellow-200 rounded-xl' ref={gender} name="gender" id="gender" defaultValue={user.gender}>
+            <select className='w-[200px] text-xl text-stone-500 font-normal p-2 pl-4 pr-4 enabled:bg-yellow-200 rounded-xl' ref={gender} name="gender" id="gender" defaultValue={user.gender}>
               <option value="Male">Male</option>
               <option value="Female">FeMale</option>
             </select>
@@ -232,17 +232,17 @@ const Profile = (props: any) => {
           <div className='flex flex-row my-2'>
             <span className='w-1 h-8 bg-sky-700 rounded-2xl mr-2'></span>
             <span className='text-xl w-[100px] text-sky-700 font-bold'>Date of Birth</span>
-            <input ref={dateOfBirth} className='text-xl text-stone-700 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='date' defaultValue={user?.dateOfBirth} />
+            <input ref={dateOfBirth} className='w-[200px] text-xl text-stone-700 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='date' defaultValue={user?.dateOfBirth} />
           </div>
           <div className='flex flex-row my-2'>
             <span className='w-1 h-8 bg-sky-700 rounded-2xl mr-2'></span>
             <span className='text-xl w-[100px] text-sky-700 font-bold'>Phone</span>
-            <input ref={phone} className='text-xl text-stone-500 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='text' defaultValue={user?.phone} />
+            <input ref={phone} className='w-[200px] text-xl text-stone-500 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='text' defaultValue={user?.phone} />
           </div>
           <div className='flex flex-row my-2'>
             <span className='w-1 h-8 bg-sky-700 rounded-2xl mr-2'></span>
             <span className='text-xl w-[100px] text-sky-700 font-bold'>Address</span>
-            <input ref={address} className='text-xl text-stone-700 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='text' defaultValue={user?.address} />
+            <input ref={address} className='w-[200px] text-xl text-stone-700 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='text' defaultValue={user?.address} />
           </div>
           <div className='flex flex-row my-2'>
             <span className='text-xl w-[100px] text-sky-700 font-bold ml-3'></span>

@@ -153,7 +153,7 @@ const DirectMessage = (props: any) => {
                     </div>
                     : <div className='w-full h-[calc(100%-10px)] sm:h-full flex flex-row overflow-auto'>
                         {commentWindow ?
-                            <div className='h-[calc(100%-40px)] sm:h-full w-full'>
+                            <div className='h-[calc(100%-65px)] sm:h-full w-full'>
                                 <CommentWindow socket={props.socket} postThread={postThread} groupId={props.groupId} handleClickCommentWindow={handleClickCommentWindow} members={members} />
 
                             </div>
@@ -172,7 +172,7 @@ const DirectMessage = (props: any) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className='flex flex-col h-[calc(100%-160px)] sm:h-[calc(100%-105px)] divide-y relative z-0 divide-y'>
+                                <div className='flex flex-col h-[calc(100%-160px)] sm:h-[calc(100%-110px)] divide-y relative z-0 divide-y'>
                                     <div className='overflow-auto'>
                                         {posts?.map((post: any) => {
                                             return (

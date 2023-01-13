@@ -101,7 +101,7 @@ const Thread = (props: any) => {
                     <SideBar socket={props.socket} />
                 </div>
                 {menu ?
-                    <div className='sm:w-0 sm:h-0'>
+                    <div className='sm:w-0 sm:h-0 h-[calc(100%-64px)]'>
                         <SideBar socket={props.socket} />
                     </div>
                     :

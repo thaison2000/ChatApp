@@ -576,12 +576,14 @@ const ChatWindow = (props: any) => {
   }
 
   return (
-    <div className='h-[calc(100%-100px)] sm:h-full sm:w-full lg:w-[calc(100%-250px)] p-0 bg-white relative z-10'>
+    <div className='sm:h-[calc(100%-100px)] sm:h-full sm:w-full lg:w-[calc(100%-250px)] h-[calc(100%-50px)] p-0 bg-white relative z-10 sm:overflow-auto'>
       {commentWindow ?
-      
-         <CommentWindow socket={props.socket} postThread={postThread} groupId={props.groupId} handleClickCommentWindow={handleClickCommentWindow} members={members} />
-        :
-        <div className='w-[100%] h-[calc(100%-100px)]'>
+
+        <div className='h-[calc(100%-50px)] sm:h-full'>
+          <CommentWindow socket={props.socket} postThread={postThread} groupId={props.groupId} handleClickCommentWindow={handleClickCommentWindow} members={members} />
+
+        </div> :
+        <div className='w-[100%] h-full sm:h-[calc(100%-100px)]'>
           {updateAvatarAlert ? <UpdateAvatarAlert /> : null}
           {addMemberAlert ? <AddMemberAlert /> : null}
           {settingAlert ? <SettingAlert /> : null}
@@ -629,7 +631,7 @@ const ChatWindow = (props: any) => {
                 </svg>
               </div>
             </div>
-            <div className='flex flex-col justify-between h-[calc(100%-120px)] sm:h-full'>
+            <div className='flex flex-col justify-between h-[calc(100%-150px)] sm:h-full'>
               <div className='flex flex-col overflow-auto divide-y relative z-0'>
 
                 {importantPostsWindow ?

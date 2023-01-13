@@ -94,7 +94,7 @@ const Draft = (props: any) => {
                     <SideBar socket={props.socket} />
                 </div>
                 {menu ?
-                    <div className='sm:w-0 sm:h-0'>
+                    <div className='h-[calc(100%-64px)] sm:w-0 sm:h-0 '>
                         <SideBar socket={props.socket} />
                     </div>
                     :

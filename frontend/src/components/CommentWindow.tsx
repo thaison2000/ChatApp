@@ -60,7 +60,7 @@ const CommentWindow = (props: any) => {
     }
 
     return (
-        <div className='w-full h-full p-0 flex flex-col relative z-20'>
+        <div className='w-full h-full p-0 flex flex-col relative z-10'>
             <div className='relative'>
                 <div className='font-bold text-2xl p-3 bg-neutral-500 text-white flex flex-row justify-between relative z-0'>
                     <h1>Thread</h1>
@@ -80,7 +80,7 @@ const CommentWindow = (props: any) => {
                 </div>
                 <div className='w-full h-[1px] bg-neutral-500 mt-3 mx-2'></div>
             </div>
-            <div className='h-[calc(100%-270px)] flex flex-col justify-between'>
+            <div className='h-[calc(100%-240px)] sm:h-[calc(100%-255px)] flex flex-col justify-between'>
                 <div className='overflow-auto'>
                     {
                         comments.map((comment: any) => {
@@ -107,7 +107,7 @@ const CommentWindow = (props: any) => {
                         })
                     }
                 </div>
-                <div className='relative my-4 m-2'>
+                <div className='relative my-4 m-1'>
                     <Editor socket={props.socket} type={'comment'} groupId={props.groupId} postId={props.postThread.postId} />
                 </div>
             </div>
