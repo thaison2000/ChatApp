@@ -108,7 +108,7 @@ const SideBar = (props: any) => {
     }, [newNotification]);
 
     return (
-        <div className='h-[calc(100%-50px)] lg:w-[250px] bg-sky-700 overflow-y-auto overflow-x-hidden relative z-100'>
+        <div className='h-full lg:w-[250px] bg-sky-700 overflow-y-auto overflow-x-hidden relative z-100'>
             {createGroupForm ? <CreateGroupForm handleClickCreateGroupForm={handleClickCreateGroup} /> : null}
             <div className='flex flex-col divide-y-2 relative'>
                 <div className=' py-4 flex flex-row w-[250px] hover:bg-sky-800' onClick={handleClickProfile}>

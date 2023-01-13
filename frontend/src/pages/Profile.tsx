@@ -206,7 +206,7 @@ const Profile = (props: any) => {
   //form thay doi thong tin ca nhan
   const ProfileEditForm = () => {
     return (
-      <div className='drop-shadow-2xl bg-white rounded-2xl p-4 mt-4 w-full'>
+      <div className='drop-shadow-2xl bg-white rounded-2xl p-4 mt-4 w-full sm:m-6 sm:w-[500px] sm:h-[450px]'>
         <div className='mx-8 mt-4 flex flex-row'>
           <span className='text-2xl text-sky-700 font-bold w-[200px]'>User information</span>
           <svg onClick={handleClickProfileEdit} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 ml-3 mt-1 text-amber-400 hover:text-red-700">
@@ -217,12 +217,12 @@ const Profile = (props: any) => {
         <div className='flex flex-col mx-8 my-2 justify-between'>
           <div className='flex flex-row my-2'>
             <span className='w-1 h-8 bg-sky-700 rounded-2xl mr-2'></span>
-            <span className='text-xl w-[200px] text-sky-700 font-bold'>Name</span>
+            <span className='text-xl w-[100px] text-sky-700 font-bold'>Name</span>
             <input ref={name} className='text-xl text-stone-500 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='text' defaultValue={user.name} />
           </div>
           <div className='flex flex-row my-2'>
             <span className='w-1 h-8 bg-sky-700 rounded-2xl mr-2'></span>
-            <span className='text-xl w-[200px] text-sky-700 font-bold'>Gender</span>
+            <span className='text-xl w-[100px] text-sky-700 font-bold'>Gender</span>
             <select className='text-xl text-stone-500 font-normal p-2 pl-4 pr-4 enabled:bg-yellow-200 rounded-xl' ref={gender} name="gender" id="gender" defaultValue={user.gender}>
               <option value="Male">Male</option>
               <option value="Female">FeMale</option>
@@ -231,21 +231,21 @@ const Profile = (props: any) => {
           </div>
           <div className='flex flex-row my-2'>
             <span className='w-1 h-8 bg-sky-700 rounded-2xl mr-2'></span>
-            <span className='text-xl w-[200px] text-sky-700 font-bold'>Date of Birth</span>
+            <span className='text-xl w-[100px] text-sky-700 font-bold'>Date of Birth</span>
             <input ref={dateOfBirth} className='text-xl text-stone-700 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='date' defaultValue={user?.dateOfBirth} />
           </div>
           <div className='flex flex-row my-2'>
             <span className='w-1 h-8 bg-sky-700 rounded-2xl mr-2'></span>
-            <span className='text-xl w-[200px] text-sky-700 font-bold'>Phone</span>
+            <span className='text-xl w-[100px] text-sky-700 font-bold'>Phone</span>
             <input ref={phone} className='text-xl text-stone-500 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='text' defaultValue={user?.phone} />
           </div>
           <div className='flex flex-row my-2'>
             <span className='w-1 h-8 bg-sky-700 rounded-2xl mr-2'></span>
-            <span className='text-xl w-[200px] text-sky-700 font-bold'>Address</span>
+            <span className='text-xl w-[100px] text-sky-700 font-bold'>Address</span>
             <input ref={address} className='text-xl text-stone-700 font-normal p-2 pl-4 enabled:bg-yellow-200 rounded-xl' type='text' defaultValue={user?.address} />
           </div>
           <div className='flex flex-row my-2'>
-            <span className='text-xl w-[200px] text-sky-700 font-bold ml-3'></span>
+            <span className='text-xl w-[100px] text-sky-700 font-bold ml-3'></span>
             <button onClick={handleClickSubmitUpdateProfile} className='text-xl text-stone-700 font-normal p-2 pl-4 bg-green-500 rounded-xl p-2 flex flex-row hover:bg-green-600 hover:text-white'>
               <span className=' mr-2 font-bold'>Submit</span>
             </button>
@@ -259,8 +259,7 @@ const Profile = (props: any) => {
     <div className='w-screen h-screen pointer-events-auto'>
       <TopBar socket={props.socket} />
       <div className='w-full h-[calc(100%-50px)] flex flex-col sm:flex sm:flex-row'>
-        <div className='flex flex-col divide-y h-full'>
-          <div onClick={handleClickMenu} className='w-full sm:w-[250px] flex flex-row bg-sky-700 hover:bg-sky-800'>
+          <div onClick={handleClickMenu} className='w-full sm:w-0 flex flex-row bg-sky-700 hover:bg-sky-800'>
             <div className='p-4'>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-white hover:text-orange-300">
                 <path fillRule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75H12a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clipRule="evenodd" />
@@ -268,18 +267,23 @@ const Profile = (props: any) => {
             </div>
             <div className='py-4 text-xl text-white font-bold'>Menu</div>
           </div>
-          {menu ?
+          <div className='w-0 h-0 sm:w-[250px] sm:h-full'>
             <SideBar socket={props.socket} />
+          </div>
+          {menu ?
+            <div className='h-[calc(100%-64px)] sm:w-0 sm:h-0 '>
+              <SideBar socket={props.socket} />
+            </div>
             :
-            <div className='w-full flex flex-row sm:w-[calc(100%-250px)]'>
-              <div className='w-full p-4 xl:flex xl:flex-row'>
-                <div className='w-full xl:flex xl:flex-col lg:flex lg:flex-row'>
-                  <div className=' flex flex-col relative drop-shadow-2xl bg-white rounded-2xl h-[250px] justify-center items-center'>
+            <div className='w-full flex flex-row sm:w-[calc(100%-250px)] relative z-10 overflow-auto'>
+              <div className='w-full xl:w-[1000px] p-4 xl:flex xl:flex-row xl:justify-start overflow-auto'>
+                <div className='w-full sm:m-6 sm:flex sm:flex-col'>
+                  <div className=' flex flex-col relative sm:w-[300px] sm:h-[300px] drop-shadow-2xl bg-white sm:p-4 rounded-2xl h-[250px] justify-center items-center '>
                     <img className='w-48 h-48 rounded-full' src={user?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + user?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
 
                   </div>
                   {currentUser?.userId == user?.userId ?
-                    <div className='relative drop-shadow-2xl bg-white rounded-2xl pb-6 mb-4 '>
+                    <div className='relative drop-shadow-2xl bg-white rounded-2xl pb-6 mb-4 sm:mt-4 sm:w-[300px] sm:h-[100px]'>
                       <label className="block mb-2 text-sm w-[240px] mt-4 ml-4 font-medium text-gray-900 dark:text-gray-300">Change avatar</label>
                       <input className="block w-[240px] text-sm text-slate-500 ml-3
                   file:mr-4 file:py-2 file:px-4
@@ -310,7 +314,7 @@ const Profile = (props: any) => {
                 </div>
                 <div className='w-full'>
                   {clickProfileEdit ? <ProfileEditForm /> :
-                    <div className='drop-shadow-2xl bg-white rounded-2xl p-2 mt-2 w-full'>
+                    <div className='drop-shadow-2xl bg-white rounded-2xl p-2 mt-2 w-full sm:m-6 sm:w-[500px] sm:h-[400px]'>
                       <div className='mx-8 mt-4 flex flex-row'>
                         <span className='text-2xl text-sky-700 font-bold w-[200px]'>User information</span>
                         {currentUser?.userId == user?.userId ?
@@ -381,7 +385,6 @@ const Profile = (props: any) => {
 
             </div>}
         </div>
-      </div>
     </div>
 
   )

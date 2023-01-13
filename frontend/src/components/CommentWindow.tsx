@@ -70,7 +70,7 @@ const CommentWindow = (props: any) => {
                 </div>
 
             </div>
-            <div className='h-[144px] max-w-[453px] overflow-auto relative'>
+            <div className='h-[144px] w-full overflow-auto relative'>
                 <ChatBox post={props.postThread} socket={props.socket} members={props.members} />
             </div>
             <div className='flex flex-row'>
