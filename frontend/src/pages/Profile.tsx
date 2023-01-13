@@ -259,7 +259,7 @@ const Profile = (props: any) => {
     <div className='w-screen h-screen pointer-events-auto'>
       <TopBar socket={props.socket} />
       <div className='w-full h-[calc(100%-50px)] flex flex-col sm:flex sm:flex-row'>
-          <div onClick={handleClickMenu} className='w-full sm:w-0 flex flex-row bg-sky-700 hover:bg-sky-800'>
+          <div onClick={handleClickMenu} className='w-full sm:w-0 sm:h-0 flex flex-row bg-sky-700 hover:bg-sky-800'>
             <div className='p-4'>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-white hover:text-orange-300">
                 <path fillRule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75H12a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clipRule="evenodd" />
@@ -276,15 +276,15 @@ const Profile = (props: any) => {
             </div>
             :
             <div className='w-full flex flex-row sm:w-[calc(100%-250px)] relative z-10 overflow-auto'>
-              <div className='w-full xl:w-[1000px] p-4 xl:flex xl:flex-row xl:justify-start overflow-auto'>
-                <div className='w-full sm:m-6 sm:flex sm:flex-col'>
+              <div className='w-full xl:w-full p-4 xl:flex xl:flex-row xl:justify-start overflow-auto'>
+                <div className='w-full sm:m-6 sm:flex sm:flex-col sm:w-72'>
                   <div className=' flex flex-col relative sm:w-[300px] sm:h-[300px] drop-shadow-2xl bg-white sm:p-4 rounded-2xl h-[250px] justify-center items-center '>
                     <img className='w-48 h-48 rounded-full' src={user?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + user?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
 
                   </div>
                   {currentUser?.userId == user?.userId ?
-                    <div className='relative drop-shadow-2xl bg-white rounded-2xl pb-6 mb-4 sm:mt-4 sm:w-[300px] sm:h-[100px]'>
-                      <label className="block mb-2 text-sm w-[240px] mt-4 ml-4 font-medium text-gray-900 dark:text-gray-300">Change avatar</label>
+                    <div className='relative drop-shadow-2xl bg-white rounded-2xl pb-6 mb-4 sm:mt-4 sm:w-[300px] sm:h-[85px]'>
+                      <label className="block mb-2 text-sm w-[240px] mt-2 ml-4 font-medium text-gray-900 dark:text-gray-300">Change avatar</label>
                       <input className="block w-[240px] text-sm text-slate-500 ml-3
                   file:mr-4 file:py-2 file:px-4
                   file:rounded-full file:border-0
@@ -358,7 +358,7 @@ const Profile = (props: any) => {
                       </div></div>
                   }
                 </div>
-                <div>
+                <div className='m-2'>
                   {userCondition === 'user' ?
                     <div onClick={handleClickSendFriendRequest} className='flex flex-row w-40 h-10 bg-green-500 rounded-lg text-white font-bold text-lg pt-[5px] pl-[12px] mt-4 hover:bg-green-700'>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mt-1 mr-2">

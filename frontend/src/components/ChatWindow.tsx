@@ -335,7 +335,7 @@ const ChatWindow = (props: any) => {
 
   const UpdateAvatarAlert = () => {
     return (
-      <div className='fixed w-full z-20 bg-white drop-shadow-xl '>
+      <div className='fixed w-full sm:w-[500px] sm:h-[500px] z-20 bg-white drop-shadow-xl '>
         <div className='w-full h-[50px] bg-sky-900 '>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Change Group Avatar</h1>
         </div>
@@ -390,7 +390,7 @@ const ChatWindow = (props: any) => {
 
   const AddMemberAlert = () => {
     return (
-      <div className='fixed w-full z-20 bg-white drop-shadow-xl '>
+      <div className='fixed w-full sm:w-[500px] sm:h-[500px] z-20 bg-white drop-shadow-xl '>
         <div className='w-full h-[50px] bg-sky-900 '>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Add Member</h1>
         </div>
@@ -454,7 +454,7 @@ const ChatWindow = (props: any) => {
 
   const SettingAlert = () => {
     return (
-      <div className='fixed w-full z-20 bg-white drop-shadow-xl '>
+      <div className='fixed w-full sm:w-[500px] sm:h-[500px] z-20 bg-white drop-shadow-xl '>
         <div className='w-full h-[50px] bg-sky-900'>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Setting</h1>
         </div>
@@ -500,7 +500,7 @@ const ChatWindow = (props: any) => {
 
   const MemberAlert = () => {
     return (
-      <div className='fixed w-full z-20 bg-white drop-shadow-xl '>
+      <div className='fixed w-full sm:w-[500px] sm:h-[500px] z-20 bg-white drop-shadow-xl '>
         <div className='w-full h-[50px] bg-sky-900 '>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Member</h1>
         </div>
