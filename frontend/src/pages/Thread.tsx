@@ -24,6 +24,12 @@ const Thread = (props: any) => {
     const { user } = useContext(Context)
     const scrollRef = useRef<any>()
 
+    const [menu, setMenu] = useState<boolean>(false)
+
+    const handleClickMenu = () => {
+        setMenu(!menu)
+    }
+
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
     }, [newPostCount, posts.length]);
@@ -82,61 +88,73 @@ const Thread = (props: any) => {
     return (
         <div className='w-screen h-screen pointer-events-auto'>
             <TopBar socket={props.socket} />
-            <div className='w-full h-[calc(100%-50px)] flex flex-row'>
-                <SideBar socket={props.socket} />
-                <div className='w-[calc(100%-250px)] overflow-auto'>
-                    {posts.map((post: any) => {
-                        return (
-                            <div className='mx-4 bg-gray-200 border-2' ref={scrollRef}>
-                                <div className='flex flex-row pb-2 px-2'>
-                                    <div>
-                                        <img className='w-8 h-8 mt-2 rounded-full' src={post.groupAvatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + post.groupAvatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
-                                    </div>
-                                    <div className='flex flex-col'>
-                                        <div className='ml-2 mx-0 text-md font-bold'>{post.groupName}</div>
-                                        <div className='text-xs ml-2'>{timeAgo.format(new Date(post.createdAt))}</div>
-                                    </div>
+            <div className='flex flex-col divide-y h-[calc(100%-50px)]'>
+                <div onClick={handleClickMenu} className='w-full sm:w-[250px] flex flex-row bg-sky-700 hover:bg-sky-800'>
+                    <div className='p-4 h-[50px]'>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-white hover:text-orange-300">
+                            <path fillRule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75H12a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clipRule="evenodd" />
+                        </svg>
+                    </div>
+                    <div className='py-4 text-xl text-white font-bold'>Menu</div>
+                </div>
+                {menu ? <SideBar socket={props.socket} /> :
+                    <div className='w-full h-[calc(100%-50px)] flex flex-row'>
+                        <div className=' overflow-auto'>
+                            {posts.map((post: any) => {
+                                return (
+                                    <div className='mx-4 bg-gray-200 border-2' ref={scrollRef}>
+                                        <div className='flex flex-row pb-2 px-2'>
+                                            <div>
+                                                <img className='w-8 h-8 mt-2 rounded-full' src={post.groupAvatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + post.groupAvatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                                            </div>
+                                            <div className='flex flex-col'>
+                                                <div className='ml-2 mx-0 text-md font-bold'>{post.groupName}</div>
+                                                <div className='text-xs ml-2'>{timeAgo.format(new Date(post.createdAt))}</div>
+                                            </div>
 
-                                </div>
-                                <div className=' py-2 bg-white'>
-                                    <div className='flex flex-col mx-2'>
-                                        <div className='ml-4 border-b-2 hover:bg-gray-100'>
-                                            <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} socket={props.socket} />
                                         </div>
-                                        <div className='ml-20 divide-y mr-6'>
-                                            {
-                                                post.comment?.map((comment: any) => {
-                                                    return (
-                                                        <div className='flex flex-row hover:bg-gray-100 pt-2'>
-                                                            <div>
-                                                                <img className='w-8 h-8 mt-2 rounded-full' src={comment.userAvatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + comment.userAvatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
-                                                            </div>
-                                                            <div className='flex flex-col'>
-                                                                <div className='ml-2'>
-                                                                    <div className='mx-0 text-md font-bold'>{comment.userName}</div>
-                                                                    <div className='text-xs'>{timeAgo.format(new Date(comment.createdAt))}</div>
+                                        <div className=' py-2 bg-white'>
+                                            <div className='flex flex-col mx-2'>
+                                                <div className='ml-4 border-b-2 hover:bg-gray-100'>
+                                                    <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} socket={props.socket} />
+                                                </div>
+                                                <div className='ml-20 divide-y mr-6'>
+                                                    {
+                                                        post.comment?.map((comment: any) => {
+                                                            return (
+                                                                <div className='flex flex-row hover:bg-gray-100 pt-2'>
+                                                                    <div>
+                                                                        <img className='w-8 h-8 mt-2 rounded-full' src={comment.userAvatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + comment.userAvatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                                                                    </div>
+                                                                    <div className='flex flex-col'>
+                                                                        <div className='ml-2'>
+                                                                            <div className='mx-0 text-md font-bold'>{comment.userName}</div>
+                                                                            <div className='text-xs'>{timeAgo.format(new Date(comment.createdAt))}</div>
+                                                                        </div>
+                                                                        <div className='ml-2 pb-4'>
+                                                                            <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                                <div className='ml-2 pb-4'>
-                                                                    <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                })
-                                            }
-                                        </div>
-                                        <div className='h-[120px] mt-4 mb-4'>
-                                            <div className=' relative h-[90px] ml-20'>
-                                                <Editor socket={props.socket} type={'comment'} groupId={post.groupId} postId={post.postId} />
+                                                            )
+                                                        })
+                                                    }
+                                                </div>
+                                                <div className='h-[120px] mt-4 mb-4'>
+                                                    <div className=' relative h-[90px] ml-20'>
+                                                        <Editor socket={props.socket} type={'comment'} groupId={post.groupId} postId={post.postId} />
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                }
             </div>
+
         </div>
     )
 }

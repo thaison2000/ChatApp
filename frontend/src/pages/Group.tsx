@@ -25,8 +25,7 @@ const Group = (props: any) => {
             </div>
             <div className='py-4 text-xl text-white font-bold'>Menu</div>
           </div>
-          {menu ? <SideBar socket={props.socket} /> : null}
-          {menu ? null : <ChatWindow groupId={groupId} socket={props.socket}/>}
+          {menu ? <SideBar socket={props.socket} /> : <ChatWindow groupId={groupId} socket={props.socket}/>}
         </div>
     </div>
     )

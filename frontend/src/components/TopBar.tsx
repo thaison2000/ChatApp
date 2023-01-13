@@ -174,7 +174,7 @@ const TopBar = (props: any) => {
     }
 
     const NotifcationAlert = () => (
-        <div className='fixed w-[350px] h-[300px] overflow-auto h-64 bg-white shadow-2xl left-[1000px] top-[20px] z-10 rounded-xl divide-y'>
+        <div className='fixed top-[50px] w-full overflow-auto bg-white shadow-2xl z-1000 divide-y'>
             {notifications?.map((notification: any) => {
                 if (notification.type == 4 &&
                     friendRequests.some((friendRequest: any) => friendRequest.sendUserId == notification.sendUserId && friendRequest.receiveUserId == notification.receiveUserId)

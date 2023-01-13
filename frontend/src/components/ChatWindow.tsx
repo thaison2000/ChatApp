@@ -20,7 +20,6 @@ const ChatWindow = (props: any) => {
   const [settingAlert, setSettingAlert] = useState<boolean>(false)
   const [addMemberAlert, setAddMemberAlert] = useState<boolean>(false)
   const [memberAlert, setMemberAlert] = useState<boolean>(false)
-  const [uploadFileAndLinkAlert, setUploadFileAndLinkAlert] = useState<boolean>(false)
   const [searchingUsers, setSearchingUsers] = useState<any>([])
   const [group, setGroup] = useState<any>()
   const [members, setMembers] = useState<Array<any>>([])
@@ -29,6 +28,11 @@ const ChatWindow = (props: any) => {
   const [postThread, setPostThread] = useState<any>({})
   const [newCommentCount, setNewCommentCount] = useState<number>(0)
   const [newLikeCount, setNewLikeCount] = useState<number>(0)
+  const [addMemberLoading, setAddMemberLoading] = useState<boolean>(false)
+  const [deleteGroupLoading, setDeleteGroupLoading] = useState<boolean>(false)
+  const [changeAvatarLoading, setChangeAvatarLoading] = useState<boolean>(false)
+  const [promoteAdminLoading, setPromoteAdminLoading] = useState<boolean>(false)
+  const [deleteMemberLoading, setDeleteMemberLoading] = useState<boolean>(false)
 
 
   const addMemberName = useRef<any>()
@@ -123,18 +127,19 @@ const ChatWindow = (props: any) => {
   }
 
   const handleSubmitUpdateGroupAvatar = async () => {
-    let fileName = ''
+    setChangeAvatarLoading(true)
     if (avatar) {
       const { status, data }: any = await APIupdateGroupAvatar(avatar, group.groupId)
       if (status) {
-        fileName = data
         setAvatar(null)
+        setChangeAvatarLoading(false)
         // window.location.reload()
       }
     }
   };
 
   const handleSubmitDeleteGroup = async () => {
+    setDeleteGroupLoading(true)
     if (deleteGroupName.current.value != group.name) {
       window.alert('Wrong group name !')
     }
@@ -158,6 +163,7 @@ const ChatWindow = (props: any) => {
             groupId: group.groupId,
             type: 12
           })
+          setDeleteGroupLoading(false)
           navigate('/')
         }
       }
@@ -184,10 +190,6 @@ const ChatWindow = (props: any) => {
     setMemberAlert(!memberAlert)
   }
 
-  const handleClickUploadFileAndLinkAlert = () => {
-    setUploadFileAndLinkAlert(!uploadFileAndLinkAlert)
-  }
-
   const handleClickSearchUserByName = async (name: string) => {
     const { status, data } = await APIfindUserByName(name)
     if (status) {
@@ -196,6 +198,7 @@ const ChatWindow = (props: any) => {
   }
 
   const handleClickAddMemberIntoGroup = async (addUser: any) => {
+    setAddMemberLoading(true)
     const { status } = await APIaddMemberIntoGroup(group.groupId, addUser.userId)
     if (status) {
       props.socket?.current?.emit("sendNotification", {
@@ -225,10 +228,12 @@ const ChatWindow = (props: any) => {
         avatar: ''
       }
       ]);
+      setAddMemberLoading(false)
     }
   }
 
   const handleClickDeleteMemberInGroup = async (deleteUser: any) => {
+    setDeleteMemberLoading(true)
     if (window.confirm('Are you sure you want to remove this user from the group ?')) {
       const { status } = await APIdeleteMemberInGroup(group.groupId, deleteUser.userId)
       if (status) {
@@ -250,11 +255,13 @@ const ChatWindow = (props: any) => {
           type: 10
         })
         setMembers(() => members.filter((member: any) => member.userId != deleteUser.userId));
+        setDeleteMemberLoading(false)
       }
     }
   }
 
   const handleClickPromoteAdminInGroup = async (promoteUser: any) => {
+    setPromoteAdminLoading(true)
     const { status } = await APIpromoteAdminInGroup(group.groupId, promoteUser.userId)
     if (status) {
       props.socket?.current?.emit("sendNotification", {
@@ -298,6 +305,7 @@ const ChatWindow = (props: any) => {
         }
       }
       setMembers(data);
+      setPromoteAdminLoading(false)
     }
   }
 
@@ -348,19 +356,32 @@ const ChatWindow = (props: any) => {
           {avatar ? <div className="w-[250px] flex flex-row">
             <img className=" ml-4 mt-4 w-40 h-40 object-contain" src={URL.createObjectURL(avatar)} alt="" />
             <div className='flex flex-col'>
-              <svg onClick={handleSubmitUpdateGroupAvatar} xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mt-8 ml-4 hover:text-green-700" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
-              </svg>
-              <svg onClick={() => setAvatar(null)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mt-10 ml-4 hover:text-red-700">
-                <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375z" />
-                <path fillRule="evenodd" d="M3.087 9l.54 9.176A3 3 0 006.62 21h10.757a3 3 0 002.995-2.824L20.913 9H3.087zm6.133 2.845a.75.75 0 011.06 0l1.72 1.72 1.72-1.72a.75.75 0 111.06 1.06l-1.72 1.72 1.72 1.72a.75.75 0 11-1.06 1.06L12 15.685l-1.72 1.72a.75.75 0 11-1.06-1.06l1.72-1.72-1.72-1.72a.75.75 0 010-1.06z" clipRule="evenodd" />
-              </svg>
+              {
+                changeAvatarLoading ?
+                  <div role="status">
+                    <svg aria-hidden="true" className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-sky-700" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                      <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                    </svg>
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                  :
+                  <div>
+                    <svg onClick={handleSubmitUpdateGroupAvatar} xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mt-8 ml-4 hover:text-green-700" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
+                    </svg>
+                    <svg onClick={() => setAvatar(null)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mt-10 ml-4 hover:text-red-700">
+                      <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375z" />
+                      <path fillRule="evenodd" d="M3.087 9l.54 9.176A3 3 0 006.62 21h10.757a3 3 0 002.995-2.824L20.913 9H3.087zm6.133 2.845a.75.75 0 011.06 0l1.72 1.72 1.72-1.72a.75.75 0 111.06 1.06l-1.72 1.72 1.72 1.72a.75.75 0 11-1.06 1.06L12 15.685l-1.72 1.72a.75.75 0 11-1.06-1.06l1.72-1.72-1.72-1.72a.75.75 0 010-1.06z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+              }
             </div>
           </div> : null
           }
         </div>
         <div className='w-full flex flex-row justify-center mb-4'>
-          <button onClick={handleClickUpdateAvatarAlert} className="rounded-full text-white py-2 px-8 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white">Cancel</button>
+          <button onClick={handleClickUpdateAvatarAlert} className="text-white py-1 px-6 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white">Cancel</button>
         </div>
       </div>
 
@@ -387,9 +408,9 @@ const ChatWindow = (props: any) => {
               </svg>
             </div>
           </div>
-          <div className=''>
+          <div className='max-h-[200px] overflow-auto'>
             {searchingUsers.map((searchingUser: any) => (
-              <div className='flex flex-row justify-between hover:bg-neutral-300 p-2'>
+              <div className='flex flex-row justify-between hover:bg-neutral-300 p-2 '>
                 <div className='flex flex-row'>
                   <div onClick={() => {
                     navigate('/profile/' + searchingUser.userId)
@@ -399,19 +420,32 @@ const ChatWindow = (props: any) => {
                   </div>
                   <div className='font-bold text-[18px] mt-3 ml-4'>{searchingUser.name}</div>
                 </div>
-                {members.some((member: any) => member.userId == searchingUser.userId) ?
-                  <div className=' mt-2'>
-                    <button className="rounded-xl text-white py-2 px-2 font-medium text-xl bg-sky-900">In</button>
-                  </div> :
-                  <div className=' mt-2'>
-                    <button onClick={() => handleClickAddMemberIntoGroup(searchingUser)} className="rounded-xl text-white py-2 px-2 font-medium text-xl bg-green-600 hover:bg-sky-900 hover:text-white">Add</button>
-                  </div>}
+                <div className=''>
+                  {members.some((member: any) => member.userId == searchingUser.userId) ?
+                    <div className=' mt-2'>
+                      <button className="rounded-xl text-white py-2 px-2 font-medium text-xl bg-sky-900">In</button>
+                    </div> :
+                    <div className=' mt-2'>
+                      {
+                        addMemberLoading ?
+                          <div role="status">
+                            <svg aria-hidden="true" className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-sky-700" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                              <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                            </svg>
+                            <span className="sr-only">Loading...</span>
+                          </div>
+                          :
+                          <button onClick={() => handleClickAddMemberIntoGroup(searchingUser)} className="rounded-xl text-white py-2 px-2 font-medium text-xl bg-green-600 hover:bg-sky-900 hover:text-white">Add</button>
+                      }
+                    </div>}
+                </div>
               </div>
             ))}
           </div>
         </div>
         <div className='w-full flex flex-row justify-center '>
-          <button onClick={handleClickAddMemberAlert} className="rounded-full text-white py-2 px-8 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white my-4">Cancel</button>
+          <button onClick={handleClickAddMemberAlert} className="text-white py-1 px-6 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white my-4">Cancel</button>
         </div>
       </div>
 
@@ -434,19 +468,30 @@ const ChatWindow = (props: any) => {
                 <div className='w-full px-2'>
                   <input ref={deleteGroupName} defaultValue={deleteGroupName.current?.value} className='w-full my-4 py-4 focus:outline-none bg-neutral-200' type="text" placeholder='Rewrite group name ...' />
                 </div>
-                <div onClick={handleSubmitDeleteGroup} className='mt-8 mr-4'>
-                  <div className='hover:bg-red-600 p-2 rounded-xl bg-sky-900'>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white ">
-                      <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
-                    </svg>
-                  </div>
+                {
+                  deleteGroupLoading ?
+                    <div role="status">
+                      <svg aria-hidden="true" className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-sky-700" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                      </svg>
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                    :
+                    <div onClick={handleSubmitDeleteGroup} className='mt-8 mr-4'>
+                      <div className='hover:bg-red-600 p-2 rounded-xl bg-sky-900'>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white ">
+                          <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
+                        </svg>
+                      </div>
 
-                </div>
+                    </div>
+                }
               </div>
             </div> : null
         }
         <div className='w-full flex flex-row justify-center '>
-          <button onClick={handleClickSettingAlert} className="rounded-full text-white py-2 px-8 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white my-4">Cancel</button>
+          <button onClick={handleClickSettingAlert} className="text-white py-1 px-6 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white my-4">Cancel</button>
         </div>
       </div>
 
@@ -490,19 +535,32 @@ const ChatWindow = (props: any) => {
                 </div>
                 {members.some((member: any) => member.userId == user.userId && member.type == 'admin') && member.type == 'user' ?
                   <div className=' mt-2 flex flex-row'>
-                    <button onClick={() => handleClickPromoteAdminInGroup(member)} title='Promote to Admin' className=" rounded-xl text-neutral-500 font-medium text-medium text-center hover:text-green-600 mr-4">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
-                        <path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.172-.311a54.614 54.614 0 014.653-2.52.75.75 0 00-.65-1.352 56.129 56.129 0 00-4.78 2.589 1.858 1.858 0 00-.859 1.228 49.803 49.803 0 00-4.634-1.527.75.75 0 01-.231-1.337A60.653 60.653 0 0111.7 2.805z" />
-                        <path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 00-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.661a6.729 6.729 0 00.551-1.608 1.5 1.5 0 00.14-2.67v-.645a48.549 48.549 0 013.44 1.668 2.25 2.25 0 002.12 0z" />
-                        <path d="M4.462 19.462c.42-.419.753-.89 1-1.394.453.213.902.434 1.347.661a6.743 6.743 0 01-1.286 1.794.75.75 0 11-1.06-1.06z" />
-                      </svg>
+                    {
+                      promoteAdminLoading || deleteMemberLoading ?
+                        <div role="status">
+                          <svg aria-hidden="true" className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-sky-700" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                          </svg>
+                          <span className="sr-only">Loading...</span>
+                        </div>
+                        :
+                        <div>
+                          <button onClick={() => handleClickPromoteAdminInGroup(member)} title='Promote to Admin' className=" rounded-xl text-neutral-500 font-medium text-medium text-center hover:text-green-600 mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
+                              <path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.172-.311a54.614 54.614 0 014.653-2.52.75.75 0 00-.65-1.352 56.129 56.129 0 00-4.78 2.589 1.858 1.858 0 00-.859 1.228 49.803 49.803 0 00-4.634-1.527.75.75 0 01-.231-1.337A60.653 60.653 0 0111.7 2.805z" />
+                              <path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 00-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.661a6.729 6.729 0 00.551-1.608 1.5 1.5 0 00.14-2.67v-.645a48.549 48.549 0 013.44 1.668 2.25 2.25 0 002.12 0z" />
+                              <path d="M4.462 19.462c.42-.419.753-.89 1-1.394.453.213.902.434 1.347.661a6.743 6.743 0 01-1.286 1.794.75.75 0 11-1.06-1.06z" />
+                            </svg>
 
-                    </button>
-                    <button onClick={() => handleClickDeleteMemberInGroup(member)} title='Delete User' className=" rounded-xl text-neutral-500 font-medium text-medium text-center hover:text-red-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
-                        <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
-                      </svg>
-                    </button>
+                          </button>
+                          <button onClick={() => handleClickDeleteMemberInGroup(member)} title='Delete User' className=" rounded-xl text-neutral-500 font-medium text-medium text-center hover:text-red-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
+                              <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
+                    }
                   </div>
                   : null}
               </div>
@@ -510,7 +568,7 @@ const ChatWindow = (props: any) => {
           </div>
         </div>
         <div className='w-full flex flex-row justify-center '>
-          <button onClick={handleClickMemberAlert} className="rounded-full text-white py-2 px-8 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white my-4">Cancel</button>
+          <button onClick={handleClickMemberAlert} className="text-white py-1 px-6 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white my-4">Cancel</button>
         </div>
       </div>
 
@@ -589,7 +647,7 @@ const ChatWindow = (props: any) => {
                     )
                   })}
               </div>
-              <div className='relative px-4'>
+              <div className='relative p-1'>
                 <Editor type={'post'} socket={props.socket} groupId={props.groupId} />
               </div>
             </div>
