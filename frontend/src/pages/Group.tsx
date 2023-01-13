@@ -16,7 +16,7 @@ const Group = (props: any) => {
   return (
     <div className='w-screen h-screen pointer-events-auto'>
       <TopBar socket={props.socket} />
-      <div className='w-full sm:h-[calc(100%-50px)] h-[calc(100%-65px)] flex flex-col sm:flex sm:flex-row'>
+      <div className='w-full sm:h-[calc(100%-50px)] h-[calc(100%-50px)] flex flex-col sm:flex sm:flex-row'>
         <div onClick={handleClickMenu} className='w-full sm:w-0 sm:h-0 flex flex-row bg-sky-700 hover:bg-sky-800'>
           <div className='p-4'>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-white hover:text-orange-300">

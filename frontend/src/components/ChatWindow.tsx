@@ -576,7 +576,7 @@ const ChatWindow = (props: any) => {
   }
 
   return (
-    <div className='sm:h-[calc(100%-100px)] sm:h-full sm:w-full lg:w-[calc(100%-250px)] h-[calc(100%-50px)] p-0 bg-white relative z-10 sm:overflow-auto'>
+    <div className='sm:h-[calc(100%-100px)] sm:h-full sm:w-full lg:w-[calc(100%-250px)] h-[calc(100%-65px)] p-0 bg-white relative z-10 sm:overflow-auto'>
       {commentWindow ?
 
         <div className='h-[calc(100%-70px)] sm:h-full'>
