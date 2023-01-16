@@ -57,12 +57,16 @@ const ChatWindow = (props: any) => {
 
   useEffect(() => {
     props.socket?.current?.on("getNotification", (data: any) => {
-      if (members.some((member: any) => member.userId == user.userId)) {
+      if (data.groupId == props.groupId) {
         if (data.type == 2) {
           setNewCommentCount((prev: number) => prev + 1)
         }
         if (data.type == 1) {
           setNewLikeCount((prev: number) => prev + 1)
+        }
+
+        if (data.type == 13) {
+          setNewLikeCount((prev: number) => prev - 1)
         }
         if (data.type == 15) {
           setNewCommentCount((prev: number) => prev - 1)
@@ -335,13 +339,13 @@ const ChatWindow = (props: any) => {
 
   const UpdateAvatarAlert = () => {
     return (
-      <div className='fixed w-full sm:w-[500px] sm:h-[500px] z-20 bg-white drop-shadow-xl '>
+      <div className='fixed w-full sm:w-[500px] sm:h-fit sm:right-0 sm:left-0 sm:top-0 sm:bottom-0 sm:m-auto z-20 bg-white drop-shadow-xl '>
         <div className='w-full h-[50px] bg-sky-900 '>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Change Group Avatar</h1>
         </div>
         <div className='flex flex-col items-center bg-neutral-200 mx-8 mt-8 mb-4  p-4'>
           <div className='bg-white rounded-full my-4'>
-            <img className='w-36 h-36 rounded-full' src={group?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + group?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+            <img className='w-36 h-36 rounded-full' src={group?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}`+ '/images/'    + group?.avatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
           </div>
           <input className="block w-[240px] text-sm text-slate-500 ml-3
                   file:mr-4 file:py-2 file:px-4
@@ -390,7 +394,7 @@ const ChatWindow = (props: any) => {
 
   const AddMemberAlert = () => {
     return (
-      <div className='fixed w-full sm:w-[500px] sm:h-[500px] z-20 bg-white drop-shadow-xl '>
+      <div className='fixed w-full sm:w-[500px] sm:h-fit sm:right-0 sm:left-0 sm:top-0 sm:bottom-0 sm:m-auto z-20 bg-white drop-shadow-xl '>
         <div className='w-full h-[50px] bg-sky-900 '>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Add Member</h1>
         </div>
@@ -416,7 +420,7 @@ const ChatWindow = (props: any) => {
                     navigate('/profile/' + searchingUser.userId)
                   }}
                     className='my-2'>
-                    <img className='rounded-full w-10 h-10' src={searchingUser?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + searchingUser?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                    <img className='rounded-full w-10 h-10' src={searchingUser?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}`    + searchingUser?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                   </div>
                   <div className='font-bold text-[18px] mt-3 ml-4'>{searchingUser.name}</div>
                 </div>
@@ -454,7 +458,7 @@ const ChatWindow = (props: any) => {
 
   const SettingAlert = () => {
     return (
-      <div className='fixed w-full sm:w-[500px] sm:h-[500px] z-20 bg-white drop-shadow-xl '>
+      <div className='fixed w-full sm:w-[500px] sm:h-fit sm:right-0 sm:left-0 sm:top-0 sm:bottom-0 sm:m-auto z-20 bg-white drop-shadow-xl '>
         <div className='w-full h-[50px] bg-sky-900'>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Setting</h1>
         </div>
@@ -500,7 +504,7 @@ const ChatWindow = (props: any) => {
 
   const MemberAlert = () => {
     return (
-      <div className='fixed w-full sm:w-[500px] sm:h-[500px] z-20 bg-white drop-shadow-xl '>
+      <div className='fixed w-full sm:w-[500px] sm:h-[500px] sm:right-0 sm:left-0 sm:top-0 sm:bottom-0 sm:m-auto z-20 bg-white drop-shadow-xl '>
         <div className='w-full h-[50px] bg-sky-900 '>
           <h1 className='text-center text-white text-2xl font-medium p-2'>Member</h1>
         </div>
@@ -526,7 +530,7 @@ const ChatWindow = (props: any) => {
                     navigate('/profile/' + member.userId)
                   }}
                     className='my-2' >
-                    <img className='rounded-full w-10 h-10' src={member?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + member?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                    <img className='rounded-full w-10 h-10' src={member?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}`    + member?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                   </div>
                   <div>
                     <div className='font-bold text-[18px] mt-2 ml-4'>{member.name}</div>
@@ -580,25 +584,25 @@ const ChatWindow = (props: any) => {
       {commentWindow ?
 
         <div className='h-[calc(100%-70px)] sm:h-full'>
-          <CommentWindow socket={props.socket} postThread={postThread} groupId={props.groupId} handleClickCommentWindow={handleClickCommentWindow} members={members} />
+          <CommentWindow socket={props.socket} postThread={postThread} groupId={props.groupId} handleClickCommentWindow={handleClickCommentWindow} members={members} group={group}/>
 
         </div> :
-        <div className='w-[100%] h-full sm:h-[calc(100%-100px)]'>
+        <div className='w-[100%] h-full sm:h-[calc(100%-100px)] sm:relative'>
           {updateAvatarAlert ? <UpdateAvatarAlert /> : null}
           {addMemberAlert ? <AddMemberAlert /> : null}
           {settingAlert ? <SettingAlert /> : null}
           {memberAlert ? <MemberAlert /> : null}
           <div className='w-[100%] relative h-full'>
             <div
-              className='flex flex-row justify-between bg-neutral-200'>
+              className='flex flex-row justify-between bg-neutral-200 h-[55px]'>
               <div>
                 <div className='flex flex-row'>
                   <div className='p-2 pl-4'>
-                    <img className='w-8 h-8 mt-2 rounded-full' src={group?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + group?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                    <img className='w-8 h-8 mt-2 rounded-full' src={group?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}`+ '/images/'    + group?.avatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
                   </div>
                   <div className='flex flex-col p-2'>
-                    <div>{group?.name}</div>
-                    <div>{group?.desc}</div>
+                    <div className='font-bold'>{group?.name}</div>
+                    <div className='font-md text-sm'>{group?.desc}</div>
                   </div>
                 </div>
 
@@ -631,27 +635,27 @@ const ChatWindow = (props: any) => {
                 </svg>
               </div>
             </div>
-            <div className='flex flex-col justify-between h-[calc(100%-150px)] sm:h-full'>
+            <div className='flex flex-col justify-between h-[calc(100%-150px)] sm:h-full divide-y'>
               <div className='flex flex-col overflow-auto divide-y relative z-0'>
 
                 {importantPostsWindow ?
                   importantPosts?.map((post: any) => {
                     return (
                       <div key={post.postId} ref={scrollRef}>
-                        <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
+                        <ChatBox groupId={props.groupId} handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
                       </div>
                     )
                   }) :
                   posts?.map((post: any) => {
                     return (
                       <div key={post.postId} ref={scrollRef}>
-                        <ChatBox handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
+                        <ChatBox groupId={props.groupId} handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
                       </div>
                     )
                   })}
               </div>
               <div className='relative p-1'>
-                <Editor type={'post'} socket={props.socket} groupId={props.groupId} />
+                <Editor type={'post'} socket={props.socket} groupId={props.groupId} group={group}/>
               </div>
             </div>
           </div>

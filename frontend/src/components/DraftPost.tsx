@@ -91,7 +91,7 @@ const DraftPost = (props: any) => {
                         <Editor type={'updateDraftPost'} content={props.draftPost.content} handleClickSaveDraftPost={handleClickSaveDraftPost} />
                     </div>
                 </div> :
-                <div className='border-2 w-[95%] ml-4 my-4 relative bg-white mb-4 flex flex-col pt-4 max-h-[400px]'>
+                <div className='border-2 w-[95%] ml-4 my-4 relative bg-white mb-4 flex flex-col lg:flex lg:flex-row pt-4 max-h-[400px]'>
                     <div className='mb-4 bg-white min-h-[100px] max-h-[500px] p-4 w-[100%] z-1 border-2 ml-2 w-[94%] overflow-auto' dangerouslySetInnerHTML={{ __html: props.draftPost.content }}>
                     </div>
                     <div className='flex flex-col'>

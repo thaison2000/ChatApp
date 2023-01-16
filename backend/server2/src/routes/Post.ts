@@ -18,6 +18,7 @@ postRoute.get('/group/:groupId',verifyToken,postController.getPostByGroupId)
 postRoute.get('/group/important/:groupId',verifyToken,postController.getImportantPostByGroupId)
 postRoute.get('/draftPost',verifyToken,postController.getDraftPostByUserId)
 postRoute.get('/thread',verifyToken,postController.getPostThreadByUserId)
+postRoute.get('/mention',verifyToken,postController.getAllMentionPostByUserId)
 postRoute.get('/unreadPosts',verifyToken,postController.getAllUnreadPosts)
 postRoute.put('/unreadPosts/:groupId',verifyToken,postController.updateAllUnreadPostsToReadPostsByGroupId)
 

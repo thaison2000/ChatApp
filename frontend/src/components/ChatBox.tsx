@@ -237,7 +237,7 @@ const ChatBox = (props: any) => {
                 navigate('/profile/' + user.userId, { replace: true })
                 window.location.reload()
               }}
-                className='w-8 h-8 m-4 rounded-full' src={user?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + user?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                className='w-8 h-8 m-4 rounded-full' src={user?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/'   + user?.avatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
             </div>
             <div className='flex flex-col mt-2'>
               <h1 className='mx-0 text-md font-bold'>{user?.name}</h1>
@@ -259,7 +259,7 @@ const ChatBox = (props: any) => {
                 navigate('/profile/' + user.userId, { replace: true })
                 window.location.reload()
               }}
-                className='w-8 h-8 mx-4 mt-4 rounded-full' src={user?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + user?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                className='w-8 h-8 mx-4 mt-4 rounded-full' src={user?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/'   + user?.avatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
             </div>
             <div className='flex flex-col'>
               <h1 className='mx-0 mt-2 text-md font-bold'>{user?.name}</h1>

@@ -93,7 +93,7 @@ const CommentWindow = (props: any) => {
                                             navigate('/profile/' + comment.userId)
                                             window.location.reload()
                                         }}
-                                            className='w-8 h-8 m-4 rounded-full' src={comment.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + comment.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                                            className='w-8 h-8 m-4 rounded-full' src={comment.avatar ? (`${process.env.REACT_APP_SERVER1_URL}`+ '/images/'    + comment.avatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
                                     </div>
                                     <div className='flex flex-col mt-2'>
                                         <h1 className='mx-0 text-md font-bold'>{comment.name}</h1>
@@ -108,7 +108,7 @@ const CommentWindow = (props: any) => {
                     }
                 </div>
                 <div className='relative my-4 m-1'>
-                    <Editor socket={props.socket} type={'comment'} groupId={props.groupId} postId={props.postThread.postId} />
+                    <Editor group={props.group} socket={props.socket} type={'comment'} groupId={props.groupId} postId={props.postThread.postId} />
                 </div>
             </div>
 

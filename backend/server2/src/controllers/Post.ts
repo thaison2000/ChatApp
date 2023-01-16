@@ -253,7 +253,7 @@ const postController = {
                 userId: req.user.userId
             });
             for (let i = 0; i < postThreadByComment.length; i++) {
-                let post = await Post.find({
+                let post = await Post.findOne({
                     postId: postThreadByComment[i].postId
                 });
                 postThreadByPost.push(post)
@@ -278,7 +278,21 @@ const postController = {
                 return ans;
             }
             postThread = deduplicate(postThread)
+            console.log(postThread)
             res.status(200).json(postThread);
+        } catch (err) {
+            console.log(err)
+            res.status(500).json(err);
+        }
+    },
+
+    getAllMentionPostByUserId: async (req: any, res: Response) => {
+        try {
+            const posts = await Post.find({
+                content: { $regex: '<a href="http://localhost:3000/profile/' + req.user.userId } 
+            });
+            console.log(posts)
+            res.status(200).json(posts);
         } catch (err) {
             console.log(err)
             res.status(500).json(err);

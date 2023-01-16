@@ -1,21 +1,21 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { APIdeletePost, APIgetPostThread, APIupdatePost } from '../API/Post'
+import { APIdeletePost, APIgetAllMentionPostByUserId, APIupdatePost } from '../API/Post'
+import ChatBox from '../components/ChatBox'
+import Editor from '../components/Editor'
 import SideBar from '../components/SideBar'
 import TopBar from '../components/TopBar'
+import { Context } from '../context/Context'
 import TimeAgo from 'javascript-time-ago'
 
 // English.
 import en from 'javascript-time-ago/locale/en'
-import Editor from '../components/Editor'
-import ChatBox from '../components/ChatBox'
-import { Context } from '../context/Context'
 
 TimeAgo.addDefaultLocale(en)
 
 // Create formatter (English).
 const timeAgo = new TimeAgo('en-US')
 
-const Thread = (props: any) => {
+const Mention = (props: any) => {
 
     const [posts, setPosts] = useState([])
     const [newPostCount, setNewPostCount] = useState<number>(0)
@@ -26,9 +26,12 @@ const Thread = (props: any) => {
 
     const [menu, setMenu] = useState<boolean>(false)
 
+    console.log(posts)
+
     const handleClickMenu = () => {
         setMenu(!menu)
     }
+    
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
@@ -58,13 +61,13 @@ const Thread = (props: any) => {
     }, [props.socket?.current]);
 
     useEffect(() => {
-        const fetchThread = async () => {
-            const { status, data } = await APIgetPostThread()
+        const fetchMention = async () => {
+            const { status, data } = await APIgetAllMentionPostByUserId()
             if (status) {
                 setPosts(data)
             }
         }
-        fetchThread();
+        fetchMention();
     }, [newPostCount, newCommentCount, newLikeCount])
 
     const handleClickDeletePost = async (postId: string) => {
@@ -112,7 +115,7 @@ const Thread = (props: any) => {
                                     <div className='mx-4 bg-gray-200 border-2 my-6' ref={scrollRef}>
                                         <div className='flex flex-row pb-2 px-2'>
                                             <div>
-                                                <img className='w-8 h-8 mt-2 rounded-full' src={post.groupAvatar ? (`${process.env.REACT_APP_SERVER1_URL}`    + post.groupAvatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                                                <img className='w-8 h-8 mt-2 rounded-full' src={post.groupAvatar ? (`${process.env.REACT_APP_SERVER1_URL}` + post.groupAvatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                                             </div>
                                             <div className='flex flex-col'>
                                                 <div className='ml-2 mx-0 text-md font-bold'>{post.groupName}</div>
@@ -131,7 +134,7 @@ const Thread = (props: any) => {
                                                             return (
                                                                 <div className='flex flex-row hover:bg-gray-100 pt-2'>
                                                                     <div>
-                                                                        <img className='w-8 h-8 mt-2 rounded-full' src={comment.userAvatar ? (`${process.env.REACT_APP_SERVER1_URL}`+ '/images/'    + comment.userAvatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
+                                                                        <img className='w-8 h-8 mt-2 rounded-full' src={comment.userAvatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + comment.userAvatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
                                                                     </div>
                                                                     <div className='flex flex-col'>
                                                                         <div className='ml-2'>
@@ -166,4 +169,4 @@ const Thread = (props: any) => {
     )
 }
 
-export default Thread
+export default Mention

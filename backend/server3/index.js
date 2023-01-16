@@ -51,7 +51,6 @@ io.on("connection", (socket) => {
 
   socket.on("sendNotification", ({ sendUserName, sendUserId, receiveUserId, type, post, affectedUserName, groupName, groupId }) => {
     const receiver = getUser(receiveUserId);
-    console.log(type)
     if (receiver) {
       io.to(receiver.socketId).emit("getNotification", {
         sendUserId,
@@ -59,6 +58,7 @@ io.on("connection", (socket) => {
         receiveUserId,
         type,
         post,
+        groupId,
         timestamp: new Date()
       })
     }

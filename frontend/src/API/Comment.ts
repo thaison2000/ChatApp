@@ -38,7 +38,7 @@ export const APIgetCommentsByPostId = async (postId: string) => {
         const res1 = await axios.get(`${process.env.REACT_APP_SERVER2_URL}` + "/api/comment/" + postId, config);
 
         for (let i =0;i <res1.data.length;i++){
-            let res2 = await axios.get(`${process.env.REACT_APP_SERVER1_URL}` + "/api/user/" + res1.data[i].userId, config)
+            let res2 = await axios.get(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/user/" + res1.data[i].userId, config)
             data.push({
                 commentId: res1.data[i].commentId,
                 userId: res2.data.userId,

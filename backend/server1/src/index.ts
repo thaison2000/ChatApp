@@ -15,11 +15,7 @@ import friendRoute from "./routes/Friend";
 import { createClient } from "redis";
 
 const redisClient = createClient({
-    socket: {
-        host: 'red-ceueoamn6mpglqckh1rg',
-        port: 6379
-        // port: parseInt(`${process.env.REDIS_PORT}`)
-    }
+    url: process.env.REDIS_URL,
 });
 
 (async () => {

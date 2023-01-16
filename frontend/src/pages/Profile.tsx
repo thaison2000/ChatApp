@@ -279,11 +279,11 @@ const Profile = (props: any) => {
               <div className='w-full xl:w-full p-4 xl:flex xl:flex-row xl:justify-start overflow-auto'>
                 <div className='w-full sm:m-6 sm:flex sm:flex-col sm:w-72'>
                   <div className=' flex flex-col relative sm:w-[300px] sm:h-[300px] drop-shadow-2xl bg-white sm:p-4 rounded-2xl h-[250px] justify-center items-center '>
-                    <img className='w-48 h-48 rounded-full' src={user?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + user?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                    <img className='w-48 h-48 rounded-full' src={user?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}`+ '/images/' + user?.avatar) : (`${process.env.REACT_APP_SERVER1_URL}`+ '/' +'images/nullAvatar.png')} alt="" />
 
                   </div>
                   {currentUser?.userId == user?.userId ?
-                    <div className='relative drop-shadow-2xl bg-white rounded-2xl pb-6 mb-4 sm:mt-4 sm:w-[300px] sm:h-[85px]'>
+                    <div className='relative drop-shadow-2xl bg-white rounded-2xl pb-6 mb-4 sm:mt-4 sm:w-[300px] '>
                       <label className="block mb-2 text-sm w-[240px] mt-2 ml-4 font-medium text-gray-900 dark:text-gray-300">Change avatar</label>
                       <input className="block w-[240px] text-sm text-slate-500 ml-3
                   file:mr-4 file:py-2 file:px-4
@@ -314,7 +314,7 @@ const Profile = (props: any) => {
                 </div>
                 <div className='w-full'>
                   {clickProfileEdit ? <ProfileEditForm /> :
-                    <div className='drop-shadow-2xl bg-white rounded-2xl p-2 mt-2 w-full sm:m-6 sm:w-[500px] sm:h-[400px]'>
+                    <div className='drop-shadow-2xl bg-white rounded-2xl p-2 mt-2 w-full sm:m-6 sm:w-[500px] sm:h-[415px]'>
                       <div className='mx-8 mt-4 flex flex-row'>
                         <span className='text-2xl text-sky-700 font-bold w-[200px]'>User information</span>
                         {currentUser?.userId == user?.userId ?

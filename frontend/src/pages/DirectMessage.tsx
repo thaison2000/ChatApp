@@ -39,12 +39,15 @@ const DirectMessage = (props: any) => {
 
     useEffect(() => {
         props.socket?.current?.on("getNotification", (data: any) => {
-            if (members.some((member: any) => member.userId == user.userId)) {
+            if (groupId == data.groupId) {
                 if (data.type == 2) {
                     setNewCommentCount((prev: number) => prev + 1)
                 }
                 if (data.type == 1) {
                     setNewLikeCount((prev: number) => prev + 1)
+                }
+                if (data.type == 13) {
+                    setNewLikeCount((prev: number) => prev - 1)
                 }
                 if (data.type == 15) {
                     setNewCommentCount((prev: number) => prev - 1)
@@ -165,19 +168,19 @@ const DirectMessage = (props: any) => {
                                             <img onClick={() => {
                                                 navigate('/profile/' + group.userId)
                                             }}
-                                                className='w-8 h-8 rounded-full' src={group?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + group?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                                                className='w-8 h-8 rounded-full' src={group?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}`    + group?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                                         </div>
                                         <div className='flex flex-col p-2'>
                                             <div>{group?.name}</div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className='flex flex-col h-[calc(100%-160px)] sm:h-[calc(100%-110px)] divide-y relative z-0 divide-y'>
+                                <div className='flex flex-col h-[calc(100%-160px)] sm:h-[calc(100%-110px)] divide-y relative z-0 divide-y justify-between'>
                                     <div className='overflow-auto'>
                                         {posts?.map((post: any) => {
                                             return (
                                                 <div key={post.postId} ref={scrollRef}>
-                                                    <ChatBox post={post} members={members} handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} postThread={postThread} />
+                                                    <ChatBox groupId={groupId} post={post} members={members} handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} postThread={postThread} />
                                                 </div>
                                             )
                                         })}

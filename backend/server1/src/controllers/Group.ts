@@ -136,7 +136,7 @@ const groupController = {
             const groupRedisKey = 'groups' + req.params.userId
             let groups: any = await redisClient.get(groupRedisKey)
             groups = JSON.parse(groups)
-            groups.filter((group: any)=> group.groupId = req.params.groupId)
+            groups.filter((group: any) => group.groupId = req.params.groupId)
             await redisClient.set(groupRedisKey, JSON.stringify(groups));
             res.status(200).json('Delete member in group successfully !')
         }

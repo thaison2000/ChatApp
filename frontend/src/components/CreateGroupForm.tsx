@@ -26,7 +26,7 @@ const CreateGroupForm = (props: any) => {
 
 
     return (
-        <div className='fixed w-full z-10 bg-white drop-shadow-xl'>
+        <div className='fixed sm:right-0 sm:left-0 sm:top-0 sm:bottom-0 sm:m-auto sm:w-[500px] sm:h-[320px] w-full z-30 bg-white drop-shadow-xl'>
             <div className='w-full h-[50px] bg-sky-900'>
                 <h1 className='text-center text-white text-2xl font-medium p-2'>Create Chanel</h1>
             </div>
@@ -40,8 +40,8 @@ const CreateGroupForm = (props: any) => {
                 </div>
                </div>
                 <div className='w-full flex flex-row justify-center mb-4'>
-                    <button onClick={handleClickCreateGroup} className="rounded-full text-white py-2 px-8 font-medium text-xl bg-green-600 hover:bg-sky-900 hover:text-white">Create</button>
-                    <button onClick={props.handleClickCreateGroupForm} className="rounded-full ml-6 text-white py-2 px-8 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white">Cancel</button>
+                    <button onClick={handleClickCreateGroup} className="text-white py-2 px-8 font-medium text-xl bg-green-600 hover:bg-sky-900 hover:text-white">Create</button>
+                    <button onClick={props.handleClickCreateGroupForm} className="ml-6 text-white py-2 px-8 font-medium text-xl bg-red-600 hover:bg-sky-900 hover:text-white">Cancel</button>
                 </div>
             </div>
         </div>

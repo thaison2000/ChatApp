@@ -85,7 +85,6 @@ const TopBar = (props: any) => {
 
     useEffect(() => {
         props.socket?.current?.on("getNotification", (data: any) => {
-            console.log(data)
             setNewNotification({
                 sendUserId: data.sendUserId,
                 sendUserName: data.sendUserName,
@@ -271,6 +270,16 @@ const TopBar = (props: any) => {
                         </div>
                     )
                 }
+                if (notification.receiveUserId == user.userId && notification.type == 19){
+                    return (
+                        <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
+                            <div>
+                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has mentioned you in a Post in group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
+                                <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
+                            </div>
+                        </div>
+                    )
+                }
             }
 
             )}
@@ -279,7 +288,7 @@ const TopBar = (props: any) => {
 
     const SearchingAlert = () => {
         return (
-            <div className='h-[500px] w-[600px] shadow-2xl bg-white z-20'>
+            <div className='absolute top-[50px] h-[300px] w-[70%] overflow-auto shadow-2xl bg-white z-20'>
                 {searchingUsers.map((searchingUser: any) => (
                     <div onClick={() => {
                         navigate('/profile/' + searchingUser.userId, { replace: true })
@@ -287,7 +296,7 @@ const TopBar = (props: any) => {
                     }
                     } className='p-4 flex flex-row hover:bg-neutral-100'>
                         <div>
-                            <img className='w-6 h-6' src={searchingUser?.avatar ? ('https://chatapp-server1-y5cc.onrender.com/images/' + searchingUser?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                            <img className='w-6 h-6' src={searchingUser?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/'   + searchingUser?.avatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
                         </div>
                         <div className='ml-4'>{searchingUser.name}</div>
                     </div>
