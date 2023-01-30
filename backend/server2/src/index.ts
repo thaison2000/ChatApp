@@ -10,6 +10,11 @@ import mongoose from "mongoose";
 import postRoute from "./routes/Post";
 import commentRoute from "./routes/Comment";
 import likeRoute from "./routes/Like";
+import multer from "multer";
+import verifyToken from "./controllers/verifyToken";
+import Post from "./models/Post";
+import path from "path";
+import Comment from "./models/Comment";
 
 dotenv.config()
 
@@ -37,17 +42,84 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
   });
   
 // Middleswares
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-app.use(express.json());
 app.use(cors())
-app.use("/images", express.static("public/images"));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json())
+app.use("/docs", express.static("public/docs"));
 
 //api
 app.use('/api/notification', notificationRoute)
 app.use('/api/post', postRoute)
 app.use('/api/comment', commentRoute)
 app.use('/api/like', likeRoute)
+
+//upload image
+export const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "public/docs");
+    },
+    filename: (req: any, file, cb) => {
+        if(req.body.postId){
+            cb(null, req.user.userId + '-' + req.body.postId + '-' + file.originalname)
+
+        }
+        if(req.body.commentId){
+            cb(null, req.user.userId + '-' + req.body.commentId + '-' + file.originalname)
+
+        }
+        },
+});
+
+const upload = multer({ storage: storage });
+
+//upload document
+app.post("/api/post/uploadDocs", verifyToken, upload.array("files",10), async (req: any, res: Response) => {
+    try {
+        
+        const updatePost = await Post.findOne({
+            userId: req.user.userId,
+            postId: req.body.postId
+        }
+        );
+        let fileNames = []
+        for(let i=0;i< req.files.length;i++){
+                fileNames.push(req.user.userId + '-' + req.body.postId + '-' +req.files[i].originalname)
+        }
+        await updatePost.updateOne({
+            $set: {
+                fileNames: fileNames
+            }
+        })
+
+        res.status(200).json('Update post docs successfully !')
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+app.post("/api/comment/uploadDocs", verifyToken, upload.array("files",10), async (req: any, res: Response) => {
+    try {
+        
+        const updateComment = await Comment.findOne({
+            userId: req.user.userId,
+            commentId: req.body.commentId
+        }
+        );
+        let fileNames = []
+        for(let i=0;i< req.files.length;i++){
+            fileNames.push(req.user.userId + '-' + req.body.commentId + '-' +req.files[i].originalname)
+        }
+        await updateComment.updateOne({
+            $set: {
+                fileNames: fileNames
+            }
+        })
+        res.status(200).json('Update post docs successfully !')
+    } catch (error) {
+        console.error(error);
+    }
+})
 
 app.get('/test', (req: Request, res: Response) => {
     return res.send("RUN NOW!")

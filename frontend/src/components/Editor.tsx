@@ -2,9 +2,9 @@ import { useContext, useEffect, useState } from 'react';
 import { useQuill } from 'react-quilljs';
 import BlotFormatter from 'quill-blot-formatter';
 import 'quill/dist/quill.snow.css';
-import { APIcreatePost, APIupdateAllUnreadPostByGroupId } from '../API/Post';
+import { APIcreatePost, APIupdateAllUnreadPostByGroupId, APIuploadDocs } from '../API/Post';
 import { Context } from '../context/Context';
-import { APIcreateComment } from '../API/Comment';
+import { APIcommentUploadDocs, APIcreateComment } from '../API/Comment';
 import { useParams } from 'react-router-dom';
 import { APIfindUserByName } from '../API/User';
 import { APIgetAllMemberByGroupId } from '../API/Group';
@@ -16,6 +16,7 @@ const Editor = (props: any) => {
 
   const { user } = useContext(Context)
   const [state, setState] = useState<string>('')
+  const [files, setFiles] = useState<any>()
   const [mentionBox, setMentionBox] = useState<boolean>(false)
   const [mentionUsers, setMentionUsers] = useState<any>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -23,8 +24,6 @@ const Editor = (props: any) => {
     modules: { blotFormatter: {} }
   });
   const [editorHeight, setEditorHeight] = useState<any>()
-
-  console.log(state)
 
   useEffect(() => {
     if (props.content) {
@@ -53,10 +52,11 @@ const Editor = (props: any) => {
   const handleClickSend = async () => {
     setIsLoading(true)
     if (props.type == 'post') {
-      const { status } = await APIcreatePost({
+      const { status, data } = await APIcreatePost({
         groupId: props.groupId,
         content: state
       })
+      console.log(data)
       if (status) {
         quillRef.current.firstChild.innerHTML = ''
         props.socket?.current?.emit("sendMessage", {
@@ -66,12 +66,18 @@ const Editor = (props: any) => {
           content: state,
           type: 8
         });
+        if (files) {
+          const { status }: any = await APIuploadDocs(files,data.postId, user.userId)
+          if (status) {
+            setFiles(null)
+          }
+        }
         setIsLoading(false)
       }
     }
 
     if (props.type == 'comment') {
-      const { status } = await APIcreateComment({
+      const { status, data } = await APIcreateComment({
         groupId: props.groupId,
         userId: user.userId,
         postId: props.postId,
@@ -86,6 +92,12 @@ const Editor = (props: any) => {
           content: state,
           type: 2
         });
+        if (files) {
+          const { status }: any = await APIcommentUploadDocs(files,data.commentId, user.userId)
+          if (status) {
+            setFiles(null)
+          }
+        }
         setIsLoading(false)
       }
     }
@@ -211,6 +223,20 @@ const Editor = (props: any) => {
       </div>
       <div style={editorHeight} className='w-[100%] z-100 h-[100px] bg-white relative'>
         <div ref={quillRef} className='relative z-100 bg-white' />
+        <div className='absolute bottom-[-40px]'>
+          <input className="block w-[240px] text-sm text-slate-500 ml-3
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-neutral-200 file:text-neutral-700
+                  hover:file:bg-neutral-400"
+            type="file"
+            id="avatar"
+            multiple
+            name='files'
+            onChange={(e: any) => setFiles(e.target.files)}
+          ></input>
+        </div>
         <div className='absolute bottom-[-40px] right-2'>
           {isLoading ?
             <div role="status">

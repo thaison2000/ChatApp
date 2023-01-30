@@ -9,14 +9,14 @@ services:
       - '6379:6379'
     restart: unless-stopped
 
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
+  postgresql:
+    image: postgres
+    container_name: postgresql
     ports:
-      - "3307:3306"
+      - "5432:5432"
     environment:
-      - MYSQL_DATABASE=chatapp
-      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
   mongo:
     image: mongo:4.4
@@ -30,7 +30,7 @@ services:
     container_name: server1-container
     depends_on:
       - redis
-      - mysql
+      - postgresql
     build: ./backend/server1
     volumes:
       - ./server1/src/

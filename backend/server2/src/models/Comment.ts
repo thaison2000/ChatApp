@@ -22,6 +22,10 @@ const CommentSchema = mongoose.Schema(
             type: String,
             required: true
         },
+        fileNames: {
+            type: Array,
+            default: []
+        },
     },
     { timestamps: true })
 

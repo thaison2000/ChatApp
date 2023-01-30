@@ -39,7 +39,6 @@ const DirectMessage = (props: any) => {
 
     useEffect(() => {
         props.socket?.current?.on("getNotification", (data: any) => {
-            if (groupId == data.groupId) {
                 if (data.type == 2) {
                     setNewCommentCount((prev: number) => prev + 1)
                 }
@@ -61,15 +60,12 @@ const DirectMessage = (props: any) => {
                 if (data.type == 18) {
                     setNewPostCount((prev: number) => prev + 1)
                 }
-            }
         });
     }, [props.socket?.current]);
 
     useEffect(() => {
         props.socket?.current?.on("getMessage", (data: any) => {
-            if (groupId == data.groupId) {
                 setNewPostCount((prev: number) => prev + 1)
-            }
         });
     }, [props.socket?.current]);
 
@@ -151,7 +147,7 @@ const DirectMessage = (props: any) => {
                     <SideBar socket={props.socket} />
                 </div>
                 {menu ?
-                    <div className='sm:w-0 sm:h-0'>
+                    <div className='sm:w-0 sm:h-0 h-[calc(100%-64px)]'>
                         <SideBar socket={props.socket} />
                     </div>
                     : <div className='w-full h-[calc(100%-10px)] sm:h-full flex flex-row overflow-auto'>

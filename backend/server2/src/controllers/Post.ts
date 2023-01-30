@@ -19,6 +19,7 @@ const postController = {
             const savePost = await newPost.save();
             res.status(200).json(savePost);
         } catch (err) {
+            console.log(err)
             res.status(500).json(err);
         }
     },

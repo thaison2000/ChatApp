@@ -14,7 +14,7 @@ const commentController = {
         });
   
         await newComment.save();
-        res.status(200).json('Create comment successfully');
+        res.status(200).json(newComment);
       } catch (err) {
         console.log(err)
         res.status(500).json(err);
@@ -26,7 +26,6 @@ const commentController = {
           const comments = await Comment.find({
             postId: req.params.postId,
           });
-          
           res.status(200).json(comments);
         } catch (err) {
           console.log(err)

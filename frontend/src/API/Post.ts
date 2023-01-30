@@ -17,9 +17,10 @@ export const APIcreatePost = async (postCreate: postCreateInterface) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.post(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/", postCreate, config);
+        const res = await axios.post(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/", postCreate, config);
         return {
-            status: true
+            status: true,
+            data: res.data
         }
 
     }
@@ -396,3 +397,29 @@ export const APIgetPostThread = async () => {
         }
     }
 }
+
+export const APIuploadDocs = async (files: any, postId: any, userId: any) => {
+    try {
+        let fileNames: Array<string> = []
+
+        const data = new FormData();
+
+        data.append("postId", postId);
+        for (let i = 0; i < files.length; i++) {
+            data.append("files", files[i]);
+          }
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.post(`${process.env.REACT_APP_SERVER2_URL}`    + "/api/post/uploadDocs", data, config);
+        return {
+            status: true
+        }
+    } catch (err) {
+        console.log(err)
+        return {status: false}
+    }
+};

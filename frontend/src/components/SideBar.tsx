@@ -21,6 +21,8 @@ const SideBar = (props: any) => {
     const [newPosts, setNewPosts] = useState<Array<number>>([]);
     const [unreadPosts, setUnreadPosts] = useState<Array<any>>([]);
     const [unreadPostsCount, setUnreadPostsCount] = useState<number>();
+    const [onlineUsers, setOnlineUsers] = useState<Array<any>>()
+
 
     useEffect(() => {
         props.socket.current?.on("getNotification", (data: any) => {
@@ -46,6 +48,12 @@ const SideBar = (props: any) => {
     }, [props.socket.current]);
 
     useEffect(() => {
+        props.socket.current?.on("getUsers", (data: any) => {
+            setOnlineUsers(data)
+        });
+    }, [props.socket.current]);
+
+    useEffect(() => {
         if ((groupId != newNotification.groupId) && (newNotification.type == 8)) {
 
             setNewPosts([...newPosts, newNotification.groupId])
@@ -67,7 +75,7 @@ const SideBar = (props: any) => {
         if (status) {
             setUnreadPostsCount((prev: any) => prev - 1)
             navigate('/group/' + groupId)
-            window.location.reload()
+            // window.location.reload()
         }
     }
 
@@ -118,7 +126,7 @@ const SideBar = (props: any) => {
                 <div>
                     <div onClick={() => {
                         navigate('/thread')
-                        window.location.reload()
+                        // window.location.reload()
                     }} className='flex flex-row py-2 hover:bg-sky-800'>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
@@ -127,7 +135,7 @@ const SideBar = (props: any) => {
                     </div>
                     <div onClick={() => {
                         navigate('/mention')
-                        window.location.reload()
+                        // window.location.reload()
                     }}
                         className = 'flex flex-row py-2 hover:bg-sky-800' >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
@@ -137,7 +145,7 @@ const SideBar = (props: any) => {
                     </div>
                 <div onClick={() => {
                     navigate('/draft')
-                    window.location.reload()
+                    // window.location.reload()
                 }} className='flex flex-row py-2 hover:bg-sky-800'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
@@ -211,11 +219,12 @@ const SideBar = (props: any) => {
                             return (
                                 <div key={directMessage.groupId} onClick={() => {
                                     navigate('/directMessage/' + directMessage.groupId)
-                                    window.location.reload()
+                                    // window.location.reload()
                                 }} className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
                                     <img className='w-6 h-6 rounded-full mt-[1px]' src={directMessage?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + directMessage?.avatar) : (`${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png')} alt="" />
                                     <span className='text-white ml-4 overflow-x-auto'>{directMessage.name}</span>
                                     {newPostCount > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{newPostCount}</div> : null}
+                                    {onlineUsers?.some((onlineUser: any)=> onlineUser.userId == directMessage.userId)? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-green-600 w-4 h-4 absolute left-[55px] bottom-[2px]'></div> : null}
                                 </div>
                             )
                         })}

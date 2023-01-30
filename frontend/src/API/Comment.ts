@@ -15,9 +15,10 @@ export const APIcreateComment = async (createComment: createCommentInterface) =>
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.post(`${process.env.REACT_APP_SERVER2_URL}` + "/api/comment/", createComment, config);
+        const res = await axios.post(`${process.env.REACT_APP_SERVER2_URL}` + "/api/comment/", createComment, config);
         return {
-            status: true
+            status: true,
+            data: res.data
         }
     }
     catch (err) {
@@ -45,7 +46,8 @@ export const APIgetCommentsByPostId = async (postId: string) => {
                 avatar: res2.data.avatar,
                 name: res2.data.name,
                 createdAt: res1.data[i].createdAt,
-                content: res1.data[i].content
+                content: res1.data[i].content,
+                fileNames: res1.data[i].fileNames
             })
         }
         return {
@@ -58,3 +60,29 @@ export const APIgetCommentsByPostId = async (postId: string) => {
         return { status: false }
     }
 }
+
+export const APIcommentUploadDocs = async (files: any, commentId: any, userId: any) => {
+    try {
+        let fileNames: Array<string> = []
+
+        const data = new FormData();
+
+        data.append("commentId", commentId);
+        for (let i = 0; i < files.length; i++) {
+            data.append("files", files[i]);
+          }
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.post(`${process.env.REACT_APP_SERVER2_URL}`    + "/api/comment/uploadDocs", data, config);
+        return {
+            status: true
+        }
+    } catch (err) {
+        console.log(err)
+        return {status: false}
+    }
+};

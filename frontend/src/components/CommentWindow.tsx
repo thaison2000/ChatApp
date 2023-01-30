@@ -21,7 +21,10 @@ const CommentWindow = (props: any) => {
     const [newCommentCount, setNewCommentCount] = useState<number>(0)
     const [newLikeCount, setNewLikeCount] = useState<number>(0)
 
+    console.log(comments)
+
     let navigate = useNavigate()
+
 
     const scrollRef = useRef<any>();
 
@@ -34,13 +37,11 @@ const CommentWindow = (props: any) => {
     useEffect(() => {
         props.socket?.current?.on("getNotification", (data: any) => {
             console.log(data)
-            if (props.members?.some((member: any) => member.userId == user.userId)) {
-                if (data.type == 2) {
-                    setNewCommentCount((prev: number) => prev + 1)
-                }
-                if (data.type == 1) {
-                    setNewLikeCount((prev: number) => prev + 1)
-                }
+            if (data.type == 2) {
+                setNewCommentCount((prev: number) => prev + 1)
+            }
+            if (data.type == 1) {
+                setNewLikeCount((prev: number) => prev + 1)
             }
         });
     }, [props.socket?.current]);
@@ -70,7 +71,7 @@ const CommentWindow = (props: any) => {
                 </div>
 
             </div>
-            <div className='h-[144px] w-full overflow-auto relative'>
+            <div className='max-h-[144px] h-[144px] w-full overflow-auto relative'>
                 <ChatBox post={props.postThread} socket={props.socket} members={props.members} />
             </div>
             <div className='flex flex-row'>
@@ -81,7 +82,7 @@ const CommentWindow = (props: any) => {
                 <div className='w-full h-[1px] bg-neutral-500 mt-3 mx-2'></div>
             </div>
             <div className='h-[calc(100%-240px)] sm:h-[calc(100%-255px)] flex flex-col justify-between'>
-                <div className='overflow-auto'>
+                <div className='overflow-auto divide-y border-b-2'>
                     {
                         comments.map((comment: any) => {
                             return <div
@@ -93,7 +94,7 @@ const CommentWindow = (props: any) => {
                                             navigate('/profile/' + comment.userId)
                                             window.location.reload()
                                         }}
-                                            className='w-8 h-8 m-4 rounded-full' src={comment.avatar ? (`${process.env.REACT_APP_SERVER1_URL}`+ '/images/'    + comment.avatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
+                                            className='w-8 h-8 m-4 rounded-full' src={comment.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + comment.avatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
                                     </div>
                                     <div className='flex flex-col mt-2'>
                                         <h1 className='mx-0 text-md font-bold'>{comment.name}</h1>
@@ -102,6 +103,20 @@ const CommentWindow = (props: any) => {
                                 </div>
                                 <div className='ml-16 pb-4' ref={scrollRef}>
                                     <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
+                                </div>
+                                <div className='flex flex-row ml-12'>
+                                    {
+                                        comment.fileNames ? comment.fileNames.map((fileName: any) => {
+                                            return (
+                                                <div className='m-4' >
+                                                    <div className='bg-neutral-200 text-center hover:bg-neutral-400 hover:text-white'>
+                                                        <a href={`${process.env.REACT_APP_SERVER2_URL}` + '/docs/' + fileName} className='w-20 h-8'>{fileName.split('.')[1]}</a>
+                                                    </div>
+                                                    <object className='w-24 h-16' data={`${process.env.REACT_APP_SERVER2_URL}` + '/docs/' + fileName}></object>
+                                                </div>
+                                            )
+                                        }) : null
+                                    }
                                 </div>
                             </div>
                         })

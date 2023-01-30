@@ -28,6 +28,10 @@ const PostSchema = mongoose.Schema(
         reads: {
             type: Array,
             default: []
+        },
+        fileNames: {
+            type: Array,
+            default: []
         }    
     },
     { timestamps: true })
