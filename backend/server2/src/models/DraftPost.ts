@@ -13,7 +13,11 @@ const DraftPostSchema = mongoose.Schema(
         content: {
             type: String,
             required: true
-        }
+        },
+        fileNames: {
+            type: Array,
+            default: []
+        }    
     },
     { timestamps: true })
 

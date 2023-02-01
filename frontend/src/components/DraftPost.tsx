@@ -51,7 +51,8 @@ const DraftPost = (props: any) => {
             for (let i = 0; i < sendGroups.length; i++) {
                 const { status } = await APIcreatePost({
                     content: props.draftPost.content,
-                    groupId: sendGroups[i].groupId
+                    groupId: sendGroups[i].groupId,
+                    fileNames: props.draftPost.fileNames
                 })
             }
             setSendGroups([])
@@ -92,7 +93,24 @@ const DraftPost = (props: any) => {
                     </div>
                 </div> :
                 <div className='border-2 w-[95%] ml-4 my-4 relative bg-white mb-4 flex flex-col lg:flex lg:flex-row pt-4 max-h-[400px]'>
-                    <div className='mb-4 bg-white min-h-[100px] max-h-[500px] p-4 w-[100%] z-1 border-2 ml-2 w-[94%] overflow-auto' dangerouslySetInnerHTML={{ __html: props.draftPost.content }}>
+                    <div className='min-h-[100px] max-h-[500px] w-[100%] border-2 ml-2 mb-4 '>
+                        <div className='bg-white  p-4 w-[100%] z-1 overflow-auto' dangerouslySetInnerHTML={{ __html: props.draftPost.content }}>
+                        </div>
+                        <div className='flex flex-row ml-2'>
+                            {
+                                props.draftPost.fileNames ? props.draftPost.fileNames?.map((fileName: any) => {
+
+                                    return (
+                                        <div className='m-4' >
+                                            <div className='bg-neutral-200 text-center hover:bg-neutral-400 hover:text-white'>
+                                                <a href={`${process.env.REACT_APP_SERVER2_URL}` + '/docs/' + fileName} className='w-20 h-8'>{fileName.split('.')[1]}</a>
+                                            </div>
+                                            <object className='w-24 h-16' data={`${process.env.REACT_APP_SERVER2_URL}` + '/docs/' + fileName}></object>
+                                        </div>
+                                    )
+                                }) : null
+                            }
+                        </div>
                     </div>
                     <div className='flex flex-col'>
                         <div className='flex flex-row'>

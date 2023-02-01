@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { APIcreateDraftPost, APIdeleteDraftPost, APIgetAllDraftPostByUserId } from '../API/Post'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { APIcreateDraftPost, APIdeleteDraftPost, APIgetAllDraftPostByUserId, APIuploadDocs } from '../API/Post'
 import DraftPost from '../components/DraftPost'
 import Editor from '../components/Editor'
 import SideBar from '../components/SideBar'
@@ -8,6 +8,7 @@ import TimeAgo from 'javascript-time-ago'
 
 // English.
 import en from 'javascript-time-ago/locale/en'
+import { Context } from '../context/Context'
 
 TimeAgo.addDefaultLocale(en)
 
@@ -16,12 +17,15 @@ const timeAgo = new TimeAgo('en-US')
 
 const Draft = (props: any) => {
 
+    const { user } = useContext(Context)
+
     const [clickCreateDraftPost, setClickCreateDraftPost] = useState(false)
     const [draftPosts, setDraftPosts] = useState([])
     const [newDraftPostCount, setNewDraftPostCount] = useState(0)
     const [updateDraftPost, setUpdateDraftPost] = useState(false)
     const scrollRef = useRef<any>()
     const [menu, setMenu] = useState<boolean>(false)
+
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
@@ -54,11 +58,17 @@ const Draft = (props: any) => {
         }
     }
 
-    const handleClickSaveDraftPost = async (content: string) => {
-        const { status } = await APIcreateDraftPost({
+    const handleClickSaveDraftPost = async (content: string, files: any) => {
+        const { status, data } = await APIcreateDraftPost({
             content: content
         })
+        
         if (status) {
+            if (files) {
+                let type = 'draftPost'
+                
+                const { status }: any = await APIuploadDocs(files,data.draftPostId, user.userId, type)
+              }
             setNewDraftPostCount((prev: number) => prev + 1)
             setClickCreateDraftPost(!clickCreateDraftPost)
         }

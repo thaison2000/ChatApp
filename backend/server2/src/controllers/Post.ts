@@ -13,7 +13,8 @@ const postController = {
             groupId: req.body.groupId,
             postId: `${uuid()}${Date.now()}`,
             content: req.body.content,
-            read: [req.user.userId]
+            read: [req.user.userId],
+            fileNames: req.body.fileNames
         });
         try {
             const savePost = await newPost.save();
@@ -32,6 +33,7 @@ const postController = {
         });
         try {
             const savePost = await newPost.save();
+            console.log(savePost)
             res.status(200).json(savePost);
         } catch (err) {
             res.status(500).json(err);

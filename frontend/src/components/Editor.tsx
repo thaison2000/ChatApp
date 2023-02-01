@@ -54,10 +54,17 @@ const Editor = (props: any) => {
     if (props.type == 'post') {
       const { status, data } = await APIcreatePost({
         groupId: props.groupId,
-        content: state
+        content: state,
+        fileNames: []
       })
-      console.log(data)
       if (status) {
+        if (files) {
+          let type = 'post'
+          const { status }: any = await APIuploadDocs(files,data.postId, user.userId, type)
+          if (status) {
+            setFiles(null)
+          }
+        }
         quillRef.current.firstChild.innerHTML = ''
         props.socket?.current?.emit("sendMessage", {
           sendUserName: user.name,
@@ -66,12 +73,7 @@ const Editor = (props: any) => {
           content: state,
           type: 8
         });
-        if (files) {
-          const { status }: any = await APIuploadDocs(files,data.postId, user.userId)
-          if (status) {
-            setFiles(null)
-          }
-        }
+       
         setIsLoading(false)
       }
     }
@@ -84,6 +86,12 @@ const Editor = (props: any) => {
         content: state
       })
       if (status) {
+        if (files) {
+          const { status }: any = await APIcommentUploadDocs(files,data.commentId, user.userId)
+          if (status) {
+            setFiles(null)
+          }
+        }
         quillRef.current.firstChild.innerHTML = ''
         props.socket?.current?.emit("sendNotification", {
           sendUserName: user.name,
@@ -92,18 +100,14 @@ const Editor = (props: any) => {
           content: state,
           type: 2
         });
-        if (files) {
-          const { status }: any = await APIcommentUploadDocs(files,data.commentId, user.userId)
-          if (status) {
-            setFiles(null)
-          }
-        }
+        
         setIsLoading(false)
       }
     }
 
     if (props.type == 'draftPost') {
-      props.handleClickSaveDraftPost(state)
+      props.handleClickSaveDraftPost(state,files)
+      setFiles(null)
       quillRef.current.firstChild.innerHTML = ''
       setIsLoading(false)
     }

@@ -15,6 +15,7 @@ import verifyToken from "./controllers/verifyToken";
 import Post from "./models/Post";
 import path from "path";
 import Comment from "./models/Comment";
+import DraftPost from "./models/DraftPost";
 
 dotenv.config()
 
@@ -76,21 +77,40 @@ const upload = multer({ storage: storage });
 //upload document
 app.post("/api/post/uploadDocs", verifyToken, upload.array("files",10), async (req: any, res: Response) => {
     try {
-        
-        const updatePost = await Post.findOne({
-            userId: req.user.userId,
-            postId: req.body.postId
-        }
-        );
-        let fileNames = []
-        for(let i=0;i< req.files.length;i++){
-                fileNames.push(req.user.userId + '-' + req.body.postId + '-' +req.files[i].originalname)
-        }
-        await updatePost.updateOne({
-            $set: {
-                fileNames: fileNames
+        if(req.body.type == 'draftPost'){
+           
+
+            const updatePost = await DraftPost.findOne({
+                userId: req.user.userId,
+                draftPostId: req.body.postId
             }
-        })
+            );
+            let fileNames = []
+            for(let i=0;i< req.files.length;i++){
+                    fileNames.push(req.user.userId + '-' + req.body.postId + '-' +req.files[i].originalname)
+            }
+            await updatePost.updateOne({
+                $set: {
+                    fileNames: fileNames
+                }
+            })
+        }
+        else{
+            const updatePost = await Post.findOne({
+                userId: req.user.userId,
+                postId: req.body.postId
+            }
+            );
+            let fileNames = []
+            for(let i=0;i< req.files.length;i++){
+                    fileNames.push(req.user.userId + '-' + req.body.postId + '-' +req.files[i].originalname)
+            }
+            await updatePost.updateOne({
+                $set: {
+                    fileNames: fileNames
+                }
+            })
+        }
 
         res.status(200).json('Update post docs successfully !')
     } catch (error) {

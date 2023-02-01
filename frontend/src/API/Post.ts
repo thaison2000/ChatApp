@@ -2,7 +2,8 @@ import axios from "axios";
 
 interface postCreateInterface {
     groupId: string,
-    content: string
+    content: string,
+    fileNames: Array<any>
 }
 
 interface draftPostCreateInterface {
@@ -128,9 +129,10 @@ export const APIcreateDraftPost = async (draftPostCreate: draftPostCreateInterfa
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.post(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/draftPost/", draftPostCreate, config);
+        const res = await axios.post(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/draftPost/", draftPostCreate, config);
         return {
-            status: true
+            status: true,
+             data: res.data
         }
 
     }
@@ -398,13 +400,14 @@ export const APIgetPostThread = async () => {
     }
 }
 
-export const APIuploadDocs = async (files: any, postId: any, userId: any) => {
+export const APIuploadDocs = async (files: any, postId: any, userId: any, type: any) => {
     try {
         let fileNames: Array<string> = []
 
         const data = new FormData();
 
         data.append("postId", postId);
+        data.append("type", type);
         for (let i = 0; i < files.length; i++) {
             data.append("files", files[i]);
           }
