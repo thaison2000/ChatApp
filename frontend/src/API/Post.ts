@@ -41,9 +41,10 @@ export const APIupdatePost = async (postId: string, content: string) => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        await axios.put(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/" + postId,{content}, config);
+        const res = await axios.put(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/" + postId,{content}, config);
         return {
-            status: true
+            status: true,
+            data: res.data
         }
 
     }

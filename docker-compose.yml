@@ -22,7 +22,7 @@ services:
     image: mongo:4.4
     container_name: mongo
     ports:
-      - 27017:27017
+      - 27018:27017
     restart: unless-stopped
 
   server1:

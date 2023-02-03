@@ -52,30 +52,37 @@ const Editor = (props: any) => {
   const handleClickSend = async () => {
     setIsLoading(true)
     if (props.type == 'post') {
-      const { status, data } = await APIcreatePost({
-        groupId: props.groupId,
-        content: state,
-        fileNames: []
-      })
-      if (status) {
-        if (files) {
-          let type = 'post'
-          const { status }: any = await APIuploadDocs(files,data.postId, user.userId, type)
-          if (status) {
-            setFiles(null)
-          }
-        }
-        quillRef.current.firstChild.innerHTML = ''
-        props.socket?.current?.emit("sendMessage", {
-          sendUserName: user.name,
-          sendUserId: user.userId,
-          groupId: props.groupId,
-          content: state,
-          type: 8
-        });
-       
+      if (!state) {
+        window.alert('You must write something before sending !')
         setIsLoading(false)
       }
+      else {
+        const { status, data } = await APIcreatePost({
+          groupId: props.groupId,
+          content: state,
+          fileNames: []
+        })
+        if (status) {
+          if (files) {
+            let type = 'post'
+            const { status }: any = await APIuploadDocs(files, data.postId, user.userId, type)
+            if (status) {
+              setFiles(null)
+            }
+          }
+          quillRef.current.firstChild.innerHTML = ''
+          props.socket?.current?.emit("sendMessage", {
+            sendUserName: user.name,
+            sendUserId: user.userId,
+            groupId: props.groupId,
+            content: state,
+            type: 8
+          });
+
+          setIsLoading(false)
+        }
+      }
+
     }
 
     if (props.type == 'comment') {
@@ -87,7 +94,7 @@ const Editor = (props: any) => {
       })
       if (status) {
         if (files) {
-          const { status }: any = await APIcommentUploadDocs(files,data.commentId, user.userId)
+          const { status }: any = await APIcommentUploadDocs(files, data.commentId, user.userId)
           if (status) {
             setFiles(null)
           }
@@ -100,26 +107,28 @@ const Editor = (props: any) => {
           content: state,
           type: 2
         });
-        
+
         setIsLoading(false)
       }
     }
 
     if (props.type == 'draftPost') {
-      props.handleClickSaveDraftPost(state,files)
+      props.handleClickSaveDraftPost(state, files)
       setFiles(null)
       quillRef.current.firstChild.innerHTML = ''
       setIsLoading(false)
     }
 
     if (props.type == 'updateDraftPost') {
-      props.handleClickSaveDraftPost(state)
+      props.handleClickSaveDraftPost(state, files)
+      setFiles(null)
       quillRef.current.firstChild.innerHTML = ''
       setIsLoading(false)
     }
 
     if (props.type == 'updatePost') {
-      props.handleClickSavePost(state)
+      props.handleClickSavePost(state, files)
+      setFiles(null)
       quillRef.current.firstChild.innerHTML = ''
       setIsLoading(false)
     }

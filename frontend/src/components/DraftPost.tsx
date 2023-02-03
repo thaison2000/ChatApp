@@ -1,10 +1,13 @@
 import { send } from 'process'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { APIfetchAllGroups } from '../API/Group'
-import { APIcreatePost, APIdeleteDraftPost, APIupdateDraftPost } from '../API/Post'
+import { APIcreatePost, APIdeleteDraftPost, APIupdateDraftPost, APIuploadDocs } from '../API/Post'
+import { Context } from '../context/Context'
 import Editor from './Editor'
 
 const DraftPost = (props: any) => {
+
+    const { user } = useContext(Context)
 
     const [edit, setEdit] = useState(false)
     const [groupId, setGroupId] = useState('')
@@ -34,12 +37,17 @@ const DraftPost = (props: any) => {
         setGroupId(e.target.value)
     }
 
-    const handleClickSaveDraftPost = async (content: string) => {
+    const handleClickSaveDraftPost = async (content: string, files: any) => {
         if (window.confirm('Are you sure you want to update this draft post ?')) {
             const { status } = await APIupdateDraftPost(props.draftPost.draftPostId, {
                 content: content
             })
             if (status) {
+                if (files) {
+                    let type = 'draftPost'
+                    
+                    const { status }: any = await APIuploadDocs(files,props.draftPost.draftPostId, user.userId, type)
+                  }
                 setEdit(!edit)
                 props.handleClickUpdateDraftPost()
             }
@@ -81,19 +89,19 @@ const DraftPost = (props: any) => {
     return (
         <div>
             {edit ?
-                <div className='border-2 w-[97%] m-4 relative h-[220px] bg-white'>
+                <div className='border-2 w-[97%] m-4 relative bg-white pb-12'>
                     <div onClick={handleClickEditPost} className='absolute top-2 right-2'>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-red-500">
                             <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clipRule="evenodd" />
                         </svg>
 
                     </div>
-                    <div className='absolute h-[100px] p-4 w-[99%] z-1 top-14'>
+                    <div className='p-4 w-[96%] z-1'>
                         <Editor type={'updateDraftPost'} content={props.draftPost.content} handleClickSaveDraftPost={handleClickSaveDraftPost} />
                     </div>
                 </div> :
                 <div className='border-2 w-[95%] ml-4 my-4 relative bg-white mb-4 flex flex-col lg:flex lg:flex-row pt-4 max-h-[400px]'>
-                    <div className='min-h-[100px] max-h-[500px] w-[100%] border-2 ml-2 mb-4 '>
+                    <div className='min-h-[100px] max-h-[500px] w-[95%] border-2 ml-2 mb-4 overflow-auto'>
                         <div className='bg-white  p-4 w-[100%] z-1 overflow-auto' dangerouslySetInnerHTML={{ __html: props.draftPost.content }}>
                         </div>
                         <div className='flex flex-row ml-2'>

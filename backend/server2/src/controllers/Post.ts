@@ -58,12 +58,12 @@ const postController = {
 
     deletePostByGroupId: async (req: any, res: Response) => {
         try {
-            const deletePost = await Post.findMany({
+            const deletePost = await Post.find({
                 userId: req.user.userId,
                 groupId: req.params.groupId
             });
-            if (deletePost) {
-                await deletePost.deleteMany();
+            if (deletePost.length > 0) {
+                await deletePost.deleteMany()
             }
             res.status(200).json('delete posts successfully');
         } catch (err) {
@@ -98,7 +98,7 @@ const postController = {
                     content: req.body.content
                 });
             if (updatePost) {
-                return res.status(200).json('update post successfully');
+                return res.status(200).json(updatePost);
             }
         } catch (err) {
             console.log(err)
@@ -117,6 +117,8 @@ const postController = {
                         groupId: req.params.groupId
                     },
                     { $push: { reads: req.user.userId } })
+
+                    console.log(updatePost)
                 }
             }
             

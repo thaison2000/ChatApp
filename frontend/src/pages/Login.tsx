@@ -28,15 +28,16 @@ const Login = () => {
             password: password
         })
         if (status) {
-            setIsLoading(false)
+            
             dispatch({ type: 'LOG_IN', payload: data });
             navigate('/')
         }
+        setIsLoading(false)
     }
 
     return (
         <div className='w-screen h-screen bg-white flex flex-col justify-center'>
-            <div className='w-[100%] h-[50%] sm:w-[50%] sm:h-[400px]  bg-white flex flex-col drop-shadow-xl m-auto my-auto'>
+            <div className='w-[100%] h-[50%] sm:w-[50%] lg:w-[40%] sm:h-[400px]  bg-white flex flex-col drop-shadow-xl m-auto my-auto'>
                 <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
                     <h1 className='text-center text-white text-2xl font-medium p-2'>Chat App</h1>
                 </div>

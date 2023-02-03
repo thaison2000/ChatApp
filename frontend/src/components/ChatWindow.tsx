@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { APIgetCommentsByPostId } from '../API/Comment';
 import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar } from '../API/Group';
 import { APIcreateNotification } from '../API/Notification';
-import { APIdeletePost, APIdeletePostByGroupId, APIgetAllImportantPostByGroupId, APIgetAllPostByGroupId, APIupdatePost } from '../API/Post';
+import { APIdeletePost, APIdeletePostByGroupId, APIgetAllImportantPostByGroupId, APIgetAllPostByGroupId, APIupdatePost, APIuploadDocs } from '../API/Post';
 import { APIfindUserByName } from '../API/User';
 import { Context } from '../context/Context';
 import ChatBox from './ChatBox'
@@ -33,7 +33,6 @@ const ChatWindow = (props: any) => {
   const [changeAvatarLoading, setChangeAvatarLoading] = useState<boolean>(false)
   const [promoteAdminLoading, setPromoteAdminLoading] = useState<boolean>(false)
   const [deleteMemberLoading, setDeleteMemberLoading] = useState<boolean>(false)
-
 
   const addMemberName = useRef<any>()
   const deleteGroupName = useRef<any>()
@@ -142,12 +141,15 @@ const ChatWindow = (props: any) => {
   const handleSubmitDeleteGroup = async () => {
     setDeleteGroupLoading(true)
     if (deleteGroupName.current.value != group.name) {
+      setDeleteGroupLoading(false)
       window.alert('Wrong group name !')
+      
     }
     else {
       if (window.confirm('Are you sure you want to delete the group ?')) {
-        const { status1 }: any = await APIdeleteGroup(group.groupId)
-        const { status2 }: any = await APIdeletePostByGroupId(group.groupId)
+        
+        const { status:status1 }: any = await APIdeleteGroup(group.groupId)
+        const { status:status2 }: any = await APIdeletePostByGroupId(group.groupId)
         if (status1 && status2) {
           props.socket?.current?.emit("sendNotification", {
             sendUserName: user.name,
@@ -322,10 +324,15 @@ const ChatWindow = (props: any) => {
     }
   }
 
-  const handleClickUpdatePost = async (postId: string, content: string) => {
+  const handleClickUpdatePost = async (postId: string, content: string, files: any) => {
     if (window.confirm('Are you sure you want to update this post in group ?')) {
-      const { status } = await APIupdatePost(postId, content)
+      const { status, data } = await APIupdatePost(postId, content)
       if (status) {
+        if (files) {
+          let type = 'post'
+         
+          const { status }: any = await APIuploadDocs(files,postId, user.userId, type)
+        }
         props.socket?.current?.emit("sendNotification", {
           type: 16
         });
@@ -417,7 +424,7 @@ const ChatWindow = (props: any) => {
                     navigate('/profile/' + searchingUser.userId)
                   }}
                     className='my-2'>
-                    <img className='rounded-full w-10 h-10' src={searchingUser?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + searchingUser?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                    <img className='rounded-full w-10 h-10' src={searchingUser?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + searchingUser?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                   </div>
                   <div className='font-bold text-[18px] mt-3 ml-4'>{searchingUser.name}</div>
                 </div>
@@ -527,7 +534,7 @@ const ChatWindow = (props: any) => {
                     navigate('/profile/' + member.userId)
                   }}
                     className='my-2' >
-                    <img className='rounded-full w-10 h-10' src={member?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + member?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                    <img className='rounded-full w-10 h-10' src={member?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + member?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
                   </div>
                   <div>
                     <div className='font-bold text-[18px] mt-2 ml-4'>{member.name}</div>

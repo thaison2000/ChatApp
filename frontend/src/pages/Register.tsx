@@ -33,14 +33,15 @@ const Register = () => {
         setIsLoading(true)
         const { status }: any = await APIRegister({ email, name, password, againPassword })
         if (status) {
-            setIsLoading(false)
+            
             navigate('/login')
         }
+        setIsLoading(false)
     };
 
     return (
         <div className='w-screen h-screen bg-white flex flex-col justify-center '>
-            <div className='w-[100%] h-[60%] sm:w-[50%] sm:h-[550px] bg-white flex flex-col drop-shadow-xl m-auto'>
+            <div className='w-[100%] h-[60%] sm:w-[50%] sm:h-[550px] lg:w-[40%] bg-white flex flex-col drop-shadow-xl m-auto'>
                 <div className='w-full h-[50px] bg-sky-900 rounded-t-lg'>
                     <h1 className='text-center text-white text-2xl font-medium p-2'>Chat App</h1>
                 </div>

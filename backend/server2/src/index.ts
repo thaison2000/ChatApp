@@ -43,10 +43,10 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
   });
   
 // Middleswares
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(express.json());
 app.use(cors())
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json())
 app.use("/docs", express.static("public/docs"));
 
 //api
@@ -85,7 +85,7 @@ app.post("/api/post/uploadDocs", verifyToken, upload.array("files",10), async (r
                 draftPostId: req.body.postId
             }
             );
-            let fileNames = []
+            let fileNames = updatePost.fileNames
             for(let i=0;i< req.files.length;i++){
                     fileNames.push(req.user.userId + '-' + req.body.postId + '-' +req.files[i].originalname)
             }
@@ -101,7 +101,7 @@ app.post("/api/post/uploadDocs", verifyToken, upload.array("files",10), async (r
                 postId: req.body.postId
             }
             );
-            let fileNames = []
+            let fileNames = updatePost.fileNames
             for(let i=0;i< req.files.length;i++){
                     fileNames.push(req.user.userId + '-' + req.body.postId + '-' +req.files[i].originalname)
             }

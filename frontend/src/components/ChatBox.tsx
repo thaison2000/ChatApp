@@ -155,8 +155,8 @@ const ChatBox = (props: any) => {
     }
   }
 
-  const handleClickSavePost = async (content: string) => {
-    props.handleClickUpdatePost(props.post?.postId, content)
+  const handleClickSavePost = async (content: string, files: any) => {
+    props.handleClickUpdatePost(props.post?.postId, content, files)
     setEditPost(!editPost)
   }
 
@@ -246,6 +246,21 @@ const ChatBox = (props: any) => {
           </div>
           <div className='relative p-4 z-1 h-[420px]'>
             <Editor type={'updatePost'} content={props.post.content} handleClickSavePost={handleClickSavePost} />
+            <div className='flex flex-row ml-2 absolute bottom-10'>
+              {
+                props.post.fileNames ? props.post.fileNames?.map((fileName: any) => {
+
+                  return (
+                    <div className='m-4' >
+                      <div className='bg-neutral-200 text-center hover:bg-neutral-400 hover:text-white'>
+                        <a href={`${process.env.REACT_APP_SERVER2_URL}` + '/docs/' + fileName} className='w-20 h-8'>{fileName.split('.')[1]}</a>
+                      </div>
+                      <object className='w-24 h-16' data={`${process.env.REACT_APP_SERVER2_URL}` + '/docs/' + fileName}></object>
+                    </div>
+                  )
+                }) : null
+              }
+            </div>
           </div>
         </div> :
         <div
