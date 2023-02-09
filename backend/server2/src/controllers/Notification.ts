@@ -31,6 +31,8 @@ const notificationController = {
         receiveUserId: req.body.receiveUserId,
         sendUserName: req.body.sendUserName,
         type: req.body.type,
+        post: req.body.post,
+        postId: req.body.postId,
         groupId: req.body.groupId,
         groupName: req.body.groupName,
         affectedUserName: req.body.affectedUserName

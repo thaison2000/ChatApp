@@ -27,7 +27,7 @@ export const APIcreateFriendRequestNotification = async (friendRequestNotificati
   }
 }
 
-export const APIcreateNotification = async ({sendUserId, receiveUserId, sendUserName, type, groupId, groupName, affectedUserName}: any) => {
+export const APIcreateNotification = async ({sendUserId, receiveUserId, sendUserName, type, groupId, groupName, affectedUserName, post, postId}: any) => {
   try {
     const config = {
       headers: {
@@ -36,7 +36,7 @@ export const APIcreateNotification = async ({sendUserId, receiveUserId, sendUser
       },
     }
     await axios.post(`${process.env.REACT_APP_SERVER2_URL}` + "/api/notification/",{
-      sendUserId, receiveUserId, sendUserName, type, groupId, groupName, affectedUserName
+      sendUserId, receiveUserId, sendUserName, type, groupId, groupName, affectedUserName, post, postId
     }, config);
     return {
       status: true

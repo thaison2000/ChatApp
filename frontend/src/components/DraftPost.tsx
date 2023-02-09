@@ -62,6 +62,13 @@ const DraftPost = (props: any) => {
                     groupId: sendGroups[i].groupId,
                     fileNames: props.draftPost.fileNames
                 })
+                props.socket?.current?.emit("sendMessage", {
+                    sendUserName: user.name,
+                    sendUserId: user.userId,
+                    groupId: sendGroups[i].groupId,
+                    content: props.draftPost.content,
+                    type: 8
+                  });
             }
             setSendGroups([])
         }

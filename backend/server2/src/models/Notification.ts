@@ -19,6 +19,9 @@ const NotificationSchema = mongoose.Schema(
         post: {
             type: String,
         },
+        postId: {
+            type: String,
+        },
         type: {
             type: Number
         },

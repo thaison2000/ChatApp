@@ -10,6 +10,7 @@ import { APIgetCommentsByPostId } from '../API/Comment';
 import { APIcreatePostLike, APIdeleteLike, APIgetLikesByPostId } from '../API/Like';
 import { APIactiveImportantPost, APIdeletePost, APIinactiveImportantPost, APIupdatePost } from '../API/Post';
 import Editor from './Editor';
+import { APIcreateNotification } from '../API/Notification';
 
 TimeAgo.addDefaultLocale(en)
 
@@ -98,11 +99,19 @@ const ChatBox = (props: any) => {
       userId: currentUser.userId,
       groupId: props.post.groupId
     })
+    const { status: status1 } = await APIcreateNotification({
+      sendUserName: user.name,
+      sendUserId: user.userId,
+      groupId: props.groupId,
+      postId: props.post.postId,
+      type: 1
+    })
     if (status) {
       props.socket?.current?.emit("sendNotification", {
         sendUserName: user.name,
         sendUserId: user.userId,
         groupId: props.groupId,
+        postId: props.post.postId,
         type: 1
       });
     }
@@ -163,7 +172,9 @@ const ChatBox = (props: any) => {
   const InteractiveAlert = () => {
     return (
       <div className='absolute right-1 top-1 z-100 p-1 bg-white rounded-2xl shadow-2xl'>
-        <div className='flex flex-row'>
+       
+        <div className=''>
+        <div className='flex flex-row '>
           <div>
             {
               props.post.userId == currentUser.userId ?
@@ -216,6 +227,7 @@ const ChatBox = (props: any) => {
                 </div> : null
             }
           </div>
+        </div>
         </div>
       </div>
     )
@@ -309,9 +321,12 @@ const ChatBox = (props: any) => {
               }) : null
             }
           </div>
-          <div className='ml-16 pb-1 flex flex-row'>
+          <div className='ml-16 pb-1 flex flex-row justify-between'>
+            <div className='flex flex-row'>
             <div onClick={handleClickLike} className='mr-4 font-bold pointer-events-auto text-sm'>{likes.length} likes</div>
             <div onClick={handleClickCommentWindow} className='text-sky-900 text-sm font-bold hover:underline pointer-events-auto'>{comments.length} replies</div>
+            </div>
+            <div className='mx-4 text-gray-500 font-bold text-sm m-2'>ID :{props.post.postId}</div>
           </div>
 
         </div>}

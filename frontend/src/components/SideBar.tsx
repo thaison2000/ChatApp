@@ -22,8 +22,6 @@ const SideBar = (props: any) => {
     const [unreadPostsCount, setUnreadPostsCount] = useState<number>(0);
     const [onlineUsers, setOnlineUsers] = useState<Array<any>>()
 
-    console.log(unreadPosts)
-
     useEffect(() => {
         props.socket.current?.on("getNotification", (data: any) => {
             setNewNotification({
@@ -199,11 +197,6 @@ const SideBar = (props: any) => {
                 {displayDirectMessage ?
                     <div className='max-h-[200px] overflow-y-auto'>
                         {directMessages?.map((directMessage: any) => {
-                            let unreadPostsbyGroup
-                            let newPostCount: number = 0
-
-                            unreadPostsbyGroup = unreadPosts.filter((unreadPost: any) => unreadPost.groupId == directMessage.groupId)
-                            newPostCount = unreadPostsbyGroup.length
                             return (
                                 <div key={directMessage.groupId} onClick={() => {
                                     navigate('/directMessage/' + directMessage.groupId)
@@ -211,7 +204,7 @@ const SideBar = (props: any) => {
                                 }} className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
                                     <img className='w-6 h-6 rounded-full mt-[1px]' src={directMessage?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + directMessage?.avatar) : (`${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png')} alt="" />
                                     <span className='text-white ml-4 overflow-x-auto'>{directMessage.name}</span>
-                                    {newPostCount > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{newPostCount}</div> : null}
+                                    {unreadPosts.filter((unreadPost: any) => unreadPost.groupId == directMessage.groupId).length > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{unreadPosts.filter((unreadPost: any) => unreadPost.groupId == directMessage.groupId).length}</div> : null}
                                     {onlineUsers?.some((onlineUser: any)=> onlineUser.userId == directMessage.userId)? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-green-600 w-4 h-4 absolute left-[55px] bottom-[2px]'></div> : null}
                                 </div>
                             )

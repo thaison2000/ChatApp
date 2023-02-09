@@ -31,8 +31,10 @@ const TopBar = (props: any) => {
     const [groups, setGroups] = useState<any>();
 
     const handleClickLogout = () => {
-        localStorage.removeItem('user')
-        window.location.reload()
+        if(window.confirm('Are you sure you want to log out ?')){
+            localStorage.removeItem('user')
+            window.location.reload()
+        }
     }
 
     const handleClickHome = () => {
@@ -64,7 +66,13 @@ const TopBar = (props: any) => {
             if (groups) {
                 const { status, data }: any = await APIgetAllNotificationsByGroupIds(groups)
                 if (status) {
-                    setNotifications((prev: any) => prev.concat(data))
+                    let notificationSum = notifications.concat(data)
+                    notificationSum?.sort((p1: any, p2: any) => {
+                        let time1: any = new Date(p2.createdAt)
+                        let time2: any = new Date(p1.createdAt)
+                        return (time2 - time1);
+                    })
+                    setNotifications(notificationSum)
                 }
             }
         }
@@ -175,6 +183,33 @@ const TopBar = (props: any) => {
     const NotifcationAlert = () => (
         <div className='fixed top-[50px] w-full overflow-auto bg-white shadow-2xl z-20 divide-y sm:h-64 sm:w-[350px] sm:right-[80px] sm:top-[20px]'>
             {notifications?.map((notification: any) => {
+                 if (notification.type == 1) {
+                    return (
+                        <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
+                            <div>
+                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> liked your <span className='text-[18px] font-medium text-sky-900'>Post </span>
+                                <span className='ml-4 text-gray-500 font-bold text-xs'>ID: {notification.postId}</span>
+                            </div>
+                            <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
+                            <a className='text-sky-900 underline' href={'http://localhost:3000/group/' + notification.groupId + '#' + notification.postId}>Go to</a>
+
+                        </div>
+                    )
+                }
+                if (notification.type == 2) {
+                   
+                    return (
+                        <div 
+                        className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
+                            <div>
+                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> commented on your <span className='text-[18px] font-medium text-sky-900'>Post</span>
+                                <span className='ml-4 text-gray-500 font-bold text-xs'>ID: {notification.postId}</span>
+                            </div>
+                            <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
+                            <a className='text-sky-900 underline' href={'http://localhost:3000/group/' + notification.groupId + '#' + notification.postId}>Go to</a>
+                        </div>
+                    )
+                }
                 if (notification.type == 4 &&
                     friendRequests.some((friendRequest: any) => friendRequest.sendUserId == notification.sendUserId && friendRequest.receiveUserId == notification.receiveUserId)
                 ) {

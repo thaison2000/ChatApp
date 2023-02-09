@@ -334,10 +334,37 @@ export const APIgetAllMentionPostByUserId = async () => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/mention/", config);
+        const res1 = await axios.get(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/mention/", config);
+        let postThread = res1.data
+
+        for (let i = 0; i < postThread.length; i++) {
+            let res2 = await axios.get(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/group/" + postThread[i].groupId, config);
+            let res3 = await axios.get(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/user/" + postThread[i].userId, config)
+            let res4 = await axios.get(`${process.env.REACT_APP_SERVER2_URL}` + "/api/comment/" + postThread[i].postId, config);
+            if (res2.data && res3.data && res4.data) {
+                postThread[i].groupName = res2.data.name
+                postThread[i].groupAvatar = res2.data.avatar
+                postThread[i].userName = res3.data.name 
+                postThread[i].userAvatar = res3.data.avatar 
+                postThread[i].comment = res4.data
+            }
+            for(let j=0;j<postThread[i].comment?.length;j++){
+                let res5 = await axios.get(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/user/" + postThread[i].comment[j].userId, config)
+                if(res5.data){
+                    postThread[i].comment[j].userName = res5.data.name
+                    postThread[i].comment[j].userAvatar = res5.data.avatar
+                }
+            }
+        }
+        postThread = postThread.sort((p1: any, p2: any) => {
+            let time1: any = new Date(p2.createdAt)
+            let time2: any = new Date(p1.createdAt)
+            return (time2 - time1);
+        })
+        
         return {
             status: true,
-            data: res.data
+            data: postThread
         }
 
     }

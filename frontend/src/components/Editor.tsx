@@ -52,7 +52,7 @@ const Editor = (props: any) => {
   const handleClickSend = async () => {
     setIsLoading(true)
     if (props.type == 'post') {
-      if (!state) {
+      if (state =='<p><br></p>') {
         window.alert('You must write something before sending !')
         setIsLoading(false)
       }
@@ -100,11 +100,25 @@ const Editor = (props: any) => {
           }
         }
         quillRef.current.firstChild.innerHTML = ''
+
+        const {status:status1} = await APIcreateNotification({
+          sendUserName: user.name,
+          sendUserId: user.userId,
+          groupId: props.groupId,
+          content: state,
+          postId: props.postId,
+          post: props.postContentForCommentNotification,
+          type: 2
+        })
+
+
         props.socket?.current?.emit("sendNotification", {
           sendUserName: user.name,
           sendUserId: user.userId,
           groupId: props.groupId,
           content: state,
+          postId: props.postId,
+          post: props.postContentForCommentNotification,
           type: 2
         });
 

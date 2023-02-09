@@ -13,6 +13,8 @@ const Group = (props: any) => {
     setMenu(!menu)
   }
 
+  console.log(useParams())
+
   return (
     <div className='w-screen h-screen pointer-events-auto'>
       <TopBar socket={props.socket} />

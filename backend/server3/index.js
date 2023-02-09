@@ -30,7 +30,6 @@ const getUser = (userId) => {
 
 io.on("connection", (socket) => {
 
-  //take userId and socketId from user
   socket.on("addUser", (userId) => {
     addUser(userId, socket.id);
     io.emit("getUsers", users);
@@ -49,7 +48,7 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("sendNotification", ({ sendUserName, sendUserId, receiveUserId, type, post, affectedUserName, groupName, groupId }) => {
+  socket.on("sendNotification", ({ sendUserName, sendUserId, receiveUserId, type, post, affectedUserName, groupName, groupId, postId }) => {
     const receiver = getUser(receiveUserId);
     if (receiver) {
       io.to(receiver.socketId).emit("getNotification", {
@@ -58,6 +57,7 @@ io.on("connection", (socket) => {
         receiveUserId,
         type,
         post,
+        postId,
         groupId,
         timestamp: new Date()
       })

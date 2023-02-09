@@ -13,11 +13,12 @@ const postController = {
             groupId: req.body.groupId,
             postId: `${uuid()}${Date.now()}`,
             content: req.body.content,
-            read: [req.user.userId],
+            reads: [req.user.userId],
             fileNames: req.body.fileNames
         });
         try {
             const savePost = await newPost.save();
+            console.log(savePost)
             res.status(200).json(savePost);
         } catch (err) {
             console.log(err)
@@ -283,8 +284,7 @@ const postController = {
                 return ans;
             }
             postThread = deduplicate(postThread)
-            console.log(postThread)
-            res.status(200).json(postThread);
+            res.status(200).json(postThread.slice(0,19));
         } catch (err) {
             console.log(err)
             res.status(500).json(err);

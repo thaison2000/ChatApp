@@ -21,8 +21,6 @@ const CommentWindow = (props: any) => {
     const [newCommentCount, setNewCommentCount] = useState<number>(0)
     const [newLikeCount, setNewLikeCount] = useState<number>(0)
 
-    console.log(comments)
-
     let navigate = useNavigate()
 
 
@@ -36,7 +34,6 @@ const CommentWindow = (props: any) => {
 
     useEffect(() => {
         props.socket?.current?.on("getNotification", (data: any) => {
-            console.log(data)
             if (data.type == 2) {
                 setNewCommentCount((prev: number) => prev + 1)
             }
@@ -123,7 +120,7 @@ const CommentWindow = (props: any) => {
                     }
                 </div>
                 <div className='relative my-4 m-1'>
-                    <Editor group={props.group} socket={props.socket} type={'comment'} groupId={props.groupId} postId={props.postThread.postId} />
+                    <Editor group={props.group} socket={props.socket} type={'comment'} groupId={props.groupId} postId={props.postThread.postId} postContentForCommentNotification={props.postThread.content}/>
                 </div>
             </div>
 

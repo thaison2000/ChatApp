@@ -164,7 +164,7 @@ const DirectMessage = (props: any) => {
                                             <img onClick={() => {
                                                 navigate('/profile/' + group.userId)
                                             }}
-                                                className='w-8 h-8 rounded-full' src={group?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}`    + group?.avatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                                                className='w-8 h-8 rounded-full' src={group?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/'   + group?.avatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
                                         </div>
                                         <div className='flex flex-col p-2'>
                                             <div>{group?.name}</div>

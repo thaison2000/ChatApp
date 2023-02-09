@@ -652,7 +652,7 @@ const ChatWindow = (props: any) => {
                   }) :
                   posts?.map((post: any) => {
                     return (
-                      <div key={post.postId} ref={scrollRef}>
+                      <div key={post.postId} id={post.postId} ref={scrollRef}>
                         <ChatBox groupId={props.groupId} handleClickUpdatePost={handleClickUpdatePost} handleClickDeletePost={handleClickDeletePost} post={post} handleClickCommentWindow={handleClickCommentWindow} socket={props.socket} members={members} postThread={postThread} />
                       </div>
                     )

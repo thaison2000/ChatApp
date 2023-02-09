@@ -120,7 +120,7 @@ const Draft = (props: any) => {
                                     {
                                         draftPosts.map((draftPost: any) => <div ref={scrollRef} key={draftPost.draftPostId} className='bg-neutral-100 mx-4 py-4'>
                                             <div className='pl-4 font-bold'>{timeAgo.format(new Date(draftPost.updatedAt))}</div>
-                                            <DraftPost draftPost={draftPost} handleClickUpdateDraftPost={handleClickUpdateDraftPost} handleClickDeleteDraftPost={handleClickDeleteDraftPost} />
+                                            <DraftPost socket={props.socket} draftPost={draftPost} handleClickUpdateDraftPost={handleClickUpdateDraftPost} handleClickDeleteDraftPost={handleClickDeleteDraftPost} />
                                         </div>
                                         )
                                     }

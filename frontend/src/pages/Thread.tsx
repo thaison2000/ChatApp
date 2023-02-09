@@ -112,7 +112,7 @@ const Thread = (props: any) => {
                                     <div className='mx-4 bg-gray-200 border-2 my-6' ref={scrollRef}>
                                         <div className='flex flex-row pb-2 px-2'>
                                             <div>
-                                                <img className='w-8 h-8 mt-2 rounded-full' src={post.groupAvatar ? (`${process.env.REACT_APP_SERVER1_URL}`    + post.groupAvatar) : 'https://chatapp-server1-y5cc.onrender.com/images/nullAvatar.png'} alt="" />
+                                                <img className='w-8 h-8 mt-2 rounded-full' src={post.groupAvatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/'    + post.groupAvatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
                                             </div>
                                             <div className='flex flex-col'>
                                                 <div className='ml-2 mx-0 text-md font-bold'>{post.groupName}</div>
