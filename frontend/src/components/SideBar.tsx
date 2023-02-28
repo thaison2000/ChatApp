@@ -128,90 +128,98 @@ const SideBar = (props: any) => {
                         navigate('/mention')
                         // window.location.reload()
                     }}
-                        className = 'flex flex-row py-2 hover:bg-sky-800' >
+                        className='flex flex-row py-2 hover:bg-sky-800' >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
                             <path strokeLinecap="round" d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 10-2.636 6.364M16.5 12V8.25" />
                         </svg>
                         <span className='text-white ml-2'>Mentions & reactions</span>
                     </div>
-                <div onClick={() => {
-                    navigate('/draft')
-                    // window.location.reload()
-                }} className='flex flex-row py-2 hover:bg-sky-800'>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-                    </svg>
-                    <span className='text-white ml-2'>Draft and sent</span>
-                </div>
-                <div className='flex flex-row py-2 hover:bg-sky-800'>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
-                    </svg>
+                    <div onClick={() => {
+                        navigate('/draft')
+                        // window.location.reload()
+                    }} className='flex flex-row py-2 hover:bg-sky-800'>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                        </svg>
+                        <span className='text-white ml-2'>Draft and sent</span>
+                    </div>
+                    <div onClick={() => {
+                        navigate('/company')
+                        // window.location.reload()
+                    }} className='flex flex-row py-2 hover:bg-sky-800'>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+                        </svg>
 
-                    <span className='text-white ml-2'>Connection</span>
-                </div>
-                <div className='flex flex-row py-2 hover:bg-sky-800'>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-                    </svg>
+                        <span className='text-white ml-2'>Company</span>
+                    </div>
+                    <div onClick={() => {
+                        navigate('/member')
+                        // window.location.reload()
+                    }} className='flex flex-row py-2 hover:bg-sky-800'>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 inline text-white ml-4">
+                            <path fillRule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clipRule="evenodd" />
+                            <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
+                        </svg>
 
-                    <span className='text-white ml-2'>More</span>
+
+                        <span className='text-white ml-2'>Member</span>
+                    </div>
+                </div>
+                <div>
+                    <div className='flex flex-row py-2 hover:bg-sky-800' onClick={handleClickDisplayChanel}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" />
+                        </svg>
+                        <span className='ml-2 text-white'>Chanel</span>
+                    </div>
+                    {displayChanel ?
+                        <div className='max-h-[200px] overflow-y-auto'>
+                            <div onClick={handleClickCreateGroup} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white mt-1">
+                                    <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
+                                </svg>
+                                <span className='text-white ml-4 mt-1'>Add Chanel</span>
+                            </div>
+                            {groups?.map((group => {
+
+                                return (
+                                    <div key={group.groupId} onClick={() => handleClickUpdateUnreadPostsToReadPosts(group.groupId)
+
+                                    } className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
+                                        <img className='w-6 h-6 rounded-full' src={group?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + group?.avatar) : (`${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png')} alt="" />
+                                        <span className='text-white ml-4 overflow-x-auto'>{group.name}</span>
+                                        {unreadPosts.filter((unreadPost: any) => unreadPost.groupId == group.groupId).length > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{unreadPosts.filter((unreadPost: any) => unreadPost.groupId == group.groupId).length}</div> : null}
+                                    </div>
+                                )
+                            }))}
+                        </div> : null}
+                </div>
+                <div>
+                    <div className='flex flex-row py-2 hover:bg-sky-800' onClick={handleClickDisplayDirectMessage}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" />
+                        </svg>
+                        <span className='ml-2 text-white'>Direct message</span>
+                    </div>
+                    {displayDirectMessage ?
+                        <div className='max-h-[200px] overflow-y-auto'>
+                            {directMessages?.map((directMessage: any) => {
+                                return (
+                                    <div key={directMessage.groupId} onClick={() => {
+                                        navigate('/directMessage/' + directMessage.groupId)
+                                        // window.location.reload()
+                                    }} className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
+                                        <img className='w-6 h-6 rounded-full mt-[1px]' src={directMessage?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + directMessage?.avatar) : (`${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png')} alt="" />
+                                        <span className='text-white ml-4 overflow-x-auto'>{directMessage.name}</span>
+                                        {unreadPosts.filter((unreadPost: any) => unreadPost.groupId == directMessage.groupId).length > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{unreadPosts.filter((unreadPost: any) => unreadPost.groupId == directMessage.groupId).length}</div> : null}
+                                        {onlineUsers?.some((onlineUser: any) => onlineUser.userId == directMessage.userId) ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-green-600 w-4 h-4 absolute left-[55px] bottom-[2px]'></div> : null}
+                                    </div>
+                                )
+                            })}
+                        </div> : null}
                 </div>
             </div>
-            <div>
-                <div className='flex flex-row py-2 hover:bg-sky-800' onClick={handleClickDisplayChanel}>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" />
-                    </svg>
-                    <span className='ml-2 text-white'>Chanel</span>
-                </div>
-                {displayChanel ?
-                    <div className='max-h-[200px] overflow-y-auto'>
-                        <div onClick={handleClickCreateGroup} className='flex flex-row py-2 pl-10 hover:bg-sky-800'>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white mt-1">
-                                <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
-                            </svg>
-                            <span className='text-white ml-4 mt-1'>Add Chanel</span>
-                        </div>
-                        {groups?.map((group => {
-
-                            return (
-                                <div key={group.groupId} onClick={() => handleClickUpdateUnreadPostsToReadPosts(group.groupId)
-
-                                } className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
-                                    <img className='w-6 h-6 rounded-full' src={group?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + group?.avatar) : (`${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png')} alt="" />
-                                    <span className='text-white ml-4 overflow-x-auto'>{group.name}</span>
-                                    {unreadPosts.filter((unreadPost: any) => unreadPost.groupId == group.groupId).length > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{unreadPosts.filter((unreadPost: any) => unreadPost.groupId == group.groupId).length}</div> : null}
-                                </div>
-                            )
-                        }))}
-                    </div> : null}
-            </div>
-            <div>
-                <div className='flex flex-row py-2 hover:bg-sky-800' onClick={handleClickDisplayDirectMessage}>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline text-white ml-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" />
-                    </svg>
-                    <span className='ml-2 text-white'>Direct message</span>
-                </div>
-                {displayDirectMessage ?
-                    <div className='max-h-[200px] overflow-y-auto'>
-                        {directMessages?.map((directMessage: any) => {
-                            return (
-                                <div key={directMessage.groupId} onClick={() => {
-                                    navigate('/directMessage/' + directMessage.groupId)
-                                    // window.location.reload()
-                                }} className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
-                                    <img className='w-6 h-6 rounded-full mt-[1px]' src={directMessage?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + directMessage?.avatar) : (`${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png')} alt="" />
-                                    <span className='text-white ml-4 overflow-x-auto'>{directMessage.name}</span>
-                                    {unreadPosts.filter((unreadPost: any) => unreadPost.groupId == directMessage.groupId).length > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{unreadPosts.filter((unreadPost: any) => unreadPost.groupId == directMessage.groupId).length}</div> : null}
-                                    {onlineUsers?.some((onlineUser: any)=> onlineUser.userId == directMessage.userId)? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-green-600 w-4 h-4 absolute left-[55px] bottom-[2px]'></div> : null}
-                                </div>
-                            )
-                        })}
-                    </div> : null}
-            </div>
-        </div>
         </div >
     )
 }

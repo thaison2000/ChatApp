@@ -11,6 +11,8 @@ import DirectMessage from './pages/DirectMessage';
 import Draft from './pages/Draft';
 import Thread from './pages/Thread';
 import Mention from './pages/Mention';
+import Company from './pages/Company';
+import Member from './pages/Member';
 
 
 function App() {
@@ -33,6 +35,8 @@ function App() {
         <Route path='directMessage/:groupId' element={user?<DirectMessage socket={socket}/>:<Login/>}></Route>
         <Route path='/' element={user?<Home socket={socket}/>:<Login/>}></Route>
         <Route path='draft' element={user?<Draft socket={socket}/>:<Login/>}></Route>
+        <Route path='company' element={user?<Company socket={socket}/>:<Login/>}></Route>
+        <Route path='member' element={user?<Member socket={socket}/>:<Login/>}></Route>
         <Route path='thread' element={user?<Thread socket={socket}/>:<Login/>}></Route>
         <Route path='mention' element={user?<Mention socket={socket}/>:<Login/>}></Route>
       </Routes>

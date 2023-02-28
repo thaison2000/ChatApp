@@ -16,6 +16,11 @@ enum Gender {
   Female
 }
 
+enum Role {
+  Admin
+  User
+}
+
 enum GroupType {
   Chanel
   DirectMessage
@@ -30,6 +35,7 @@ model User {
   dateOfBirth                 String?
   password                    String
   gender                      Gender  @default(Male)
+  role                        Role    @default(Admin)
   avatar                      String?
   friendRequestSendUser       FriendRequest[] @relation("sendUser")
   friendRequestReceiveUser    FriendRequest[] @relation("receiveUser")
@@ -37,6 +43,17 @@ model User {
   friendFriend                Friend[]        @relation("friend")
   groupAdmin                  GroupAdmin[]
   groupUser                   GroupUser[]
+  company                     Company         @relation("company", fields: [companyId], references: [companyId], onDelete: Cascade)
+  companyId                   Int
+}
+
+model Company {
+  companyId               Int     @id @default(autoincrement())
+  avatar                String?
+  name                  String   
+  desc                  String?
+  user                  User[]     @relation("company")
+ 
 }
 
 model Group {

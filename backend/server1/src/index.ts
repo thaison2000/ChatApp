@@ -13,6 +13,8 @@ import { PrismaClient } from "@prisma/client";
 import groupRoute from "./routes/Group";
 import friendRoute from "./routes/Friend";
 import { createClient } from "redis";
+import bcrypt from 'bcrypt'
+import companyRoute from "./routes/company";
 
 const redisClient = createClient({
     url: process.env.REDIS_URL,
@@ -58,6 +60,7 @@ app.use('/api/auth', authRoute)
 app.use('/api/user', userRoute)
 app.use('/api/group', groupRoute)
 app.use('/api/friend', friendRoute)
+app.use('/api/company', companyRoute)
 
 //upload image
 export const storage = multer.diskStorage({
@@ -91,6 +94,23 @@ app.post("/api/user/updateAvatar", verifyToken, upload.single("file"), async (re
     }
 })
 
+app.post("/api/company/updateAvatar", verifyToken, upload.single("file"), async (req: any, res: Response) => {
+    try {
+        const companyProfile = await prisma.company.update({
+            where: {
+                companyId: parseInt(req.body.companyId)
+            },
+            data: {
+                avatar: req.body.name
+            }
+        })
+
+        res.status(200).json('Update company avatar successfully !')
+    } catch (error) {
+        console.error(error);
+    }
+})
+
 //update group avatar
 app.post("/api/group/updateAvatar", verifyToken, upload.single("file"), async (req: any, res: Response) => {
     try {
@@ -106,8 +126,8 @@ app.post("/api/group/updateAvatar", verifyToken, upload.single("file"), async (r
         const groupRedisKey = 'groups' + req.user.userId
         let groups: any = await redisClient.get(groupRedisKey)
         groups = JSON.parse(groups)
-        groups.map((group:any)=> {
-            if(group.groupId == parseInt(req.body.groupId)){
+        groups.map((group: any) => {
+            if (group.groupId == parseInt(req.body.groupId)) {
                 group.avatar = req.body.name
             }
         })
@@ -123,4 +143,47 @@ app.get('/test', (req: Request, res: Response) => {
     return res.send("RUN NOW!")
 })
 
-app.listen(process.env.PORT, () => console.log('Server running on port ' + process.env.PORT))
+app.listen(process.env.PORT, () => {
+    async function addDemoData() {
+        //add demo company
+        const companyExist = await prisma.company.findUnique({
+            where: {
+                companyId: 1
+            }
+        })
+        if (!companyExist) {
+            const company = {
+                name: 'company1'
+
+            }
+            let newCompany = await prisma.company.create({
+                data: company
+            })
+        }
+
+        // add demo user
+        const userExist = await prisma.user.findUnique({
+            where: {
+                email: 'user1@gmail.com'
+            }
+        })
+        if (userExist == null) {
+            const salt = await bcrypt.genSalt(10)
+            const hashedPassword = await bcrypt.hash('user1', salt)
+            const user = {
+                email: 'user1@gmail.com',
+                name: 'user1',
+                password: hashedPassword,
+                companyId: 1,
+            }
+            let newUser = await prisma.user.create({
+                data: user
+            })
+        }
+
+    }
+
+    addDemoData()
+    console.log('Server running on port ' + process.env.PORT)
+})
+

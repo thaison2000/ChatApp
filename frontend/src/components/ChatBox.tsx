@@ -100,18 +100,20 @@ const ChatBox = (props: any) => {
       groupId: props.post.groupId
     })
     const { status: status1 } = await APIcreateNotification({
-      sendUserName: user.name,
-      sendUserId: user.userId,
+      sendUserName: currentUser.name,
+      sendUserId: currentUser.userId,
       groupId: props.groupId,
       postId: props.post.postId,
+      receiveUserId: user.userId,
       type: 1
     })
     if (status) {
       props.socket?.current?.emit("sendNotification", {
-        sendUserName: user.name,
-        sendUserId: user.userId,
+        sendUserName: currentUser.name,
+        sendUserId: currentUser.userId,
         groupId: props.groupId,
         postId: props.post.postId,
+        receiveUserId: user.userId,
         type: 1
       });
     }

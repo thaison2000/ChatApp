@@ -78,7 +78,7 @@ const TopBar = (props: any) => {
         }
         getAllNotificationsByReceiveUserId()
         getAllNotificationsByGroupIds()
-    }, [groups]);
+    }, [groups,newNotification]);
 
 
     useEffect(() => {

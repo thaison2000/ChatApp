@@ -8,7 +8,8 @@ interface userRegisterInterface {
     email: string,
     name: string,
     password: string,
-    againPassword?: string
+    againPassword?: string,
+    companyId: number
 }
 
 interface userLoginInterface {
@@ -46,7 +47,8 @@ const authController = {
             const user: userRegisterInterface = {
                 email: req.body.email,
                 name: req.body.name,
-                password: hashedPassword
+                password: hashedPassword,
+                companyId: req.body.companyId
             }
             let newUser = await prisma.user.create({
                 data: user
@@ -96,6 +98,8 @@ const authController = {
                 address: user.address,
                 gender: user.gender,
                 avatar: user.avatar,
+                companyId: user.companyId,
+                role: user.role,
                 jwt: token
             })
         }
