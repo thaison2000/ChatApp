@@ -17,7 +17,7 @@ import bcrypt from 'bcrypt'
 import companyRoute from "./routes/Company";
 
 const redisClient = createClient({
-    url: process.env.REDIS_URL,
+    url: `${process.env.REDIS_URL}`,
 });
 
 (async () => {
