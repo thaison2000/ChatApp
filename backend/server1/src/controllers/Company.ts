@@ -59,6 +59,63 @@ const companyController = {
         }
     },
 
+    deleteUser: async (req: any, res: Response) => {
+        try {
+            
+            const user = await prisma.user.delete({
+                where: {
+                    userId: parseInt(req.params.userId)
+                }
+            })
+
+            res.status(200).json(user)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+    lockUser: async (req: any, res: Response) => {
+        try {
+            
+            const user = await prisma.user.update({
+                where: {
+                    userId: req.body.userId
+                },
+                data: {
+                    status: 'Locked'
+                }
+            })
+
+            res.status(200).json(user)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+    unLockUser: async (req: any, res: Response) => {
+        try {
+            
+            const user = await prisma.user.update({
+                where: {
+                    userId: req.body.userId
+                },
+                data: {
+                    status: 'Unlocked'
+                }
+            })
+
+            res.status(200).json(user)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
 }
 
 export default companyController

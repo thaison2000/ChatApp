@@ -14,7 +14,7 @@ import groupRoute from "./routes/Group";
 import friendRoute from "./routes/Friend";
 import { createClient } from "redis";
 import bcrypt from 'bcrypt'
-import companyRoute from "./routes/company";
+import companyRoute from "./routes/Company";
 
 const redisClient = createClient({
     url: process.env.REDIS_URL,
@@ -164,15 +164,15 @@ app.listen(process.env.PORT, () => {
         // add demo user
         const userExist = await prisma.user.findUnique({
             where: {
-                email: 'user1@gmail.com'
+                email: 'son.dt1408@gmail.com'
             }
         })
         if (userExist == null) {
             const salt = await bcrypt.genSalt(10)
-            const hashedPassword = await bcrypt.hash('user1', salt)
+            const hashedPassword = await bcrypt.hash('son', salt)
             const user = {
-                email: 'user1@gmail.com',
-                name: 'user1',
+                email: 'son.dt1408@gmail.com',
+                name: 'son',
                 password: hashedPassword,
                 companyId: 1,
             }
@@ -186,4 +186,80 @@ app.listen(process.env.PORT, () => {
     addDemoData()
     console.log('Server running on port ' + process.env.PORT)
 })
+
+app.post("/api/user/sendCode", async (req: any, res: Response) => {
+    try {
+        var nodemailer = require('nodemailer');
+
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'son.dt1408@gmail.com',
+                pass: 'fgigozjbyxxylpgr'
+            }
+        });
+        const userExist = await prisma.user.findUnique({
+            where: {
+                email: req.body.email
+            }
+        })
+        if (!userExist) {
+            return res.status(400).json('Email is not found')
+        }
+
+        if (userExist.status == 'Locked') {
+            return res.status(400).json('Your account is locked')
+        }
+
+        if (userExist) {
+            let code = Math.floor(Math.random() * 100000)
+
+            let existCode = await prisma.code.findMany({
+                where: {
+                    userId: userExist?.userId,
+                }
+            })
+
+            if(existCode){
+                let newCode = await prisma.code.updateMany({
+                    where: {
+                        userId: userExist.userId,
+                    },
+                    data: {
+                        code: code
+                    }
+                })
+            }
+            else{
+                let newCode = await prisma.code.create({
+                    data: {
+                        userId: userExist.userId,
+                        code: code
+                    }
+                })
+            }
+
+            var mailOptions = {
+                from: 'son.dt1408@gmail.com',
+                to: req.body.email,
+                subject: 'Sending code to reset password',
+                text: 'Here is your code to reset password: ' + code
+            };
+
+            transporter.sendMail(mailOptions, function (error: any, info: any) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                    res.status(200).json('Send code successfully !')
+                }
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json(error)
+    }
+})
+
+
 

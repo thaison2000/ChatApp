@@ -8,7 +8,9 @@ interface userRegisterInterface {
     email: string,
     name: string,
     password: string,
-    againPassword: string
+    againPassword: string,
+    role: string,
+    companyId: string
 }
 
 export const APILogin = async (userLogin: userLoginInterface) => {
@@ -84,4 +86,43 @@ export const APIRegister = async (userRegister: userRegisterInterface) => {
             return {status: false}
         }
     }
+};
+
+export const APIsendCode = async (email: string) => {
+    try {
+        const res = await axios.post(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/user/sendCode", {email: email});
+        console.log(res)
+        alert('Send code successfully, please check your email!')
+        return {
+            status: true,
+            data: res.data
+        }
+    }
+    catch (err:any) {
+        if(err.response.data == 'Email is not found'){
+            alert('Can not found your email, may be you do not have account')
+            return {status: false}
+        }
+        if(err.response.data == 'Your account is locked'){
+            alert('Your account is locked')
+            return {status: false}
+        }
+        }
+};
+
+export const APIchangePassword = async (email: string, code: string, newPassword: string) => {
+    try {
+        const res = await axios.post(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/auth/changePassword", {email: email, code: code, newPassword: newPassword});
+        alert('Change password successfully!')
+        return {
+            status: true,
+            data: res.data
+        }
+    }
+    catch (err:any) {
+        if(err.response.data == 'Wrong code'){
+            alert('Wrong code')
+            return {status: false}
+        }
+        }
 };

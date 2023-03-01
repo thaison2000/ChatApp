@@ -9,7 +9,8 @@ interface userRegisterInterface {
     name: string,
     password: string,
     againPassword?: string,
-    companyId: number
+    companyId: number,
+    role: string
 }
 
 interface userLoginInterface {
@@ -48,10 +49,17 @@ const authController = {
                 email: req.body.email,
                 name: req.body.name,
                 password: hashedPassword,
-                companyId: req.body.companyId
+                companyId: req.body.companyId,
+                role: req.body.role
             }
             let newUser = await prisma.user.create({
-                data: user
+                data: {
+                    email: req.body.email,
+                    name: req.body.name,
+                    password: hashedPassword,
+                    companyId: req.body.companyId,
+                    role: req.body.role
+                }
             })
             res.status(200).json(newUser)
 
@@ -80,6 +88,10 @@ const authController = {
                 return res.status(400).json('Email is not found')
             }
 
+            if (user.status == 'Locked') {
+                return res.status(400).json('Your account is locked')
+            }
+
             // checking password
             const validPass = await bcrypt.compare(req.body.password, user.password)
             if (!validPass) {
@@ -100,8 +112,49 @@ const authController = {
                 avatar: user.avatar,
                 companyId: user.companyId,
                 role: user.role,
+                status: user.status,
                 jwt: token
             })
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+    changPassword: async (req: any, res: Response) => {
+        try {
+
+            const userExist = await prisma.user.findUnique({
+                where: {
+                    email: req.body.email
+                }
+            })
+
+            // checking code
+            const code = await prisma.code.findMany({
+                where: {
+                    userId: userExist?.userId,
+                    code: parseInt(req.body.code)
+                }
+            })
+
+            if (!code) {
+                res.status(500).json('Wrong code')
+            }
+
+            const salt = await bcrypt.genSalt(10)
+            const hashedPassword = await bcrypt.hash(req.body.newPassword, salt)
+
+            const newUser = await prisma.user.update({
+                where: {
+                    email: req.body.email
+                },
+                data: {
+                    password: hashedPassword
+                }
+            })
+            res.status(200).json('Change password successfully')
         }
         catch (err) {
             console.log(err)

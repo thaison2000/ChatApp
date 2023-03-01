@@ -3,7 +3,7 @@ import { Route,Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
-import Register from './pages/Register';
+import ChangePassword from './pages/ChangePassword';
 import { Context } from './context/Context';
 import { io } from "socket.io-client";
 import Group from './pages/Group';
@@ -29,7 +29,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route path='login' element={<Login/>}></Route>
-        <Route path='register' element={<Register/>}></Route>
+        <Route path='changePassword' element={<ChangePassword/>}></Route>
         <Route path='profile/:userId' element={user?<Profile socket={socket}/>:<Login/>}></Route>
         <Route path='group/:groupId' element={user?<Group socket={socket}/>:<Login/>}></Route>
         <Route path='directMessage/:groupId' element={user?<DirectMessage socket={socket}/>:<Login/>}></Route>

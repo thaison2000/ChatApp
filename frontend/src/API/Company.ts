@@ -26,6 +26,66 @@ export const APIgetCompanyUsers = async (companyId: string) => {
     }
 };
 
+export const APIdeleteCompanyUser = async (userId: any) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        const res = await axios.delete(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/company/user/" + userId, config)
+        return {
+            status: true,
+            data: res.data
+        }
+    }
+    catch (err) {
+        console.log(err)
+        return {status: false}
+    }
+};
+
+export const APIlockCompanyUser = async (userId: any) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        const res = await axios.post(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/company/user/locked",{userId: userId}, config)
+        return {
+            status: true,
+            data: res.data
+        }
+    }
+    catch (err) {
+        console.log(err)
+        return {status: false}
+    }
+};
+
+export const APIunlockCompanyUser = async (userId: any) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        const res = await axios.post(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/company/user/unLocked",{userId: userId} , config)
+        return {
+            status: true,
+            data: res.data
+        }
+    }
+    catch (err) {
+        console.log(err)
+        return {status: false}
+    }
+};
+
 export const APIgetCompanyProfile = async (companyId: string) => {
     try {
         const config = {

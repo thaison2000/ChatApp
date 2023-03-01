@@ -49,7 +49,7 @@ const Login = () => {
                         <input onChange={handlePasswordChange} className='w-full my-4 py-4 focus:outline-none' type="password" placeholder='password ...' />
                     </div>
                     <div className='w-full px-12'>
-                        <h1 className='py-4 text-center text-lg font-medium'>Do you have an account ? <Link to='/register' className='text-lg font-normal text-rose-600'>Register now</Link></h1>
+                        <h1 className='py-4 text-center text-lg font-medium'>Lost your password ? <Link to='/changePassword' className='text-lg font-normal text-rose-600'>Change password now</Link></h1>
                     </div>
                     <div className='w-full flex flex-row justify-center'>
                         {isLoading ?
