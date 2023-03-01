@@ -24,13 +24,16 @@ const postController = {
             groupId: req.body.groupId,
             postId: `${(0, uuidv4_1.uuid)()}${Date.now()}`,
             content: req.body.content,
-            read: [req.user.userId]
+            reads: [req.user.userId],
+            fileNames: req.body.fileNames
         });
         try {
             const savePost = yield newPost.save();
+            console.log(savePost);
             res.status(200).json(savePost);
         }
         catch (err) {
+            console.log(err);
             res.status(500).json(err);
         }
     }),
@@ -42,6 +45,7 @@ const postController = {
         });
         try {
             const savePost = yield newPost.save();
+            console.log(savePost);
             res.status(200).json(savePost);
         }
         catch (err) {
@@ -66,11 +70,11 @@ const postController = {
     }),
     deletePostByGroupId: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const deletePost = yield Post_1.default.findMany({
+            const deletePost = yield Post_1.default.find({
                 userId: req.user.userId,
                 groupId: req.params.groupId
             });
-            if (deletePost) {
+            if (deletePost.length > 0) {
                 yield deletePost.deleteMany();
             }
             res.status(200).json('delete posts successfully');
@@ -105,7 +109,7 @@ const postController = {
                 content: req.body.content
             });
             if (updatePost) {
-                return res.status(200).json('update post successfully');
+                return res.status(200).json(updatePost);
             }
         }
         catch (err) {
@@ -124,6 +128,7 @@ const postController = {
                         postId: posts[i].postId,
                         groupId: req.params.groupId
                     }, { $push: { reads: req.user.userId } });
+                    console.log(updatePost);
                 }
             }
             return res.status(200).json('update read posts successfully');
@@ -257,7 +262,7 @@ const postController = {
                 userId: req.user.userId
             });
             for (let i = 0; i < postThreadByComment.length; i++) {
-                let post = yield Post_1.default.find({
+                let post = yield Post_1.default.findOne({
                     postId: postThreadByComment[i].postId
                 });
                 postThreadByPost.push(post);
@@ -280,7 +285,20 @@ const postController = {
                 return ans;
             }
             postThread = deduplicate(postThread);
-            res.status(200).json(postThread);
+            res.status(200).json(postThread.slice(0, 19));
+        }
+        catch (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
+    }),
+    getAllMentionPostByUserId: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const posts = yield Post_1.default.find({
+                content: { $regex: '<a href="http://localhost:3000/profile/' + req.user.userId }
+            });
+            console.log(posts);
+            res.status(200).json(posts);
         }
         catch (err) {
             console.log(err);

@@ -45,10 +45,18 @@ const authController = {
             const user = {
                 email: req.body.email,
                 name: req.body.name,
-                password: hashedPassword
+                password: hashedPassword,
+                companyId: req.body.companyId,
+                role: req.body.role
             };
             let newUser = yield prisma.user.create({
-                data: user
+                data: {
+                    email: req.body.email,
+                    name: req.body.name,
+                    password: hashedPassword,
+                    companyId: req.body.companyId,
+                    role: req.body.role
+                }
             });
             res.status(200).json(newUser);
         }
@@ -74,6 +82,9 @@ const authController = {
             if (!user) {
                 return res.status(400).json('Email is not found');
             }
+            if (user.status == 'Locked') {
+                return res.status(400).json('Your account is locked');
+            }
             // checking password
             const validPass = yield bcrypt_1.default.compare(req.body.password, user.password);
             if (!validPass) {
@@ -90,10 +101,48 @@ const authController = {
                 address: user.address,
                 gender: user.gender,
                 avatar: user.avatar,
+                companyId: user.companyId,
+                role: user.role,
+                status: user.status,
                 jwt: token
             });
         }
         catch (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
+    }),
+    changPassword: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const userExist = yield prisma.user.findUnique({
+                where: {
+                    email: req.body.email
+                }
+            });
+            // checking code
+            const code = yield prisma.code.findMany({
+                where: {
+                    userId: userExist === null || userExist === void 0 ? void 0 : userExist.userId,
+                    code: parseInt(req.body.code)
+                }
+            });
+            if (!code) {
+                res.status(500).json('Wrong code');
+            }
+            const salt = yield bcrypt_1.default.genSalt(10);
+            const hashedPassword = yield bcrypt_1.default.hash(req.body.newPassword, salt);
+            const newUser = yield prisma.user.update({
+                where: {
+                    email: req.body.email
+                },
+                data: {
+                    password: hashedPassword
+                }
+            });
+            res.status(200).json('Change password successfully');
+        }
+        catch (err) {
+            console.log(err);
             res.status(500).json(err);
         }
     })

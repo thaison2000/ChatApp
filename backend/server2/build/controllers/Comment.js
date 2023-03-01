@@ -25,7 +25,7 @@ const commentController = {
                 postId: req.body.postId,
             });
             yield newComment.save();
-            res.status(200).json('Create comment successfully');
+            res.status(200).json(newComment);
         }
         catch (err) {
             console.log(err);

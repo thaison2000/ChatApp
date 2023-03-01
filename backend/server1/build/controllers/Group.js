@@ -55,7 +55,7 @@ const groupController = {
                 }
             });
             if (admin) {
-                yield prisma.group.delete({
+                const deleteGroup = yield prisma.group.delete({
                     where: {
                         groupId: parseInt(req.params.groupId)
                     }
@@ -70,6 +70,11 @@ const groupController = {
                         groupId: parseInt(req.params.groupId)
                     }
                 });
+                const groupRedisKey = 'groups' + req.user.userId;
+                let groups = yield __1.redisClient.get(groupRedisKey);
+                groups = JSON.parse(groups);
+                groups = groups.filter((group) => group.groupId != deleteGroup.groupId);
+                yield __1.redisClient.set(groupRedisKey, JSON.stringify(groups));
             }
             res.status(200).json('Delete group successfully !');
         }
@@ -112,8 +117,14 @@ const groupController = {
             const groupRedisKey = 'groups' + req.body.userId;
             let groups = yield __1.redisClient.get(groupRedisKey);
             groups = JSON.parse(groups);
-            groups.push(group);
-            yield __1.redisClient.set(groupRedisKey, JSON.stringify(groups));
+            let data = [];
+            if (groups) {
+                groups.push(group);
+            }
+            else {
+                data.push(groups);
+            }
+            yield __1.redisClient.set(groupRedisKey, JSON.stringify(data));
             res.status(200).json('Add member into group successfully !');
         }
         catch (err) {
@@ -133,7 +144,7 @@ const groupController = {
             const groupRedisKey = 'groups' + req.params.userId;
             let groups = yield __1.redisClient.get(groupRedisKey);
             groups = JSON.parse(groups);
-            groups.filter((group) => group.groupId = req.params.groupId);
+            groups = groups.filter((group) => group.groupId != req.params.groupId);
             yield __1.redisClient.set(groupRedisKey, JSON.stringify(groups));
             res.status(200).json('Delete member in group successfully !');
         }

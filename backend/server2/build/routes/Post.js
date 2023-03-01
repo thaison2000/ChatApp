@@ -21,6 +21,7 @@ postRoute.get('/group/:groupId', verifyToken_1.default, Post_1.default.getPostBy
 postRoute.get('/group/important/:groupId', verifyToken_1.default, Post_1.default.getImportantPostByGroupId);
 postRoute.get('/draftPost', verifyToken_1.default, Post_1.default.getDraftPostByUserId);
 postRoute.get('/thread', verifyToken_1.default, Post_1.default.getPostThreadByUserId);
+postRoute.get('/mention', verifyToken_1.default, Post_1.default.getAllMentionPostByUserId);
 postRoute.get('/unreadPosts', verifyToken_1.default, Post_1.default.getAllUnreadPosts);
 postRoute.put('/unreadPosts/:groupId', verifyToken_1.default, Post_1.default.updateAllUnreadPostsToReadPostsByGroupId);
 exports.default = postRoute;

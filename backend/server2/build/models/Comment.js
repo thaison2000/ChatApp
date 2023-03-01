@@ -22,6 +22,10 @@ const CommentSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    fileNames: {
+        type: Array,
+        default: []
+    },
 }, { timestamps: true });
 const Comment = mongoose.model('Comment', CommentSchema);
 exports.default = Comment;

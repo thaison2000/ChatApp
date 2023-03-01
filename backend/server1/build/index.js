@@ -26,12 +26,10 @@ const client_1 = require("@prisma/client");
 const Group_1 = __importDefault(require("./routes/Group"));
 const Friend_1 = __importDefault(require("./routes/Friend"));
 const redis_1 = require("redis");
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const Company_1 = __importDefault(require("./routes/Company"));
 const redisClient = (0, redis_1.createClient)({
-    socket: {
-        host: 'red-ceueoamn6mpglqckh1rg',
-        port: 6379
-        // port: parseInt(`${process.env.REDIS_PORT}`)
-    }
+    url: `${process.env.REDIS_URL}`,
 });
 exports.redisClient = redisClient;
 (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -63,6 +61,7 @@ app.use('/api/auth', Auth_1.default);
 app.use('/api/user', User_1.default);
 app.use('/api/group', Group_1.default);
 app.use('/api/friend', Friend_1.default);
+app.use('/api/company', Company_1.default);
 //upload image
 exports.storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
@@ -86,6 +85,22 @@ app.post("/api/user/updateAvatar", verifyToken_1.default, upload.single("file"),
             }
         });
         res.status(200).json('Update user avatar successfully !');
+    }
+    catch (error) {
+        console.error(error);
+    }
+}));
+app.post("/api/company/updateAvatar", verifyToken_1.default, upload.single("file"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const companyProfile = yield prisma.company.update({
+            where: {
+                companyId: parseInt(req.body.companyId)
+            },
+            data: {
+                avatar: req.body.name
+            }
+        });
+        res.status(200).json('Update company avatar successfully !');
     }
     catch (error) {
         console.error(error);
@@ -120,5 +135,113 @@ app.post("/api/group/updateAvatar", verifyToken_1.default, upload.single("file")
 app.get('/test', (req, res) => {
     return res.send("RUN NOW!");
 });
-app.listen(process.env.PORT, () => console.log('Server running on port ' + process.env.PORT));
+app.listen(process.env.PORT, () => {
+    function addDemoData() {
+        return __awaiter(this, void 0, void 0, function* () {
+            //add demo company
+            const companyExist = yield prisma.company.findUnique({
+                where: {
+                    companyId: 1
+                }
+            });
+            if (!companyExist) {
+                const company = {
+                    name: 'company1'
+                };
+                let newCompany = yield prisma.company.create({
+                    data: company
+                });
+            }
+            // add demo user
+            const userExist = yield prisma.user.findUnique({
+                where: {
+                    email: 'son.dt1408@gmail.com'
+                }
+            });
+            if (userExist == null) {
+                const salt = yield bcrypt_1.default.genSalt(10);
+                const hashedPassword = yield bcrypt_1.default.hash('son', salt);
+                const user = {
+                    email: 'son.dt1408@gmail.com',
+                    name: 'son',
+                    password: hashedPassword,
+                    companyId: 1,
+                };
+                let newUser = yield prisma.user.create({
+                    data: user
+                });
+            }
+        });
+    }
+    addDemoData();
+    console.log('Server running on port ' + process.env.PORT);
+});
+app.post("/api/user/sendCode", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        var nodemailer = require('nodemailer');
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'son.dt1408@gmail.com',
+                pass: 'fgigozjbyxxylpgr'
+            }
+        });
+        const userExist = yield prisma.user.findUnique({
+            where: {
+                email: req.body.email
+            }
+        });
+        if (!userExist) {
+            return res.status(400).json('Email is not found');
+        }
+        if (userExist.status == 'Locked') {
+            return res.status(400).json('Your account is locked');
+        }
+        if (userExist) {
+            let code = Math.floor(Math.random() * 100000);
+            let existCode = yield prisma.code.findMany({
+                where: {
+                    userId: userExist === null || userExist === void 0 ? void 0 : userExist.userId,
+                }
+            });
+            if (existCode) {
+                let newCode = yield prisma.code.updateMany({
+                    where: {
+                        userId: userExist.userId,
+                    },
+                    data: {
+                        code: code
+                    }
+                });
+            }
+            else {
+                let newCode = yield prisma.code.create({
+                    data: {
+                        userId: userExist.userId,
+                        code: code
+                    }
+                });
+            }
+            var mailOptions = {
+                from: 'son.dt1408@gmail.com',
+                to: req.body.email,
+                subject: 'Sending code to reset password',
+                text: 'Here is your code to reset password: ' + code
+            };
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.log(error);
+                }
+                else {
+                    console.log('Email sent: ' + info.response);
+                    res.status(200).json('Send code successfully !');
+                }
+            });
+        }
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json(error);
+    }
+}));
 //# sourceMappingURL=index.js.map

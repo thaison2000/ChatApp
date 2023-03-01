@@ -16,7 +16,8 @@ const PostSchema = mongoose.Schema({
     },
     content: {
         type: String,
-        required: true
+        required: true,
+        text: true
     },
     type: {
         type: Number,
@@ -27,8 +28,13 @@ const PostSchema = mongoose.Schema({
     reads: {
         type: Array,
         default: []
+    },
+    fileNames: {
+        type: Array,
+        default: []
     }
 }, { timestamps: true });
+PostSchema.index({ 'content': 'text' });
 const Post = mongoose.model('Post', PostSchema);
 exports.default = Post;
 //# sourceMappingURL=Post.js.map
