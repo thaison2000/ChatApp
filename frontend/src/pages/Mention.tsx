@@ -26,7 +26,6 @@ const Mention = (props: any) => {
 
     const [menu, setMenu] = useState<boolean>(false)
 
-    console.log(posts)
 
     const handleClickMenu = () => {
         setMenu(!menu)

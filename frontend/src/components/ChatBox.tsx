@@ -81,13 +81,13 @@ const ChatBox = (props: any) => {
 
   useEffect(() => {
     const fetchUserByUserId = async () => {
-      const { status, data } = await APIgetUserProfile(props.post.userId)
+      const { status, data } = await APIgetUserProfile(props?.post.userId)
       if (status) {
         setUser(data)
       }
     }
     fetchUserByUserId();
-  }, [props.post.userId]);
+  }, [props.post?.userId]);
 
   const handleClickCommentWindow = () => {
     props.handleClickCommentWindow(props.post)
@@ -280,7 +280,7 @@ const ChatBox = (props: any) => {
         <div
           onMouseEnter={() => setInteractiveAlert(true)}
           onMouseLeave={() => setInteractiveAlert(false)}
-          className={props.post.type == 1 ? 'w-full bg-red-100 hover:bg-red-200 relative' : 'w-full bg-white hover:bg-gray-100 relative'}>
+          className={props.post?.type == 1 ? 'w-full bg-red-100 hover:bg-red-200 relative' : 'w-full bg-white hover:bg-gray-100 relative'}>
           <div className='flex flex-row relative'>
             {interactiveAlert ? <InteractiveAlert /> : null}
             <div>
@@ -293,8 +293,8 @@ const ChatBox = (props: any) => {
             <div className='flex flex-col'>
               <h1 className='mx-0 mt-2 text-md font-bold'>{user?.name}</h1>
               <div className='flex flex-row'>
-                <div className="text-xs">{timeAgo.format(new Date(props.post.createdAt))}</div>
-                {props.post.type == 1 ?
+                <div className="text-xs">{timeAgo.format(new Date(props?.post?.createdAt || null))}</div>
+                {props.post?.type == 1 ?
                   (
                     <div className='ml-2'>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500 ">
@@ -307,11 +307,11 @@ const ChatBox = (props: any) => {
             </div>
           </div>
           <div className='ml-16 pb-1'>
-            <div dangerouslySetInnerHTML={{ __html: props.post.content }}></div>
+            <div dangerouslySetInnerHTML={{ __html: props.post?.content }}></div>
           </div>
           <div className='flex flex-row ml-12'>
             {
-              props.post.fileNames ? props.post.fileNames.map((fileName: any) => {
+              props.post?.fileNames ? props.post?.fileNames.map((fileName: any) => {
                 return (
                   <div className='m-4' >
                     <div className='bg-neutral-200 text-center hover:bg-neutral-400 hover:text-white'>
@@ -328,7 +328,6 @@ const ChatBox = (props: any) => {
             <div onClick={handleClickLike} className='mr-4 font-bold pointer-events-auto text-sm'>{likes.length} likes</div>
             <div onClick={handleClickCommentWindow} className='text-sky-900 text-sm font-bold hover:underline pointer-events-auto'>{comments.length} replies</div>
             </div>
-            <div className='mx-4 text-gray-500 font-bold text-sm m-2'>ID :{props.post.postId}</div>
           </div>
 
         </div>}

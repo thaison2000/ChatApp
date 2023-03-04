@@ -11,14 +11,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  SuperAdmin
+  Admin
+  User
+}
+
 enum Gender {
   Male
   Female
-}
-
-enum Role {
-  Admin
-  User
 }
 
 enum Status {
@@ -40,7 +41,7 @@ model User {
   dateOfBirth                 String?
   password                    String
   gender                      Gender  @default(Male)
-  role                        Role    @default(Admin)
+  userRole                    Role    @default(SuperAdmin)
   status                      Status  @default(Unlocked)
   avatar                      String?
   friendRequestSendUser       FriendRequest[] @relation("sendUser")

@@ -18,7 +18,10 @@ const Editor = (props: any) => {
   const [state, setState] = useState<string>('')
   const [files, setFiles] = useState<any>()
   const [mentionBox, setMentionBox] = useState<boolean>(false)
+  const [mentionSelectUsers, setMentionSelectUsers] = useState<any>([])
   const [mentionUsers, setMentionUsers] = useState<any>()
+
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const { quill, quillRef, Quill } = useQuill({
     modules: { blotFormatter: {} }
@@ -52,7 +55,8 @@ const Editor = (props: any) => {
   const handleClickSend = async () => {
     setIsLoading(true)
     if (props.type == 'post') {
-      if (state =='<p><br></p>') {
+      
+      if (state == '<p><br></p>' || state == '') {
         window.alert('You must write something before sending !')
         setIsLoading(false)
       }
@@ -78,6 +82,31 @@ const Editor = (props: any) => {
             content: state,
             type: 8
           });
+          for (let i = 0; i < mentionSelectUsers.length; i++) {
+            if (state.includes(`<a href="http://localhost:3000/profile/${mentionSelectUsers[i].userId}" style="text-decoration: underline; color: blue; font-size: 14px;">${mentionSelectUsers[i].name}</a> `)) {
+              props.socket?.current?.emit("sendNotification", {
+                sendUserName: user.name,
+                sendUserId: user.userId,
+                groupName: props.group.name,
+                groupId: props.groupId,
+                receiveUserId: mentionSelectUsers[i].userId,
+                content: state,
+                postId: data.postId,
+                type: 19
+              });
+              await APIcreateNotification({
+                sendUserName: user.name,
+                sendUserId: user.userId,
+                groupName: props.group.name,
+                groupId: props.group.groupId,
+                receiveUserId: mentionSelectUsers[i].userId,
+                content: state,
+                postId: data.postId,
+                type: 19
+              })
+              setMentionSelectUsers([])
+            }
+          }
 
           setIsLoading(false)
         }
@@ -86,44 +115,76 @@ const Editor = (props: any) => {
     }
 
     if (props.type == 'comment') {
-      const { status, data } = await APIcreateComment({
-        groupId: props.groupId,
-        userId: user.userId,
-        postId: props.postId,
-        content: state
-      })
-      if (status) {
-        if (files) {
-          const { status }: any = await APIcommentUploadDocs(files, data.commentId, user.userId)
-          if (status) {
-            setFiles(null)
-          }
-        }
-        quillRef.current.firstChild.innerHTML = ''
-
-        const {status:status1} = await APIcreateNotification({
-          sendUserName: user.name,
-          sendUserId: user.userId,
-          groupId: props.groupId,
-          content: state,
-          postId: props.postId,
-          post: props.postContentForCommentNotification,
-          type: 2
-        })
-
-
-        props.socket?.current?.emit("sendNotification", {
-          sendUserName: user.name,
-          sendUserId: user.userId,
-          groupId: props.groupId,
-          content: state,
-          postId: props.postId,
-          post: props.postContentForCommentNotification,
-          type: 2
-        });
-
+      if (state == '<p><br></p>' || state == '') {
+        window.alert('You must write something before sending !')
         setIsLoading(false)
       }
+      else {
+        const { status, data } = await APIcreateComment({
+          groupId: props.groupId,
+          userId: user.userId,
+          postId: props.postId,
+          content: state
+        })
+        if (status) {
+          if (files) {
+            const { status }: any = await APIcommentUploadDocs(files, data.commentId, user.userId)
+            if (status) {
+              setFiles(null)
+            }
+          }
+          for (let i = 0; i < mentionSelectUsers.length; i++) {
+            if (state.includes(`<a href="http://localhost:3000/profile/${mentionSelectUsers[i].userId}" style="text-decoration: underline; color: blue; font-size: 14px;">${mentionSelectUsers[i].name}</a> `)) {
+              props.socket?.current?.emit("sendNotification", {
+                sendUserName: user.name,
+                sendUserId: user.userId,
+                groupName: props.group.name,
+                groupId: props.groupId,
+                receiveUserId: mentionSelectUsers[i].userId,
+                content: state,
+                postId: data.postId,
+                type: 19
+              });
+              await APIcreateNotification({
+                sendUserName: user.name,
+                sendUserId: user.userId,
+                groupName: props.group.name,
+                groupId: props.group.groupId,
+                receiveUserId: mentionSelectUsers[i].userId,
+                content: state,
+                postId: data.postId,
+                type: 19
+              })
+              setMentionSelectUsers([])
+            }
+          }
+          quillRef.current.firstChild.innerHTML = ''
+
+          const { status: status1 } = await APIcreateNotification({
+            sendUserName: user.name,
+            sendUserId: user.userId,
+            groupId: props.groupId,
+            content: state,
+            postId: props.postId,
+            post: props.postContentForCommentNotification,
+            type: 2
+          })
+
+
+          props.socket?.current?.emit("sendNotification", {
+            sendUserName: user.name,
+            sendUserId: user.userId,
+            groupId: props.groupId,
+            content: state,
+            postId: props.postId,
+            post: props.postContentForCommentNotification,
+            type: 2
+          });
+
+          setIsLoading(false)
+        }
+      }
+
     }
 
     if (props.type == 'draftPost') {
@@ -143,6 +204,7 @@ const Editor = (props: any) => {
     if (props.type == 'updatePost') {
       props.handleClickSavePost(state, files)
       setFiles(null)
+
       quillRef.current.firstChild.innerHTML = ''
       setIsLoading(false)
     }
@@ -195,25 +257,10 @@ const Editor = (props: any) => {
             <div onClick={async () => {
               let data = state.replace('@', `<a href="http://localhost:3000/profile/${mentionUser.userId}" style="text-decoration: underline; color: blue; font-size: 14px;">${mentionUser.name}</a> `)
               quillRef.current.firstChild.innerHTML = data
+              let users = mentionSelectUsers
+              users.push(mentionUser)
+              setMentionSelectUsers(users)
               setMentionBox(false)
-              props.socket?.current?.emit("sendNotification", {
-                sendUserName: user.name,
-                sendUserId: user.userId,
-                groupName: props.group.name,
-                groupId: props.groupId,
-                receiveUserId: mentionUser.userId,
-                content: state,
-                type: 19
-              });
-              await APIcreateNotification({
-                sendUserName: user.name,
-                sendUserId: user.userId,
-                groupName: props.group.name,
-                groupId: props.group.groupId,
-                receiveUserId: mentionUser.userId,
-                content: state,
-                type: 19
-              })
             }
             } className='p-4 flex flex-row hover:bg-neutral-100'>
               <div>

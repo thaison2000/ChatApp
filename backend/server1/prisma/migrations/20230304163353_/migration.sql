@@ -1,5 +1,11 @@
 -- CreateEnum
+CREATE TYPE "Role" AS ENUM ('SuperAdmin', 'Admin', 'User');
+
+-- CreateEnum
 CREATE TYPE "Gender" AS ENUM ('Male', 'Female');
+
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('Locked', 'Unlocked');
 
 -- CreateEnum
 CREATE TYPE "GroupType" AS ENUM ('Chanel', 'DirectMessage');
@@ -14,9 +20,31 @@ CREATE TABLE "User" (
     "dateOfBirth" TEXT,
     "password" TEXT NOT NULL,
     "gender" "Gender" NOT NULL DEFAULT 'Male',
+    "userRole" "Role" NOT NULL DEFAULT 'SuperAdmin',
+    "status" "Status" NOT NULL DEFAULT 'Unlocked',
     "avatar" TEXT,
+    "companyId" INTEGER NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("userId")
+);
+
+-- CreateTable
+CREATE TABLE "Company" (
+    "companyId" SERIAL NOT NULL,
+    "avatar" TEXT,
+    "name" TEXT NOT NULL,
+    "desc" TEXT,
+
+    CONSTRAINT "Company_pkey" PRIMARY KEY ("companyId")
+);
+
+-- CreateTable
+CREATE TABLE "Code" (
+    "codeId" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "code" INTEGER NOT NULL,
+
+    CONSTRAINT "Code_pkey" PRIMARY KEY ("codeId")
 );
 
 -- CreateTable
@@ -68,6 +96,12 @@ CREATE TABLE "FriendRequest" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- AddForeignKey
+ALTER TABLE "User" ADD CONSTRAINT "User_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("companyId") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Code" ADD CONSTRAINT "Code_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "GroupAdmin" ADD CONSTRAINT "GroupAdmin_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("groupId") ON DELETE CASCADE ON UPDATE CASCADE;

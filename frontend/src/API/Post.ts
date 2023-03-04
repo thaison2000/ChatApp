@@ -303,6 +303,29 @@ export const APIgetAllImportantPostByGroupId = async (groupId: string) => {
     }
 }
 
+export const APIgetPostByPostId = async (postId: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        const res = await axios.get(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/post/" +postId, config);
+        return {
+            status: true,
+            data: res.data
+        }
+
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+}
+
 export const APIgetAllDraftPostByUserId = async () => {
     try {
         const config = {
@@ -311,7 +334,7 @@ export const APIgetAllDraftPostByUserId = async () => {
                 'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
             },
         }
-        const res = await axios.get(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/draftPost/", config);
+        const res = await axios.get(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/draftPost", config);
         return {
             status: true,
             data: res.data

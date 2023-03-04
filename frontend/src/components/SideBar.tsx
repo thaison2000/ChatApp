@@ -189,7 +189,7 @@ const SideBar = (props: any) => {
                                     } className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
                                         <img className='w-6 h-6 rounded-full' src={group?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + group?.avatar) : (`${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png')} alt="" />
                                         <span className='text-white ml-4 overflow-x-auto'>{group.name}</span>
-                                        {unreadPosts.filter((unreadPost: any) => unreadPost.groupId == group.groupId).length > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{unreadPosts.filter((unreadPost: any) => unreadPost.groupId == group.groupId).length}</div> : null}
+                                        {unreadPosts?.filter((unreadPost: any) => unreadPost.groupId == group.groupId).length > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{unreadPosts.filter((unreadPost: any) => unreadPost.groupId == group.groupId).length}</div> : null}
                                     </div>
                                 )
                             }))}
@@ -212,7 +212,7 @@ const SideBar = (props: any) => {
                                     }} className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
                                         <img className='w-6 h-6 rounded-full mt-[1px]' src={directMessage?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + directMessage?.avatar) : (`${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png')} alt="" />
                                         <span className='text-white ml-4 overflow-x-auto'>{directMessage.name}</span>
-                                        {unreadPosts.filter((unreadPost: any) => unreadPost.groupId == directMessage.groupId).length > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{unreadPosts.filter((unreadPost: any) => unreadPost.groupId == directMessage.groupId).length}</div> : null}
+                                        {unreadPosts?.filter((unreadPost: any) => unreadPost.groupId == directMessage.groupId).length > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{unreadPosts.filter((unreadPost: any) => unreadPost.groupId == directMessage.groupId).length}</div> : null}
                                         {onlineUsers?.some((onlineUser: any) => onlineUser.userId == directMessage.userId) ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-green-600 w-4 h-4 absolute left-[55px] bottom-[2px]'></div> : null}
                                     </div>
                                 )

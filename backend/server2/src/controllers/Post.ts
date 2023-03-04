@@ -202,7 +202,6 @@ const postController = {
     getPostByPostId: async (req: any, res: Response) => {
         try {
             const post = await Post.findOne({
-                userId: req.user.userId,
                 postId: req.params.postId
             });
             res.status(200).json(post);
@@ -242,7 +241,9 @@ const postController = {
             const draftPosts = await DraftPost.find({
                 userId: req.user.userId
             });
+           
             res.status(200).json(draftPosts);
+            console.log(draftPosts)
         } catch (err) {
             console.log(err)
             res.status(500).json(err);

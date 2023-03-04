@@ -20,16 +20,15 @@ const Draft = (props: any) => {
     const { user } = useContext(Context)
 
     const [clickCreateDraftPost, setClickCreateDraftPost] = useState(false)
-    const [draftPosts, setDraftPosts] = useState([])
+    const [draftPosts, setDraftPosts] = useState<any>([])
     const [newDraftPostCount, setNewDraftPostCount] = useState(0)
     const [updateDraftPost, setUpdateDraftPost] = useState(false)
     const scrollRef = useRef<any>()
     const [menu, setMenu] = useState<boolean>(false)
 
-
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-    }, [newDraftPostCount, updateDraftPost, clickCreateDraftPost, draftPosts.length]);
+    }, [newDraftPostCount, updateDraftPost, clickCreateDraftPost, draftPosts?.length]);
 
     useEffect(() => {
         const fetchAllDraftPost = async () => {
@@ -118,7 +117,7 @@ const Draft = (props: any) => {
                             <div className='divide-y'>
                                 <div className='overflow-auto'>
                                     {
-                                        draftPosts.map((draftPost: any) => <div ref={scrollRef} key={draftPost.draftPostId} className='bg-neutral-100 mx-4 py-4'>
+                                        draftPosts?.map((draftPost: any) => <div ref={scrollRef} key={draftPost.draftPostId} className='bg-neutral-100 mx-4 py-4'>
                                             <div className='pl-4 font-bold'>{timeAgo.format(new Date(draftPost.updatedAt))}</div>
                                             <DraftPost socket={props.socket} draftPost={draftPost} handleClickUpdateDraftPost={handleClickUpdateDraftPost} handleClickDeleteDraftPost={handleClickDeleteDraftPost} />
                                         </div>

@@ -9,7 +9,7 @@ interface userRegisterInterface {
     name: string,
     password: string,
     againPassword: string,
-    role: string,
+    userRole: string,
     companyId: string
 }
 
@@ -26,6 +26,10 @@ export const APILogin = async (userLogin: userLoginInterface) => {
     catch (err:any) {
         if(err.response.data == 'Email is not found'){
             alert('Không tìm thấy Email')
+            return {status: false}
+        }
+        if(err.response.data == 'Your account is locked'){
+            alert('Tài khoản của bạn đã bị khóa')
             return {status: false}
         }
         if(err.response.data == 'Invalid Password'){

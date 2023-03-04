@@ -182,7 +182,7 @@ const DirectMessage = (props: any) => {
                                         })}
                                     </div>
                                     <div className='relative p-1'>
-                                        <Editor socket={props.socket} groupId={groupId} type={'post'} handleUpdateNewPostCount={handleUpdateNewPostCount} />
+                                        <Editor socket={props.socket} groupId={groupId} type={'post'} handleUpdateNewPostCount={handleUpdateNewPostCount} group={group} />
                                     </div>
                                 </div>
                             </div>

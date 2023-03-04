@@ -9,6 +9,7 @@ import TimeAgo from 'javascript-time-ago'
 
 // English.
 import en from 'javascript-time-ago/locale/en'
+import PostNotification from './PostNotification'
 
 TimeAgo.addDefaultLocale(en)
 
@@ -28,10 +29,13 @@ const TopBar = (props: any) => {
     const [notifications, setNotifications] = useState<any>([]);
     const [countNewNotifications, setCountNewNotifications] = useState<number>(0);
     const [newNotification, setNewNotification] = useState<any>();
-    const [groups, setGroups] = useState<any>();
+    const [groups, setGroups] = useState<any>([]);
+    const [postNotification, setPostNotification] = useState<boolean>(false);
+    const [activeNotification, setActiveNotification] = useState<any>();
+
 
     const handleClickLogout = () => {
-        if(window.confirm('Are you sure you want to log out ?')){
+        if (window.confirm('Are you sure you want to log out ?')) {
             localStorage.removeItem('user')
             window.location.reload()
         }
@@ -39,6 +43,10 @@ const TopBar = (props: any) => {
 
     const handleClickHome = () => {
         navigate('/')
+    }
+
+    const handleClickPostNotification = () => {
+        setPostNotification(!postNotification)
     }
 
     useEffect(() => {
@@ -56,29 +64,22 @@ const TopBar = (props: any) => {
     }, [newNotification]);
 
     useEffect(() => {
-        const getAllNotificationsByReceiveUserId = async () => {
-            const { status, data }: any = await APIgetAllNotificationsByReceiveUserId()
-            if (status) {
-                setNotifications(data)
-            }
+        const getAllNotifications = async () => {
+            const { status: status1, data: data1 }: any = await APIgetAllNotificationsByReceiveUserId()
+            const { status: status2, data: data2 }: any = await APIgetAllNotificationsByGroupIds(groups)
+
+            let notificationSum = data1.concat(data2)
+            notificationSum?.sort((p1: any, p2: any) => {
+                let time1: any = new Date(p2.createdAt)
+                let time2: any = new Date(p1.createdAt)
+                return (time2 - time1);
+            })
+            setNotifications(notificationSum)
         }
-        const getAllNotificationsByGroupIds = async () => {
-            if (groups) {
-                const { status, data }: any = await APIgetAllNotificationsByGroupIds(groups)
-                if (status) {
-                    let notificationSum = notifications.concat(data)
-                    notificationSum?.sort((p1: any, p2: any) => {
-                        let time1: any = new Date(p2.createdAt)
-                        let time2: any = new Date(p1.createdAt)
-                        return (time2 - time1);
-                    })
-                    setNotifications(notificationSum)
-                }
-            }
-        }
-        getAllNotificationsByReceiveUserId()
-        getAllNotificationsByGroupIds()
-    }, [groups,newNotification]);
+
+
+        getAllNotifications()
+    }, [groups, newNotification]);
 
 
     useEffect(() => {
@@ -183,30 +184,33 @@ const TopBar = (props: any) => {
     const NotifcationAlert = () => (
         <div className='fixed top-[50px] w-full overflow-auto bg-white shadow-2xl z-20 divide-y sm:h-64 sm:w-[350px] sm:right-[80px] sm:top-[20px]'>
             {notifications?.map((notification: any) => {
-                 if (notification.type == 1) {
+                if (notification.type == 1) {
                     return (
-                        <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
+                        <div onClick={() => {
+                            setPostNotification(!postNotification)
+                            setActiveNotification(notification)
+
+                        }} className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
                                 <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> liked your <span className='text-[18px] font-medium text-sky-900'>Post </span>
-                                <span className='ml-4 text-gray-500 font-bold text-xs'>ID: {notification.postId}</span>
                             </div>
                             <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
-                            <a className='text-sky-900 underline' href={'http://localhost:3000/group/' + notification.groupId + '#' + notification.postId}>Go to</a>
-
                         </div>
                     )
                 }
                 if (notification.type == 2) {
-                   
+
                     return (
-                        <div 
-                        className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
+                        <div onClick={() => {
+                            setPostNotification(!postNotification)
+                            setActiveNotification(notification)
+
+                        }}
+                            className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
                                 <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> commented on your <span className='text-[18px] font-medium text-sky-900'>Post</span>
-                                <span className='ml-4 text-gray-500 font-bold text-xs'>ID: {notification.postId}</span>
                             </div>
                             <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
-                            <a className='text-sky-900 underline' href={'http://localhost:3000/group/' + notification.groupId + '#' + notification.postId}>Go to</a>
                         </div>
                     )
                 }
@@ -305,9 +309,14 @@ const TopBar = (props: any) => {
                         </div>
                     )
                 }
-                if (notification.receiveUserId == user.userId && notification.type == 19){
+                if (notification.receiveUserId == user.userId && notification.type == 19) {
                     return (
-                        <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
+                        <div
+                            onClick={() => {
+                                setPostNotification(!postNotification)
+                                setActiveNotification(notification)
+
+                            }} className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
                                 <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> has mentioned you in a Post in group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
                                 <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
@@ -331,7 +340,7 @@ const TopBar = (props: any) => {
                     }
                     } className='p-4 flex flex-row hover:bg-neutral-100'>
                         <div>
-                            <img className='w-6 h-6' src={searchingUser?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/'   + searchingUser?.avatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
+                            <img className='w-6 h-6' src={searchingUser?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + searchingUser?.avatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
                         </div>
                         <div className='ml-4'>{searchingUser.name}</div>
                     </div>
@@ -342,6 +351,7 @@ const TopBar = (props: any) => {
 
     return (
         <div className='h-[50px] flex flex-row bg-sky-900 relative w-[100%]'>
+            {postNotification ? <PostNotification socket={props.socket} postId={activeNotification.postId} groupId={activeNotification.groupId} /> : null}
             {notificationAlert ? <NotifcationAlert /> : null}
             <div className='w-[40%] sm:w-[250px] flex flex-row'>
                 <div className='w-full'>

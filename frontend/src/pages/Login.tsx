@@ -28,6 +28,7 @@ const Login = () => {
             password: password
         })
         if (status) {
+            console.log(data)
             
             dispatch({ type: 'LOG_IN', payload: data });
             navigate('/')
