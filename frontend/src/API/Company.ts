@@ -75,6 +75,7 @@ export const APIunlockCompanyUser = async (userId: any) => {
             },
         }
         const res = await axios.post(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/company/user/unLocked",{userId: userId} , config)
+        
         return {
             status: true,
             data: res.data

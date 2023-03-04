@@ -27,6 +27,7 @@ const Member = (props: any) => {
 
     console.log(user)
 
+
     useEffect(() => {
         const fetchAllUser = async () => {
             const { status, data } = await APIgetCompanyUsers(user.companyId)
@@ -159,7 +160,7 @@ const Member = (props: any) => {
                     <div className='w-full  h-[calc(100%-65px)]'>
                         <div className='h-[75px]'>
                             {
-                                user.role = 'Admin' ?
+                                (user.permission == 'Admin' || user.permission == 'SuperAdmin') ?
                                     <div onClick={handleClickCreateUser} className='m-4 bg-sky-700 text-white p-4 font-bold text-xl hover:bg-sky-800 pointer-events-auto inline-block'>
                                         Create a user
                                     </div> : null
@@ -220,9 +221,9 @@ const Member = (props: any) => {
                                                             {User.permission}
                                                         </td>
                                                         <td className="px-6 py-4 font-medium text-black whitespace-nowrap dark:text-black">
-                                                            {User.status = 'Locked'? 'Active': 'Inactive'}
+                                                            {User.status}
                                                         </td>
-                                                        <td className="px-6 py-4 font-medium text-black whitespace-nowrap dark:text-black flex flex-row justify-center">
+                                                        <td className="px-6 py-2 font-medium text-black whitespace-nowrap dark:text-black flex flex-row justify-center">
                                                             {((User.permission == 'User' && user.permission == 'Admin') || (User.permission != 'SuperAdmin' && user.permission == 'SuperAdmin')) ? <div className='mx-2'>
                                                                 <button onClick={() => handleClickSubmitDeleteAccount(User.userId)} className=" text-white py-2 px-4 font-medium text-xl bg-red-500 hover:bg-red-900 hover:text-white">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
