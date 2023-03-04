@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('SuperAdmin', 'Admin', 'User');
+CREATE TYPE "Permission" AS ENUM ('SuperAdmin', 'Admin', 'User');
 
 -- CreateEnum
 CREATE TYPE "Gender" AS ENUM ('Male', 'Female');
@@ -20,7 +20,7 @@ CREATE TABLE "User" (
     "dateOfBirth" TEXT,
     "password" TEXT NOT NULL,
     "gender" "Gender" NOT NULL DEFAULT 'Male',
-    "userRole" "Role" NOT NULL DEFAULT 'SuperAdmin',
+    "permission" "Permission" NOT NULL DEFAULT 'SuperAdmin',
     "status" "Status" NOT NULL DEFAULT 'Unlocked',
     "avatar" TEXT,
     "companyId" INTEGER NOT NULL,

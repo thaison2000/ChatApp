@@ -11,7 +11,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
+enum Permission {
   SuperAdmin
   Admin
   User
@@ -41,7 +41,7 @@ model User {
   dateOfBirth                 String?
   password                    String
   gender                      Gender  @default(Male)
-  userRole                    Role    @default(SuperAdmin)
+  permission                  Permission    @default(SuperAdmin)
   status                      Status  @default(Unlocked)
   avatar                      String?
   friendRequestSendUser       FriendRequest[] @relation("sendUser")

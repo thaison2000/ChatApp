@@ -9,7 +9,7 @@ interface userRegisterInterface {
     name: string,
     password: string,
     againPassword: string,
-    userRole: string,
+    permission: string,
     companyId: string
 }
 

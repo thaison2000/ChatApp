@@ -27,7 +27,6 @@ const Member = (props: any) => {
 
     console.log(user)
 
-
     useEffect(() => {
         const fetchAllUser = async () => {
             const { status, data } = await APIgetCompanyUsers(user.companyId)
@@ -53,7 +52,7 @@ const Member = (props: any) => {
                 name: name.current.value,
                 password: password.current.value,
                 againPassword: againPassword.current.value,
-                userRole: role.current.value,
+                permission: role.current.value,
                 companyId: user.companyId
             })
 
@@ -218,13 +217,13 @@ const Member = (props: any) => {
                                                             {User.name}
                                                         </td>
                                                         <td className="px-6 py-4 font-medium text-black whitespace-nowrap dark:text-black">
-                                                            {User.role}
+                                                            {User.permission}
                                                         </td>
                                                         <td className="px-6 py-4 font-medium text-black whitespace-nowrap dark:text-black">
-                                                            {User.status = 1? 'Active': 'Unactive'}
+                                                            {User.status = 'Locked'? 'Active': 'Inactive'}
                                                         </td>
                                                         <td className="px-6 py-4 font-medium text-black whitespace-nowrap dark:text-black flex flex-row justify-center">
-                                                            {((User.role == 'User' && user.role == 'Admin') || (User.role != 'SuperAdmin' && user.role == 'SuperAdmin')) ? <div className='mx-2'>
+                                                            {((User.permission == 'User' && user.permission == 'Admin') || (User.permission != 'SuperAdmin' && user.permission == 'SuperAdmin')) ? <div className='mx-2'>
                                                                 <button onClick={() => handleClickSubmitDeleteAccount(User.userId)} className=" text-white py-2 px-4 font-medium text-xl bg-red-500 hover:bg-red-900 hover:text-white">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                                                                         <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
@@ -233,7 +232,7 @@ const Member = (props: any) => {
                                                                 </button>
                                                             </div> : null}
                                                             {
-                                                                (User.role == 'User' && user.role == 'Admin' && User.status == 'Unlocked') ?
+                                                                (((User.permission == 'User' && user.permission == 'Admin') || (User.permission != 'SuperAdmin' && user.permission == 'SuperAdmin')) && User.status == 'Unlocked') ?
                                                                     <button onClick={() => handleClickSubmitLockAccount(User.userId)} className=" text-white py-2 px-4 font-medium text-xl bg-green-500 hover:bg-green-900 hover:text-white">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                                                                             <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
@@ -242,7 +241,7 @@ const Member = (props: any) => {
 
                                                             }
                                                             {
-                                                                (User.role == 'User' && User.status == 'Locked') ?
+                                                                (((User.permission == 'User' && user.permission == 'Admin') || (User.permission != 'SuperAdmin' && user.permission == 'SuperAdmin')) && User.status == 'Locked') ?
                                                                     <button onClick={() => handleClickSubmitUnlockAccount(User.userId)} className=" text-white py-2 px-4 font-medium text-xl bg-yellow-500 hover:bg-yellow-900 hover:text-white">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                                                                             <path d="M18 1.5c2.9 0 5.25 2.35 5.25 5.25v3.75a.75.75 0 01-1.5 0V6.75a3.75 3.75 0 10-7.5 0v3a3 3 0 013 3v6.75a3 3 0 01-3 3H3.75a3 3 0 01-3-3v-6.75a3 3 0 013-3h9v-3c0-2.9 2.35-5.25 5.25-5.25z" />

@@ -10,7 +10,7 @@ interface userRegisterInterface {
     password: string,
     againPassword?: string,
     companyId: number,
-    userRole: number
+    permission: string
 }
 
 interface userLoginInterface {
@@ -50,7 +50,7 @@ const authController = {
                 name: req.body.name,
                 password: hashedPassword,
                 companyId: req.body.companyId,
-                userRole: req.body.userRole
+                permission: req.body.permission
             }
             let newUser = await prisma.user.create({
                 data: {
@@ -58,7 +58,7 @@ const authController = {
                     name: req.body.name,
                     password: hashedPassword,
                     companyId: req.body.companyId,
-                    userRole: req.body.userRole
+                    permission: req.body.permission
                 }
             })
             res.status(200).json(newUser)
@@ -113,7 +113,7 @@ const authController = {
                 companyId: user.companyId,
                 status: user.status,
                 jwt: token,
-                userRole: user.userRole,
+                permission: user.permission
             })
         }
         catch (err) {

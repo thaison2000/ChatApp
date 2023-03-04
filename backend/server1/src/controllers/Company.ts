@@ -50,7 +50,7 @@ const companyController = {
                     companyId: parseInt(req.params.companyId)
                 }
             })
-
+            console.log(users)
             res.status(200).json(users)
         }
         catch (err) {
