@@ -165,7 +165,7 @@ app.listen(process.env.PORT, () => {
                     email: 'son.dt1408@gmail.com',
                     name: 'son',
                     password: hashedPassword,
-                    companyId: 1,
+                    companyId: 1
                 };
                 let newUser = yield prisma.user.create({
                     data: user

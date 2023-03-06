@@ -205,7 +205,6 @@ const postController = {
     getPostByPostId: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const post = yield Post_1.default.findOne({
-                userId: req.user.userId,
                 postId: req.params.postId
             });
             res.status(200).json(post);
@@ -246,6 +245,7 @@ const postController = {
                 userId: req.user.userId
             });
             res.status(200).json(draftPosts);
+            console.log(draftPosts);
         }
         catch (err) {
             console.log(err);

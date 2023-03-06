@@ -97,9 +97,10 @@ const notificationController = {
         }
     }),
     getAllNotificationsByGroupIds: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a;
         try {
             let data = [];
-            for (let i = 0; i < req.body.groups.length; i++) {
+            for (let i = 0; i < ((_a = req.body.groups) === null || _a === void 0 ? void 0 : _a.length); i++) {
                 const notifications = yield Notification_1.default.find({
                     groupId: req.body.groups[i].groupId,
                 });

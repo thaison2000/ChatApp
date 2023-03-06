@@ -47,7 +47,7 @@ const authController = {
                 name: req.body.name,
                 password: hashedPassword,
                 companyId: req.body.companyId,
-                role: req.body.role
+                permission: req.body.permission
             };
             let newUser = yield prisma.user.create({
                 data: {
@@ -55,7 +55,7 @@ const authController = {
                     name: req.body.name,
                     password: hashedPassword,
                     companyId: req.body.companyId,
-                    role: req.body.role
+                    permission: req.body.permission
                 }
             });
             res.status(200).json(newUser);
@@ -102,9 +102,9 @@ const authController = {
                 gender: user.gender,
                 avatar: user.avatar,
                 companyId: user.companyId,
-                role: user.role,
                 status: user.status,
-                jwt: token
+                jwt: token,
+                permission: user.permission
             });
         }
         catch (err) {
