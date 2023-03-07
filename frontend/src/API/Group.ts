@@ -225,3 +225,41 @@ export const APIdeleteGroup = async (groupId: string) => {
         return {status: false}
     }
 };
+
+export const APIupdateGroupName = async (groupId: string, name: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.put(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/group/name",{groupId, name}, config);
+        return {
+            status: true
+        }
+    }
+    catch (err) {
+        console.log(err)
+        return {status: false}
+    }
+};
+
+export const APIupdateGroupDesc = async (groupId: string, desc: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        await axios.put(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/group/desc",{groupId, desc}, config);
+        return {
+            status: true
+        }
+    }
+    catch (err) {
+        console.log(err)
+        return {status: false}
+    }
+};

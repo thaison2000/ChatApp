@@ -68,13 +68,15 @@ const TopBar = (props: any) => {
             const { status: status1, data: data1 }: any = await APIgetAllNotificationsByReceiveUserId()
             const { status: status2, data: data2 }: any = await APIgetAllNotificationsByGroupIds(groups)
 
-            let notificationSum = data1.concat(data2)
+            if(data1 && data2){
+                let notificationSum = data1.concat(data2)
             notificationSum?.sort((p1: any, p2: any) => {
                 let time1: any = new Date(p2.createdAt)
                 let time2: any = new Date(p1.createdAt)
                 return (time2 - time1);
             })
             setNotifications(notificationSum)
+            }
         }
 
 

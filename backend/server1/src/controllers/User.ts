@@ -46,18 +46,76 @@ const userController = {
     },
 
     findUserByName: async (req: any, res: Response) => {
-        try {              
-                const users = await prisma.user.findMany({
-                    
+        try {
+            const users = await prisma.user.findMany({
+
+                where: {
+                    name: {
+                        contains: req.query.name,
+                    }
+                }
+            })
+            console.log(users)
+            res.status(200).json(users)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+    findUserInGroupByName: async (req: any, res: Response) => {
+        try {
+            const users = await prisma.user.findMany({
+
+                where: {
+                    name: {
+                        contains: req.query.name,
+                    },
+                }
+            })
+            let data = []
+            for (let i = 0; i < users.length; i++) {
+                const user = await prisma.groupUser.findMany({
                     where: {
-                        name: {
-                            contains: req.query.name,
-                        }
+                        groupId: parseInt(req.params.groupId),
+                        userId: users[i].userId
                     }
                 })
-                console.log(users)
-                res.status(200).json(users)
+                if (user) {
+                    const adminUser = await prisma.groupAdmin.findMany({
+                        where: {
+                            groupId: parseInt(req.params.groupId),
+                            userId: users[i].userId
+                        }
+                    })
+                    if(adminUser.length> 0){
+                        let type = 'admin'
+                        data.push({
+                            userId: users[i].userId,
+                            groupId: parseInt(req.params.groupId),
+                            avatar: users[i].avatar,
+                            type: 'admin',
+                            name: users[i].name
+
+                        })
+                    }
+                    else{
+                        let type = 'user'
+                        data.push({
+                            userId: users[i].userId,
+                            groupId: parseInt(req.params.groupId),
+                            avatar: users[i].avatar,
+                            type: 'user',
+                            name: users[i].name
+
+                        })
+                    }
+                }
             }
+            console.log(data)
+            res.status(200).json(data)
+        }
         catch (err) {
             console.log(err)
             res.status(500).json(err)

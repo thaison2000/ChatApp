@@ -123,15 +123,23 @@ app.post("/api/group/updateAvatar", verifyToken, upload.single("file"), async (r
             }
         })
 
-        const groupRedisKey = 'groups' + req.user.userId
-        let groups: any = await redisClient.get(groupRedisKey)
-        groups = JSON.parse(groups)
-        groups.map((group: any) => {
-            if (group.groupId == parseInt(req.body.groupId)) {
-                group.avatar = req.body.name
+        const groupUsers = await prisma.groupUser.findMany({
+            where: {
+                groupId: parseInt(req.body.groupId)
             }
         })
-        await redisClient.set(groupRedisKey, JSON.stringify(groups));
+
+        for (let i = 0; i < groupUsers.length; i++) {
+            const groupRedisKey = 'groups' + groupUsers[i].userId
+            let groups: any = await redisClient.get(groupRedisKey)
+            groups = JSON.parse(groups)
+            groups.map((group: any) => {
+                if (group.groupId == parseInt(req.body.groupId)) {
+                    group.avatar = req.body.name
+                }
+            })
+            await redisClient.set(groupRedisKey, JSON.stringify(groups));
+        }
 
         res.status(200).json('Update group avatar successfully !')
     } catch (error) {
@@ -220,7 +228,7 @@ app.post("/api/user/sendCode", async (req: any, res: Response) => {
                 }
             })
 
-            if(existCode){
+            if (existCode) {
                 let newCode = await prisma.code.updateMany({
                     where: {
                         userId: userExist.userId,
@@ -230,7 +238,7 @@ app.post("/api/user/sendCode", async (req: any, res: Response) => {
                     }
                 })
             }
-            else{
+            else {
                 let newCode = await prisma.code.create({
                     data: {
                         userId: userExist.userId,

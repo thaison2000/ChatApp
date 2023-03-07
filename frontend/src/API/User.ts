@@ -93,3 +93,25 @@ export const APIfindUserByName = async (name: string) => {
         }
     }
 };
+
+export const APIfindUserInGroupByName = async (name: string, groupId: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        const res = await axios.get(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/user/group/" + groupId + "?name=" + name, config);
+        return {
+            data: res.data,
+            status: true
+        }
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            status: false
+        }
+    }
+};

@@ -93,7 +93,7 @@ const notificationController = {
       let data: any[] = []
       for(let i=0;i<req.body.groups?.length;i++){
         const notifications = await Notification.find({
-          groupId: req.body.groups[i].groupId,
+          groupId: req.body.groups[i]?.groupId,
         });
         data = data.concat(notifications)
       }     

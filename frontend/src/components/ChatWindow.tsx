@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { APIgetCommentsByPostId } from '../API/Comment';
-import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar } from '../API/Group';
+import { APIaddMemberIntoGroup, APIdeleteGroup, APIdeleteMemberInGroup, APIgetAllMemberByGroupId, APIgetGroupByGroupId, APIpromoteAdminInGroup, APIupdateGroupAvatar, APIupdateGroupDesc, APIupdateGroupName } from '../API/Group';
 import { APIcreateNotification } from '../API/Notification';
 import { APIdeletePost, APIdeletePostByGroupId, APIgetAllImportantPostByGroupId, APIgetAllPostByGroupId, APIupdatePost, APIuploadDocs } from '../API/Post';
-import { APIfindUserByName } from '../API/User';
+import { APIfindUserByName, APIfindUserInGroupByName } from '../API/User';
 import { Context } from '../context/Context';
 import ChatBox from './ChatBox'
 import CommentWindow from './CommentWindow';
@@ -33,10 +33,17 @@ const ChatWindow = (props: any) => {
   const [changeAvatarLoading, setChangeAvatarLoading] = useState<boolean>(false)
   const [promoteAdminLoading, setPromoteAdminLoading] = useState<boolean>(false)
   const [deleteMemberLoading, setDeleteMemberLoading] = useState<boolean>(false)
+  const [searchMembers, setSearchMembers] = useState<Array<any>>([])
+  const [updateGroup, setUpdateGroup] = useState<boolean>(false)
 
   const addMemberName = useRef<any>()
   const deleteGroupName = useRef<any>()
+  const newGroupName = useRef<any>()
+  const newGroupDesc = useRef<any>()
+
   const scrollRef = useRef<any>();
+
+  const nameSearch = useRef<any>();
 
   const { user } = useContext(Context)
 
@@ -51,6 +58,10 @@ const ChatWindow = (props: any) => {
       setNewPostCount((prev: number) => prev + 1)
     });
   }, [props.socket?.current]);
+
+  useEffect(() => {
+    setSearchMembers(members)
+  }, [members]);
 
   useEffect(() => {
     props.socket?.current?.on("getNotification", (data: any) => {
@@ -108,7 +119,7 @@ const ChatWindow = (props: any) => {
       }
     };
     fetchGroupByGroupId();
-  }, [props.groupId, avatar])
+  }, [props.groupId, avatar, updateGroup])
 
   useEffect(() => {
     const fetchAllGroupMembers = async () => {
@@ -138,18 +149,44 @@ const ChatWindow = (props: any) => {
     }
   };
 
+  const handleSubmitUpdateGroupName = async () => {
+    if (newGroupName.current.value) {
+      if (window.confirm('Are you sure you want to change group name ?')) {
+      const { status, data }: any = await APIupdateGroupName(group.groupId, newGroupName.current.value)
+      if (status) {
+        setUpdateGroup(!updateGroup)
+
+        // window.location.reload()
+      }
+    }
+  }
+  };
+
+  const handleSubmitUpdateGroupDesc = async () => {
+    if (newGroupDesc.current.value) {
+      if (window.confirm('Are you sure you want to change group description ?')) {
+      const { status, data }: any = await APIupdateGroupDesc(group.groupId, newGroupDesc.current.value)
+      if (status) {
+        setUpdateGroup(!updateGroup)
+
+        // window.location.reload()
+      }
+    }
+  }
+  };
+
   const handleSubmitDeleteGroup = async () => {
     setDeleteGroupLoading(true)
     if (deleteGroupName.current.value != group.name) {
       setDeleteGroupLoading(false)
       window.alert('Wrong group name !')
-      
+
     }
     else {
       if (window.confirm('Are you sure you want to delete the group ?')) {
-        
-        const { status:status1 }: any = await APIdeleteGroup(group.groupId)
-        const { status:status2 }: any = await APIdeletePostByGroupId(group.groupId)
+
+        const { status: status1 }: any = await APIdeleteGroup(group.groupId)
+        const { status: status2 }: any = await APIdeletePostByGroupId(group.groupId)
         if (status1 && status2) {
           props.socket?.current?.emit("sendNotification", {
             sendUserName: user.name,
@@ -197,6 +234,13 @@ const ChatWindow = (props: any) => {
     const { status, data } = await APIfindUserByName(name)
     if (status) {
       setSearchingUsers(data)
+    }
+  }
+
+  const handleClickSearchUserByNameInGroup = async (name: string) => {
+    const { status, data } = await APIfindUserInGroupByName(name, group.groupId)
+    if (status) {
+      setSearchMembers(data)
     }
   }
 
@@ -260,7 +304,9 @@ const ChatWindow = (props: any) => {
         setMembers(() => members.filter((member: any) => member.userId != deleteUser.userId));
         setDeleteMemberLoading(false)
       }
+
     }
+    setDeleteMemberLoading(false)
   }
 
   const handleClickPromoteAdminInGroup = async (promoteUser: any) => {
@@ -330,8 +376,8 @@ const ChatWindow = (props: any) => {
       if (status) {
         if (files) {
           let type = 'post'
-         
-          const { status }: any = await APIuploadDocs(files,postId, user.userId, type)
+
+          const { status }: any = await APIuploadDocs(files, postId, user.userId, type)
         }
         props.socket?.current?.emit("sendNotification", {
           type: 16
@@ -469,6 +515,42 @@ const ChatWindow = (props: any) => {
         {
           members.some((member: any) => member.userId == user.userId && member.type == 'admin') ?
             <div className='mx-8 mt-8 bg-neutral-200  p-4'>
+              <div className='flex flex-row text-green-600'>
+                <div className=' mt-2 text-xl font-bold ml-2'>Change Group Name</div>
+              </div>
+              <div className='flex flex-row'>
+                <div className='w-full px-2'>
+                  <input ref={newGroupName} defaultValue={newGroupName.current?.value} className='w-full my-4 py-4 focus:outline-none bg-neutral-200' type="text" placeholder='New name ...' />
+                </div>
+                <div onClick={handleSubmitUpdateGroupName} className='mt-8 mr-4'>
+                  <div className='hover:bg-green-600 p-2 rounded-xl bg-sky-900'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
+                      <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
+                    </svg>
+
+                  </div>
+                </div>
+
+
+              </div>
+              <div className='flex flex-row text-yellow-600'>
+                <div className=' mt-2 text-xl font-bold ml-2'>Change Group Description</div>
+              </div>
+              <div className='flex flex-row'>
+                <div className='w-full px-2'>
+                  <input ref={newGroupDesc} defaultValue={newGroupDesc.current?.value} className='w-full my-4 py-4 focus:outline-none bg-neutral-200' type="text" placeholder='New desc ...' />
+                </div>
+                <div onClick={handleSubmitUpdateGroupDesc} className='mt-8 mr-4'>
+                  <div className='hover:bg-yellow-600 p-2 rounded-xl bg-sky-900'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
+                      <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
+                    </svg>
+
+                  </div>
+                </div>
+              </div>
+
+
               <div className='flex flex-row text-red-600'>
                 <div className=' mt-2 text-xl font-bold ml-2'>Delete Group</div>
               </div>
@@ -494,6 +576,7 @@ const ChatWindow = (props: any) => {
                       </div>
 
                     </div>
+
                 }
               </div>
             </div> : null
@@ -518,16 +601,16 @@ const ChatWindow = (props: any) => {
           </div>
           <div className='flex flex-row '>
             <div className='w-full px-2'>
-              <input ref={addMemberName} defaultValue={addMemberName.current?.value} className='w-full my-4 py-4 focus:outline-none bg-neutral-200' type="text" placeholder='name ...' />
+              <input ref={nameSearch} className='w-full my-4 py-4 focus:outline-none bg-neutral-200' type="text" placeholder='name ...' />
             </div>
             <div className='mt-9 mr-4'>
-              <svg onClick={() => handleClickSearchUserByName(addMemberName.current.value)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+              <svg onClick={() => handleClickSearchUserByNameInGroup(nameSearch.current.value)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                 <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clipRule="evenodd" />
               </svg>
             </div>
           </div>
           <div className='max-h-[200px] overflow-auto'>
-            {members.map((member: any) => (
+            {searchMembers?.map((member: any) => (
               <div className='flex flex-row justify-between hover:bg-neutral-300 p-2 '>
                 <div className='flex flex-row'>
                   <div onClick={() => {

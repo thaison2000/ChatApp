@@ -82,7 +82,7 @@ const groupController = {
         }
     },
 
-    updateGroup: async (req: any, res: Response) => {
+    updateGroupName: async (req: any, res: Response) => {
         try {
             await prisma.group.update({
                 where: {
@@ -90,10 +90,63 @@ const groupController = {
                 },
                 data: {
                     name: req.body.name,
-                    desc: req.body.desc
                 }
             })
-            res.status(200).json('Update group successfully !')
+            const groupUsers = await prisma.groupUser.findMany({
+                where: {
+                    groupId: parseInt(req.body.groupId)
+                }
+            })
+    
+            for (let i = 0; i < groupUsers.length; i++) {
+                const groupRedisKey = 'groups' + groupUsers[i].userId
+                let groups: any = await redisClient.get(groupRedisKey)
+                groups = JSON.parse(groups)
+                groups.map((group: any) => {
+                    if (group.groupId == parseInt(req.body.groupId)) {
+                        group.name = req.body.name
+                    }
+                })
+                await redisClient.set(groupRedisKey, JSON.stringify(groups));
+            }
+
+            res.status(200).json('Update group name successfully !')
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+    updateGroupDesc: async (req: any, res: Response) => {
+        try {
+            await prisma.group.update({
+                where: {
+                    groupId: req.body.groupId
+                },
+                data: {
+                    desc: req.body.desc,
+                }
+            })
+            const groupUsers = await prisma.groupUser.findMany({
+                where: {
+                    groupId: parseInt(req.body.groupId)
+                }
+            })
+    
+            for (let i = 0; i < groupUsers.length; i++) {
+                const groupRedisKey = 'groups' + groupUsers[i].userId
+                let groups: any = await redisClient.get(groupRedisKey)
+                groups = JSON.parse(groups)
+                groups.map((group: any) => {
+                    if (group.groupId == parseInt(req.body.groupId)) {
+                        group.desc = req.body.desc
+                    }
+                })
+                await redisClient.set(groupRedisKey, JSON.stringify(groups));
+            }
+
+            res.status(200).json('Update group desc successfully !')
         }
         catch (err) {
             console.log(err)

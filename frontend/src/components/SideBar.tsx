@@ -15,7 +15,7 @@ const SideBar = (props: any) => {
     const [displayChanel, setDisplayChanel] = useState(true)
     const [displayDirectMessage, setDisplayDirectMessage] = useState(true)
     const [createGroupForm, setCreateGroupForm] = useState(false)
-    const [groups, setGroups] = useState<Array<any>>()
+    const [groups, setGroups] = useState<Array<any>>([])
     const [directMessages, setDirectMessages] = useState<Array<any>>()
     const [newNotification, setNewNotification] = useState<any>({});
     const [unreadPosts, setUnreadPosts] = useState<Array<any>>([]);
@@ -184,12 +184,12 @@ const SideBar = (props: any) => {
                             {groups?.map((group => {
 
                                 return (
-                                    <div key={group.groupId} onClick={() => handleClickUpdateUnreadPostsToReadPosts(group.groupId)
+                                    <div key={group?.groupId} onClick={() => handleClickUpdateUnreadPostsToReadPosts(group.groupId)
 
                                     } className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
                                         <img className='w-6 h-6 rounded-full' src={group?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + group?.avatar) : (`${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png')} alt="" />
-                                        <span className='text-white ml-4 overflow-x-auto'>{group.name}</span>
-                                        {unreadPosts?.filter((unreadPost: any) => unreadPost.groupId == group.groupId).length > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{unreadPosts.filter((unreadPost: any) => unreadPost.groupId == group.groupId).length}</div> : null}
+                                        <span className='text-white ml-4 overflow-x-auto'>{group?.name}</span>
+                                        {unreadPosts?.filter((unreadPost: any) => unreadPost.groupId == group?.groupId).length > 0 ? <div className='rounded-full text-[12px] text-white font-medium pl-1 bg-red-600 w-4 h-4 absolute left-[55px] top-[2px]'>{unreadPosts.filter((unreadPost: any) => unreadPost.groupId == group.groupId).length}</div> : null}
                                     </div>
                                 )
                             }))}
