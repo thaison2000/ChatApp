@@ -21,5 +21,7 @@ postRoute.get('/thread',verifyToken,postController.getPostThreadByUserId)
 postRoute.get('/mention',verifyToken,postController.getAllMentionPostByUserId)
 postRoute.get('/unreadPosts',verifyToken,postController.getAllUnreadPosts)
 postRoute.put('/unreadPosts/:groupId',verifyToken,postController.updateAllUnreadPostsToReadPostsByGroupId)
+postRoute.post('/search',verifyToken,postController.getFullTextSearchPostByUserIdAndGroupIds)
+
 
 export default postRoute

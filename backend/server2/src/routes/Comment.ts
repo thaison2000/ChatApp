@@ -6,6 +6,6 @@ const commentRoute = express.Router()
 
 commentRoute.post('/',verifyToken,commentController.createComment)
 commentRoute.get('/:postId',verifyToken,commentController.getCommentsByPostId)
-
+commentRoute.delete('/:commentId',verifyToken,commentController.deleteCommentsById)
 
 export default commentRoute

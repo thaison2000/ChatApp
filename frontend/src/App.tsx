@@ -13,6 +13,7 @@ import Thread from './pages/Thread';
 import Mention from './pages/Mention';
 import Company from './pages/Company';
 import Member from './pages/Member';
+import MessageSearching from './pages/MessageSearching';
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
         <Route path='member' element={user?<Member socket={socket}/>:<Login/>}></Route>
         <Route path='thread' element={user?<Thread socket={socket}/>:<Login/>}></Route>
         <Route path='mention' element={user?<Mention socket={socket}/>:<Login/>}></Route>
+        <Route path='messageSearching' element={user?<MessageSearching socket={socket}/>:<Login/>}></Route>
       </Routes>
     </div>
   );

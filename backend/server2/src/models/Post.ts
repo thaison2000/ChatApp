@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const PostSchema = mongoose.Schema(
+let PostSchema = mongoose.Schema(
     {
         userId: {
             type: Number,
@@ -36,7 +36,6 @@ const PostSchema = mongoose.Schema(
     },
     { timestamps: true })
 
-PostSchema.index({'content': 'text'});
 const Post = mongoose.model('Post', PostSchema)
 
 

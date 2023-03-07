@@ -111,20 +111,20 @@ const postController = {
             const posts = await Post.find({
                 groupId: req.params.groupId
             })
-            for(let i=0;i< posts.length;i++){
-                if(!posts[i].reads.includes(req.user.userId)){
+            for (let i = 0; i < posts.length; i++) {
+                if (!posts[i].reads.includes(req.user.userId)) {
                     const updatePost = await Post.updateOne({
                         postId: posts[i].postId,
                         groupId: req.params.groupId
                     },
-                    { $push: { reads: req.user.userId } })
+                        { $push: { reads: req.user.userId } })
 
                     console.log(updatePost)
                 }
             }
-            
+
             return res.status(200).json('update read posts successfully');
-            
+
         } catch (err) {
             console.log(err)
             res.status(500).json(err);
@@ -135,7 +135,7 @@ const postController = {
         try {
 
             const unreadPosts = await Post.find({
-                reads: { $nin: [req.user.userId] } 
+                reads: { $nin: [req.user.userId] }
             })
             res.status(200).json(unreadPosts);
         } catch (err) {
@@ -241,7 +241,7 @@ const postController = {
             const draftPosts = await DraftPost.find({
                 userId: req.user.userId
             });
-           
+
             res.status(200).json(draftPosts);
             console.log(draftPosts)
         } catch (err) {
@@ -285,7 +285,7 @@ const postController = {
                 return ans;
             }
             postThread = deduplicate(postThread)
-            res.status(200).json(postThread.slice(0,19));
+            res.status(200).json(postThread.slice(0, 19));
         } catch (err) {
             console.log(err)
             res.status(500).json(err);
@@ -294,16 +294,56 @@ const postController = {
 
     getAllMentionPostByUserId: async (req: any, res: Response) => {
         try {
-            const posts = await Post.find({
-                content: { $regex: '<a href="http://localhost:3000/profile/' + req.user.userId } 
+            let posts = await Post.find({
+                content: { $regex: '<a href="http://localhost:3000/profile/' + req.user.userId }
             });
-            console.log(posts)
+
+            const comments = await Comment.find({
+                content: { $regex: '<a href="http://localhost:3000/profile/' + req.user.userId }
+            });
+            for (let i = 0; i < comments.length; i++) {
+                const post = await Post.findOne({
+                    postId: comments[i].postId
+                });
+                if (post) {
+                    posts.push(post)
+                }
+            }
+            posts = posts?.sort((p1: any, p2: any) => {
+                let time1: any = new Date(p2.createdAt)
+                let time2: any = new Date(p1.createdAt)
+                return (time2 - time1);
+            })
+
             res.status(200).json(posts);
         } catch (err) {
             console.log(err)
             res.status(500).json(err);
         }
     },
+
+    getFullTextSearchPostByUserIdAndGroupIds: async (req: any, res: Response) => {
+        try {
+            let data: any = []
+            for (let i = 0; i < req.body.groups.length; i++) {
+                let posts = await Post.find(
+                    {
+                        groupId: req.body.groups[i].groupId
+                    }
+                );
+                console.log(posts)
+                data = data.concat(posts)
+            }
+
+            data = data.filter((d: any)=> d.content.includes(req.body.searchString))
+           
+            res.status(200).json(data);
+        } catch (err) {
+            console.log(err)
+            res.status(500).json(err);
+        }
+    },
+
 
 }
 

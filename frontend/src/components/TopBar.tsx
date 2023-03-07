@@ -210,7 +210,7 @@ const TopBar = (props: any) => {
                         }}
                             className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
-                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> commented on your <span className='text-[18px] font-medium text-sky-900'>Post</span>
+                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> commented on your <span className='text-[18px] font-medium text-sky-900'>Post</span> in group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span> 
                             </div>
                             <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
                         </div>

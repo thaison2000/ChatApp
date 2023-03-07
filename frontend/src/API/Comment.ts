@@ -61,6 +61,27 @@ export const APIgetCommentsByPostId = async (postId: string) => {
     }
 }
 
+export const APIdeleteCommentsByCommentId = async (commentId: string) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': JSON.parse(`${localStorage.getItem("user")}`).jwt
+            },
+        }
+        const res = await axios.delete(`${process.env.REACT_APP_SERVER2_URL}` + "/api/comment/" + commentId, config);
+
+        return {
+            status: true,
+            data: res.data
+        }
+    }
+    catch (err) {
+        console.log(err)
+        return { status: false }
+    }
+}
+
 export const APIcommentUploadDocs = async (files: any, commentId: any, userId: any) => {
     try {
         let fileNames: Array<string> = []
