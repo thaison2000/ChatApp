@@ -196,7 +196,7 @@ const SideBar = (props: any) => {
                             {groups?.map((group => {
 
                                 return (
-                                    <div key={group?.groupId} onClick={() => handleClickUpdateUnreadPostsToReadPosts(group.groupId)
+                                    <div key={group?.groupId} onClick={() => handleClickUpdateUnreadPostsToReadPosts(group?.groupId)
 
                                     } className='flex flex-row py-2 pl-10 hover:bg-sky-800 relative'>
                                         <img className='w-6 h-6 rounded-full' src={group?.avatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + group?.avatar) : (`${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png')} alt="" />

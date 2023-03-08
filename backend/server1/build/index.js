@@ -117,15 +117,22 @@ app.post("/api/group/updateAvatar", verifyToken_1.default, upload.single("file")
                 avatar: req.body.name
             }
         });
-        const groupRedisKey = 'groups' + req.user.userId;
-        let groups = yield redisClient.get(groupRedisKey);
-        groups = JSON.parse(groups);
-        groups.map((group) => {
-            if (group.groupId == parseInt(req.body.groupId)) {
-                group.avatar = req.body.name;
+        const groupUsers = yield prisma.groupUser.findMany({
+            where: {
+                groupId: parseInt(req.body.groupId)
             }
         });
-        yield redisClient.set(groupRedisKey, JSON.stringify(groups));
+        for (let i = 0; i < groupUsers.length; i++) {
+            const groupRedisKey = 'groups' + groupUsers[i].userId;
+            let groups = yield redisClient.get(groupRedisKey);
+            groups = JSON.parse(groups);
+            groups.map((group) => {
+                if (group.groupId == parseInt(req.body.groupId)) {
+                    group.avatar = req.body.name;
+                }
+            });
+            yield redisClient.set(groupRedisKey, JSON.stringify(groups));
+        }
         res.status(200).json('Update group avatar successfully !');
     }
     catch (error) {

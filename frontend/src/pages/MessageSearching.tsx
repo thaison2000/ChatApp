@@ -9,7 +9,7 @@ import TimeAgo from 'javascript-time-ago'
 
 // English.
 import en from 'javascript-time-ago/locale/en'
-import { APIfetchAllGroups } from '../API/Group'
+import { APIfetchAllDirectMessageGroups, APIfetchAllGroups } from '../API/Group'
 
 TimeAgo.addDefaultLocale(en)
 
@@ -65,10 +65,11 @@ const MessageSearching = (props: any) => {
 
     useEffect(() => {
         const fetchAllGroups = async () => {
-            const { status, data } = await APIfetchAllGroups()
-            if (status) {
-                setGroups(data)
-            }
+            let value = []
+            const { status: status1, data: data1 } = await APIfetchAllGroups()
+            const { status, data } = await APIfetchAllDirectMessageGroups()
+            
+                setGroups(data1.concat(data))
         }
         fetchAllGroups();
     }, []);

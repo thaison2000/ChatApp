@@ -33,7 +33,6 @@ const TopBar = (props: any) => {
     const [postNotification, setPostNotification] = useState<boolean>(false);
     const [activeNotification, setActiveNotification] = useState<any>();
 
-
     const handleClickLogout = () => {
         if (window.confirm('Are you sure you want to log out ?')) {
             localStorage.removeItem('user')
@@ -68,14 +67,15 @@ const TopBar = (props: any) => {
             const { status: status1, data: data1 }: any = await APIgetAllNotificationsByReceiveUserId()
             const { status: status2, data: data2 }: any = await APIgetAllNotificationsByGroupIds(groups)
 
-            if(data1 && data2){
+            if (data1 && data2) {
                 let notificationSum = data1.concat(data2)
-            notificationSum?.sort((p1: any, p2: any) => {
-                let time1: any = new Date(p2.createdAt)
-                let time2: any = new Date(p1.createdAt)
-                return (time2 - time1);
-            })
-            setNotifications(notificationSum)
+                notificationSum = notificationSum.filter((notifcation: any) => notifcation.sendUserId != user.userId)
+                notificationSum?.sort((p1: any, p2: any) => {
+                    let time1: any = new Date(p2.createdAt)
+                    let time2: any = new Date(p1.createdAt)
+                    return (time2 - time1);
+                })
+                setNotifications(notificationSum)
             }
         }
 
@@ -111,7 +111,7 @@ const TopBar = (props: any) => {
     }, [props.socket?.current]);
 
     useEffect(() => {
-        if (newNotification && newNotification.sendUserId != user.userId) {
+        if ((newNotification && newNotification.sendUserId != user.userId)) {
             setNotifications((prev: any) => [...prev, newNotification]);
             setCountNewNotifications(countNewNotifications + 1)
         }
@@ -210,7 +210,7 @@ const TopBar = (props: any) => {
                         }}
                             className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
-                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> commented on your <span className='text-[18px] font-medium text-sky-900'>Post</span> in group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span> 
+                                <span className='text-[18px] font-medium text-sky-900'>{notification.sendUserName}</span> commented on your <span className='text-[18px] font-medium text-sky-900'>Post</span> in group <span className='text-[18px] font-medium text-sky-900'>{notification.groupName}</span>
                             </div>
                             <div className="">{timeAgo.format(new Date(notification.createdAt))}</div>
                         </div>

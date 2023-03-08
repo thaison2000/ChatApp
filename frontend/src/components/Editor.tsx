@@ -123,7 +123,7 @@ const Editor = (props: any) => {
         const { status, data } = await APIcreateComment({
           groupId: props.groupId,
           userId: user.userId,
-          postId: props.postId,
+          postId: props.post.postId,
           content: state
         })
         if (status) {
@@ -138,7 +138,7 @@ const Editor = (props: any) => {
               props.socket?.current?.emit("sendNotification", {
                 sendUserName: user.name,
                 sendUserId: user.userId,
-                groupName: props.group.name,
+                groupName: props.group?.name,
                 groupId: props.groupId,
                 receiveUserId: mentionSelectUsers[i].userId,
                 content: state,
@@ -148,7 +148,7 @@ const Editor = (props: any) => {
               await APIcreateNotification({
                 sendUserName: user.name,
                 sendUserId: user.userId,
-                groupName: props.group.name,
+                groupName: props.group?.name,
                 groupId: props.group.groupId,
                 receiveUserId: mentionSelectUsers[i].userId,
                 content: state,
@@ -164,10 +164,11 @@ const Editor = (props: any) => {
             sendUserName: user.name,
             sendUserId: user.userId,
             groupId: props.groupId,
-            groupName: props.group.name,
+            groupName: props.group?.name,
             content: state,
-            postId: props.postId,
+            postId: props.post.postId,
             post: props.postContentForCommentNotification,
+            receiveUserId: props.post.userId,
             type: 2
           })
 
@@ -176,10 +177,11 @@ const Editor = (props: any) => {
             sendUserName: user.name,
             sendUserId: user.userId,
             groupId: props.groupId,
-            groupName: props.group.name,
+            groupName: props.group?.name,
             content: state,
-            postId: props.postId,
+            postId: props.post.postId,
             post: props.postContentForCommentNotification,
+            receiveUserId: props.post.userId,
             type: 2
           });
 

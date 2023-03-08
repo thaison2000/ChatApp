@@ -20,7 +20,7 @@ const groupController = {
                     userId: req.user.userId
                 }
             })
-            await prisma.groupUser.create({
+            let groupUser = await prisma.groupUser.create({
                 data: {
                     groupId: newGroup.groupId,
                     userId: req.user.userId
@@ -49,7 +49,14 @@ const groupController = {
                     groupId: parseInt(req.params.groupId)
                 }
             })
-            if (admin) {
+            if (admin.length > 0) {
+
+                const users = await prisma.groupUser.findMany({
+                    where: {
+                        groupId: parseInt(req.params.groupId)
+                    }
+                })
+
                 const deleteGroup = await prisma.group.delete({
                     where: {
                         groupId: parseInt(req.params.groupId)
@@ -67,12 +74,15 @@ const groupController = {
                         groupId: parseInt(req.params.groupId)
                     }
                 })
-                const groupRedisKey = 'groups' + req.user.userId
+                for(let i=0;i<users.length;i++){
+                    const groupRedisKey = 'groups' + users[i].userId
                 let groups: any = await redisClient.get(groupRedisKey)
                 groups = JSON.parse(groups)
                 
                 groups = groups.filter((group: any) => group.groupId != deleteGroup.groupId)
+                console.log(groups)
                 await redisClient.set(groupRedisKey, JSON.stringify(groups));
+                }
             }
             res.status(200).json('Delete group successfully !')
         }
@@ -350,6 +360,7 @@ const groupController = {
                     type: 'DirectMessage'
                 }
             }
+            
             res.status(200).json(group)
         }
         catch (err) {

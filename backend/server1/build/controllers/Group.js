@@ -83,7 +83,7 @@ const groupController = {
             res.status(500).json(err);
         }
     }),
-    updateGroup: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    updateGroupName: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             yield prisma.group.update({
                 where: {
@@ -91,10 +91,58 @@ const groupController = {
                 },
                 data: {
                     name: req.body.name,
-                    desc: req.body.desc
                 }
             });
-            res.status(200).json('Update group successfully !');
+            const groupUsers = yield prisma.groupUser.findMany({
+                where: {
+                    groupId: parseInt(req.body.groupId)
+                }
+            });
+            for (let i = 0; i < groupUsers.length; i++) {
+                const groupRedisKey = 'groups' + groupUsers[i].userId;
+                let groups = yield __1.redisClient.get(groupRedisKey);
+                groups = JSON.parse(groups);
+                groups.map((group) => {
+                    if (group.groupId == parseInt(req.body.groupId)) {
+                        group.name = req.body.name;
+                    }
+                });
+                yield __1.redisClient.set(groupRedisKey, JSON.stringify(groups));
+            }
+            res.status(200).json('Update group name successfully !');
+        }
+        catch (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
+    }),
+    updateGroupDesc: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            yield prisma.group.update({
+                where: {
+                    groupId: req.body.groupId
+                },
+                data: {
+                    desc: req.body.desc,
+                }
+            });
+            const groupUsers = yield prisma.groupUser.findMany({
+                where: {
+                    groupId: parseInt(req.body.groupId)
+                }
+            });
+            for (let i = 0; i < groupUsers.length; i++) {
+                const groupRedisKey = 'groups' + groupUsers[i].userId;
+                let groups = yield __1.redisClient.get(groupRedisKey);
+                groups = JSON.parse(groups);
+                groups.map((group) => {
+                    if (group.groupId == parseInt(req.body.groupId)) {
+                        group.desc = req.body.desc;
+                    }
+                });
+                yield __1.redisClient.set(groupRedisKey, JSON.stringify(groups));
+            }
+            res.status(200).json('Update group desc successfully !');
         }
         catch (err) {
             console.log(err);

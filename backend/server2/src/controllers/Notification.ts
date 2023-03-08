@@ -39,7 +39,6 @@ const notificationController = {
       });
 
       await newNotification.save();
-      console.log(newNotification)
       res.status(200).json('Create notification successfully');
     } catch (err) {
       console.log(err)

@@ -29,7 +29,7 @@ export const APILogin = async (userLogin: userLoginInterface) => {
             return {status: false}
         }
         if(err.response.data == 'Your account is locked'){
-            alert('Tài khoản của bạn đã bị khóa')
+            alert('Your account is locked')
             return {status: false}
         }
         if(err.response.data == 'Invalid Password'){

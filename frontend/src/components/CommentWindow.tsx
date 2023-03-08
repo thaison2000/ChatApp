@@ -28,6 +28,7 @@ const CommentWindow = (props: any) => {
 
     const { user } = useContext(Context)
 
+
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
     }, [comments]);
@@ -141,7 +142,7 @@ const CommentWindow = (props: any) => {
                     }
                 </div>
                 <div className='relative my-4 m-1'>
-                    <Editor group={props.group} socket={props.socket} type={'comment'} groupId={props.groupId} postId={props.postThread.postId} postContentForCommentNotification={props.postThread.content} />
+                    <Editor group={props.group} socket={props.socket} type={'comment'} groupId={props.groupId} post={props.postThread} postContentForCommentNotification={props.postThread.content} />
                 </div>
             </div>
 

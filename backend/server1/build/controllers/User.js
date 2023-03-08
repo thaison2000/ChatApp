@@ -58,6 +58,60 @@ const userController = {
             console.log(err);
             res.status(500).json(err);
         }
+    }),
+    findUserInGroupByName: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const users = yield prisma.user.findMany({
+                where: {
+                    name: {
+                        contains: req.query.name,
+                    },
+                }
+            });
+            let data = [];
+            for (let i = 0; i < users.length; i++) {
+                const user = yield prisma.groupUser.findMany({
+                    where: {
+                        groupId: parseInt(req.params.groupId),
+                        userId: users[i].userId
+                    }
+                });
+                if (user) {
+                    const adminUser = yield prisma.groupAdmin.findMany({
+                        where: {
+                            groupId: parseInt(req.params.groupId),
+                            userId: users[i].userId
+                        }
+                    });
+                    if (adminUser.length > 0) {
+                        let type = 'admin';
+                        data.push({
+                            userId: users[i].userId,
+                            groupId: parseInt(req.params.groupId),
+                            avatar: users[i].avatar,
+                            type: 'admin',
+                            name: users[i].name
+                        });
+                    }
+                    else {
+                        let type = 'user';
+                        data.push({
+                            userId: users[i].userId,
+                            groupId: parseInt(req.params.groupId),
+                            avatar: users[i].avatar,
+                            type: 'user',
+                            name: users[i].name
+                        });
+                    }
+                }
+            }
+            console.log(data);
+            res.status(200).json(data);
+        }
+        catch (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
     })
 };
 exports.default = userController;

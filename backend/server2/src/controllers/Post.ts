@@ -59,13 +59,12 @@ const postController = {
 
     deletePostByGroupId: async (req: any, res: Response) => {
         try {
-            const deletePost = await Post.find({
-                userId: req.user.userId,
-                groupId: req.params.groupId
-            });
-            if (deletePost.length > 0) {
-                await deletePost.deleteMany()
-            }
+           
+                await Post.deleteMany({
+                    userId: req.user.userId,
+                    groupId: req.params.groupId
+                })
+            
             res.status(200).json('delete posts successfully');
         } catch (err) {
             console.log(err)
@@ -331,7 +330,6 @@ const postController = {
                         groupId: req.body.groups[i].groupId
                     }
                 );
-                console.log(posts)
                 data = data.concat(posts)
             }
 

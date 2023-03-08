@@ -10,5 +10,6 @@ const userRoute = express_1.default.Router();
 userRoute.put('/', verifyToken_1.default, User_1.default.updateProfile);
 userRoute.get('/:userId', verifyToken_1.default, User_1.default.getProfile);
 userRoute.get('/', verifyToken_1.default, User_1.default.findUserByName);
+userRoute.get('/group/:groupId', verifyToken_1.default, User_1.default.findUserInGroupByName);
 exports.default = userRoute;
 //# sourceMappingURL=User.js.map
