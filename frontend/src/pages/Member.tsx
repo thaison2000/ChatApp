@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { APIRegister } from '../API/Auth'
 import { APIdeleteCompanyUser, APIgetCompanyUsers, APIlockCompanyUser, APIunlockCompanyUser } from '../API/Company'
 import { APIcreateNotification } from '../API/Notification'
+import { APIfindUserByName } from '../API/User'
 import SideBar from '../components/SideBar'
 import TopBar from '../components/TopBar'
 import { Context } from '../context/Context'
@@ -19,6 +20,8 @@ const Member = (props: any) => {
     const [updateUser, setUpdateUser] = useState(false)
     const scrollRef = useRef<any>()
     const [menu, setMenu] = useState<boolean>(false)
+    const [searchingWord, setSearchingWord] = useState<string>('')
+
 
     const name = useRef<any>()
     const email = useRef<any>()
@@ -45,6 +48,16 @@ const Member = (props: any) => {
 
     const handleClickUpdateUser = () => {
         setUpdateUser(!updateUser)
+    }
+
+    const handleClickFindUser = async () => {
+        const { status, data } = await APIfindUserByName(searchingWord)
+        if (status) {
+            setUsers(data)
+            if (data.length == 0) {
+                alert('Can not find any user !')
+            }
+        }
     }
 
     const handleClickSubmitCreateAccount = async () => {
@@ -75,13 +88,13 @@ const Member = (props: any) => {
                     sendUserId: user.userId,
                     receiveUserId: userId,
                     type: 20
-                  });
-                  await APIcreateNotification({
+                });
+                await APIcreateNotification({
                     sendUserName: user.name,
                     sendUserId: user.userId,
                     receiveUserId: userId,
                     type: 19
-                  })
+                })
                 setNewUserCount((prev: number) => prev + 1)
             }
         }
@@ -109,6 +122,10 @@ const Member = (props: any) => {
 
     const handleClickMenu = () => {
         setMenu(!menu)
+    }
+
+    const handleSearchingWordChange = (e: any) => {
+        setSearchingWord(e.target.value)
     }
 
     const CreateUserForm = () =>
@@ -170,7 +187,20 @@ const Member = (props: any) => {
                         <SideBar socket={props.socket} />
                     </div>
                     :
-                    <div className='w-full  h-[calc(100%-65px)]'>
+                    <div className='w-full h-full flex flex-col'>
+                        <div className='flex flex-row justify-between shadow-2xl bg-white'>
+                            <div className='px-2 w-[80%]'>
+                                <input onChange={handleSearchingWordChange} className='w-full my-4 py-3 mx-2 focus:outline-none' type="text" placeholder='Searching for users ...' />
+                            </div>
+                            <div onClick={() => handleClickFindUser()} className='mt-5 mr-4'>
+                                <div className='hover:bg-yellow-600 p-2 rounded-xl bg-sky-900'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
+                                        <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
+                                    </svg>
+
+                                </div>
+                            </div>
+                        </div>
                         <div className='h-[75px]'>
                             {
                                 (user.permission == 'Admin' || user.permission == 'SuperAdmin') ?
