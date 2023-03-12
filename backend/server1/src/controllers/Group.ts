@@ -302,22 +302,24 @@ const groupController = {
                     groupAnotherUser = groupAnotherUser.filter((groupAnotherUser: any) => {
                         return groupAnotherUser.userId != req.user.userId
                     })
-                    let user
+                   
                     for (let i = 0; i < groupAnotherUser.length; i++) {
-                        user = await prisma.user.findUnique({
+                        let user = await prisma.user.findUnique({
                             where: {
                                 userId: groupAnotherUser[0].userId
                             }
                         })
+                       
+                        if(user){
+                            data.push({
+                                groupId: group.groupId,
+                                name: user?.name,
+                                avatar: user?.avatar,
+                                userId: user?.userId
+                            })
+                           }
                     }
-                   if(user){
-                    data.push({
-                        groupId: group.groupId,
-                        name: user?.name,
-                        avatar: user?.avatar,
-                        userId: user?.userId
-                    })
-                   }
+                  
                 }
             }
 

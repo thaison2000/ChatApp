@@ -10,6 +10,7 @@ import TimeAgo from 'javascript-time-ago'
 // English.
 import en from 'javascript-time-ago/locale/en'
 import { APIfetchAllDirectMessageGroups, APIfetchAllGroups } from '../API/Group'
+import { APIdeleteCommentsByCommentId } from '../API/Comment'
 
 TimeAgo.addDefaultLocale(en)
 
@@ -68,11 +69,31 @@ const MessageSearching = (props: any) => {
             let value = []
             const { status: status1, data: data1 } = await APIfetchAllGroups()
             const { status, data } = await APIfetchAllDirectMessageGroups()
-            
-                setGroups(data1.concat(data))
+
+            setGroups(data1.concat(data))
         }
         fetchAllGroups();
     }, []);
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            const { status, data } = await APIgetAllFullTextPostByUserId(searchString.current.value, groups)
+            if (status) {
+                setPosts(data)
+            }
+        }
+        fetchPost();
+    }, [newPostCount, newCommentCount, newLikeCount])
+
+    const handleClickDeleteComment = async (commentId: string) => {
+        if (window.confirm('Are you sure you want to delete this comment ?')) {
+            const { status } = await APIdeleteCommentsByCommentId(commentId)
+            if (status) {
+
+                setNewCommentCount((prev: number) => prev + 1)
+            }
+        }
+    }
 
     const handleClickDeletePost = async (postId: string) => {
         if (window.confirm('Are you sure you want to remove this post in group ?')) {
@@ -92,7 +113,7 @@ const MessageSearching = (props: any) => {
         }
     }
 
-    const handleClickSearchPost = async ()=>{
+    const handleClickSearchPost = async () => {
         const { status, data } = await APIgetAllFullTextPostByUserId(searchString.current.value, groups)
         if (status) {
             setPosts(data)
@@ -125,7 +146,7 @@ const MessageSearching = (props: any) => {
                             <div className='px-2 w-[80%]'>
                                 <input ref={searchString} defaultValue={searchString.current?.value} className='w-full my-4 py-3 mx-2 focus:outline-none' type="text" placeholder='Searching for posts ...' />
                             </div>
-                            <div onClick={()=>handleClickSearchPost()} className='mt-5 mr-4'>
+                            <div onClick={() => handleClickSearchPost()} className='mt-5 mr-4'>
                                 <div className='hover:bg-yellow-600 p-2 rounded-xl bg-sky-900'>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
                                         <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
@@ -147,6 +168,7 @@ const MessageSearching = (props: any) => {
                                                 <div className='text-xs ml-2'>{timeAgo.format(new Date(post.createdAt))}</div>
                                             </div>
 
+
                                         </div>
                                         <div className=' py-2 bg-white'>
                                             <div className='flex flex-col mx-2'>
@@ -157,27 +179,40 @@ const MessageSearching = (props: any) => {
                                                     {
                                                         post.comment?.map((comment: any) => {
                                                             return (
-                                                                <div className='flex flex-row hover:bg-gray-100 pt-2'>
+                                                                <div className='flex flex-row justify-between hover:bg-gray-100 pt-2'>
+                                                                <div className='flex w-full'>
                                                                     <div>
                                                                         <img className='w-8 h-8 mt-2 rounded-full' src={comment.userAvatar ? (`${process.env.REACT_APP_SERVER1_URL}` + '/images/' + comment.userAvatar) : `${process.env.REACT_APP_SERVER1_URL}` + '/images/nullAvatar.png'} alt="" />
                                                                     </div>
-                                                                    <div className='flex flex-col'>
-                                                                        <div className='ml-2'>
-                                                                            <div className='mx-0 text-md font-bold'>{comment.userName}</div>
-                                                                            <div className='text-xs'>{timeAgo.format(new Date(comment.createdAt))}</div>
+                                                                    <div className='flex flex-col w-full'>
+                                                                        <div className='flex justify-between w-full'>
+                                                                            <div className='ml-2'>
+                                                                                <div className='mx-0 text-md font-bold'>{comment.userName}</div>
+                                                                                <div className='text-xs'>{timeAgo.format(new Date(comment.createdAt))}</div>
+                                                                            </div>
+                                                                            {
+                                                                                comment.userId == user.userId ? <button onClick={() => handleClickDeleteComment(comment.commentId)} className=" text-white py-2 px-3 mx-2 my-3 font-medium text-xl bg-red-500 hover:bg-red-900 hover:text-white">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                                                                                        <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
+                                                                                    </svg>
+
+                                                                                </button> : null
+                                                                            }
                                                                         </div>
                                                                         <div className='ml-2 pb-4'>
                                                                             <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
+
+                                                            </div>
                                                             )
                                                         })
                                                     }
                                                 </div>
                                                 <div className='mt-4 mb-4 pl-4 h-fit'>
                                                     <div className=' relative pb-12'>
-                                                        <Editor socket={props.socket} type={'comment'} groupId={post.groupId} postId={post.postId} />
+                                                        <Editor socket={props.socket} type={'comment'} groupId={post.groupId} postId={post.postId} post={post} />
                                                     </div>
                                                 </div>
                                             </div>
