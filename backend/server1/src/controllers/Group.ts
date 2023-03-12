@@ -310,14 +310,17 @@ const groupController = {
                             }
                         })
                     }
+                   if(user){
                     data.push({
                         groupId: group.groupId,
                         name: user?.name,
                         avatar: user?.avatar,
                         userId: user?.userId
                     })
+                   }
                 }
             }
+
             res.status(200).json(data)
         }
         catch (err) {

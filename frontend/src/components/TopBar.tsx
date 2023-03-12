@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { APIaddFriend, APIdeleteFriendRequest, APIgetAllFriendRequestByReceiveUserId } from '../API/Friend'
 import { APIfetchAllGroups } from '../API/Group'
 import { APIcreateFriendRequestNotification, APIdeleteNotification, APIgetAllNotificationsByGroupIds, APIgetAllNotificationsByReceiveUserId } from '../API/Notification'
@@ -17,6 +17,8 @@ TimeAgo.addDefaultLocale(en)
 const timeAgo = new TimeAgo('en-US')
 
 const TopBar = (props: any) => {
+
+    const groupId = useParams().groupId
 
     let navigate = useNavigate()
     const scrollRef = useRef<any>()
@@ -70,11 +72,14 @@ const TopBar = (props: any) => {
             if (data1 && data2) {
                 let notificationSum = data1.concat(data2)
                 notificationSum = notificationSum.filter((notifcation: any) => notifcation.sendUserId != user.userId)
+
                 notificationSum?.sort((p1: any, p2: any) => {
                     let time1: any = new Date(p2.createdAt)
                     let time2: any = new Date(p1.createdAt)
                     return (time2 - time1);
                 })
+                console.log(notificationSum)
+
                 setNotifications(notificationSum)
             }
         }
@@ -96,6 +101,16 @@ const TopBar = (props: any) => {
 
     useEffect(() => {
         props.socket?.current?.on("getNotification", (data: any) => {
+            if (data.type == 20) {
+                localStorage.removeItem('user')
+                window.location.reload()
+
+            }
+        
+            if (data.type == 10 && groupId == data.groupId && data.receiveUserId == user.userId) {
+                navigate('/')
+
+            }
             setNewNotification({
                 sendUserId: data.sendUserId,
                 sendUserName: data.sendUserName,
@@ -275,9 +290,10 @@ const TopBar = (props: any) => {
                         </div>
                     )
                 }
-                if (notification.sendUserId != user.userId && notification.type == 10 && groups.some((group: any) => {
+                if (notification.type == 10 && groups.some((group: any) => {
                     return group.groupId == notification.groupId
                 })) {
+                    
                     return (
                         <div className='py-2 px-4 hover:bg-neutral-200' ref={scrollRef}>
                             <div>
@@ -287,7 +303,7 @@ const TopBar = (props: any) => {
                         </div>
                     )
                 }
-                if (notification.sendUserId != user.userId && notification.type == 11 && groups.some((group: any) => {
+                if (notification.type == 11 && groups.some((group: any) => {
                     return group.groupId == notification.groupId
                 })) {
                     return (
@@ -299,7 +315,7 @@ const TopBar = (props: any) => {
                         </div>
                     )
                 }
-                if (notification.sendUserId != user.userId && notification.type == 12 && groups.some((group: any) => {
+                if (notification.type == 12 && groups.some((group: any) => {
                     return group.groupId == notification.groupId
                 })) {
                     return (

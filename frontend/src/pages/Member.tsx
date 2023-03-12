@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { APIRegister } from '../API/Auth'
 import { APIdeleteCompanyUser, APIgetCompanyUsers, APIlockCompanyUser, APIunlockCompanyUser } from '../API/Company'
+import { APIcreateNotification } from '../API/Notification'
 import SideBar from '../components/SideBar'
 import TopBar from '../components/TopBar'
 import { Context } from '../context/Context'
@@ -69,6 +70,18 @@ const Member = (props: any) => {
             const { status, data }: any = await APIdeleteCompanyUser(userId)
 
             if (status) {
+                props.socket?.current?.emit("sendNotification", {
+                    sendUserName: user.name,
+                    sendUserId: user.userId,
+                    receiveUserId: userId,
+                    type: 20
+                  });
+                  await APIcreateNotification({
+                    sendUserName: user.name,
+                    sendUserId: user.userId,
+                    receiveUserId: userId,
+                    type: 19
+                  })
                 setNewUserCount((prev: number) => prev + 1)
             }
         }

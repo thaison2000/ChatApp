@@ -289,6 +289,7 @@ const ChatWindow = (props: any) => {
           sendUserId: user.userId,
           groupName: group.name,
           groupId: group.groupId,
+          receiveUserId: deleteUser.userId,
           affectedUserName: deleteUser.name,
           type: 10
         });
@@ -298,6 +299,7 @@ const ChatWindow = (props: any) => {
           sendUserId: user.userId,
           groupName: group.name,
           groupId: group.groupId,
+          receiveUserId: deleteUser.userId,
           affectedUserName: deleteUser.name,
           type: 10
         })

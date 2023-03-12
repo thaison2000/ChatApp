@@ -86,7 +86,7 @@ model GroupAdmin {
   groupAdminId          Int     @id @default(autoincrement())
   group                 Group   @relation("group", fields: [groupId], references: [groupId], onDelete: Cascade)
   groupId               Int
-  user                  User    @relation(fields: [userId], references: [userId])
+  user                  User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
   userId                Int     
 }
 
@@ -94,23 +94,23 @@ model GroupUser {
   groupUserId           Int     @id @default(autoincrement())
   group                 Group   @relation("group", fields: [groupId], references: [groupId], onDelete: Cascade)
   groupId               Int
-  user                  User    @relation(fields: [userId], references: [userId])
+  user                  User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
   userId                Int     
 }
 
 model Friend {
   friendRecordId        Int      @id @default(autoincrement())
-  user                  User     @relation("user", fields: [userId], references: [userId])
+  user                  User     @relation("user", fields: [userId], references: [userId], onDelete: Cascade)
   userId                Int
-  friend                User     @relation("friend", fields: [friendId], references: [userId])
+  friend                User     @relation("friend", fields: [friendId], references: [userId], onDelete: Cascade)
   friendId              Int
 }
 
 model FriendRequest {
   friendRequestId       Int     @id @default(autoincrement())
-  sendUser              User    @relation("sendUser", fields: [sendUserId], references: [userId])
+  sendUser              User    @relation("sendUser", fields: [sendUserId], references: [userId], onDelete: Cascade)
   sendUserId            Int
-  receiveUser           User    @relation("receiveUser", fields: [receiveUserId], references: [userId])
+  receiveUser           User    @relation("receiveUser", fields: [receiveUserId], references: [userId], onDelete: Cascade)
   receiveUserId         Int
 }
 

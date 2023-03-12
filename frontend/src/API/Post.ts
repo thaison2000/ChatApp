@@ -436,6 +436,8 @@ export const APIgetAllMentionPostByUserId = async () => {
             let time2: any = new Date(p1.createdAt)
             return (time2 - time1);
         })
+
+        console.log(postThread)
         
         return {
             status: true,
@@ -462,8 +464,6 @@ export const APIgetPostThread = async () => {
         const res1 = await axios.get(`${process.env.REACT_APP_SERVER2_URL}` + "/api/post/thread/", config);
 
         let postThread = res1.data
-
-        console.log(postThread)
 
         for (let i = 0; i < postThread.length; i++) {
             let res2 = await axios.get(`${process.env.REACT_APP_SERVER1_URL}`    + "/api/group/" + postThread[i].groupId, config);

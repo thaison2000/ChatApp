@@ -53,6 +53,7 @@ const NotificationSchema = mongoose.Schema(
         // 17 la active tin nhan thanh important
         // 18 la inactive tin nhan important
         // 19 la mention
+        // 20 la delete user
     },
     { timestamps: true })
 

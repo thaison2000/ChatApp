@@ -262,14 +262,18 @@ const postController = {
                 let post = await Post.findOne({
                     postId: postThreadByComment[i].postId
                 });
-                postThreadByPost.push(post)
+                if(post){
+                    postThreadByPost.push(post)
+                }
 
             }
+           
             postThread = postThreadByPost
             //sap xep theo thoi gian gan nhat
+            
             postThread = postThread?.sort((p1: any, p2: any) => {
-                let time1: any = new Date(p2.createdAt)
-                let time2: any = new Date(p1.createdAt)
+                let time1: any = new Date(p2?.createdAt)
+                let time2: any = new Date(p1?.createdAt)
                 return (time2 - time1);
             })
 
@@ -283,6 +287,7 @@ const postController = {
                 });
                 return ans;
             }
+           
             postThread = deduplicate(postThread)
             res.status(200).json(postThread.slice(0, 19));
         } catch (err) {
