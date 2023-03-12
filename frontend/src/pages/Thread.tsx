@@ -149,7 +149,7 @@ const Thread = (props: any) => {
                                                 </div>
                                                 <div className='mt-4 mb-4 pl-4 h-fit'>
                                                     <div className=' relative pb-12'>
-                                                        <Editor socket={props.socket} type={'comment'} groupId={post.groupId} postId={post.postId} />
+                                                        <Editor socket={props.socket} type={'comment'} groupId={post.groupId} postId={post.postId} post={post}/>
                                                     </div>
                                                 </div>
                                             </div>

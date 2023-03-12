@@ -123,7 +123,7 @@ const Editor = (props: any) => {
         const { status, data } = await APIcreateComment({
           groupId: props.groupId,
           userId: user.userId,
-          postId: props.post.postId,
+          postId: props.post?.postId,
           content: state
         })
         if (status) {
