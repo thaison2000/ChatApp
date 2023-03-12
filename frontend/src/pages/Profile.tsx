@@ -160,6 +160,7 @@ const Profile = (props: any) => {
       props.socket?.current?.emit("sendNotification", {
         sendUserName: currentUser.name,
         sendUserId: currentUser.userId,
+        receiveUserId: user.userId,
         type: 7
       });
       setUserCondition('user')

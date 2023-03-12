@@ -19,6 +19,8 @@ const timeAgo = new TimeAgo('en-US')
 const TopBar = (props: any) => {
 
     const groupId = useParams().groupId
+    const userId = useParams().userId
+
 
     let navigate = useNavigate()
     const scrollRef = useRef<any>()
@@ -108,6 +110,10 @@ const TopBar = (props: any) => {
             }
         
             if (data.type == 10 && groupId == data.groupId && data.receiveUserId == user.userId) {
+                navigate('/')
+
+            }
+            if (data.type == 7 && data.receiveUserId == userId) {
                 navigate('/')
 
             }
